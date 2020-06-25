@@ -163,8 +163,8 @@ let submit = Document.getElementById(submit);
 submit.addEventListener('click', submitDataListener);
 
 function submitDataListener(event) {
-  let hours = Document.getElementById().value;
-  let minutes = Document.getElementById().value;
+  let hours = Document.getElementById(hoursId).value;
+  let minutes = Document.getElementById(minutesId).value;
   let timeObj = { "hours": hours, "minutes": minutes};
   // TODO: Here, call Priya's function to get list of places from time object
   // places = Priya.getPlacesFromTime(timeObj);
