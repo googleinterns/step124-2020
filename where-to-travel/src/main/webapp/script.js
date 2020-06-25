@@ -138,17 +138,10 @@ const submitId = "submit";
 const hoursId = "hrs";
 const minutesId = "mnts";
 
-let submit = Document.getElementById(submit);
-
-function submitDataListener(event) {
-  let hours = Document.getElementById().value;
-  let minutes = Document.getElementById().value;
-  let timeObj = { "hours": hours, "minutes": minutes};
-  //Here, call Priya's function to get list of places
-}
-
-
+let map;
 function initialize() {
+  // TODO: Replace this line with getting location from Priya
+  // let home = Priya.getUserLocation();
   let home = {lat: -33.86, lng: 151.2027};
   let mapOptions = {
     center: new google.maps.LatLng(-33.868, 151.2),
@@ -157,25 +150,28 @@ function initialize() {
     mapTypeControl: false,
     styles: mapStyles
   };	 
-  let map = new google.maps.Map(document.getElementById("map"), mapOptions);
-
-  let contentString = 
-    '<div id="content">'+
-      '<div id="siteNotice">'+
-      '</div>'+
-      '<h1 id="firstHeading" class="firstHeading">Place</h1>'+
-      '<div id="bodyContent">'+
-        '<p>Lorem Ipsum</p>'+
-        '<p>more styled text with html <a href=#>link</a></p>'+
-      '</div>'+
-    '</div>';
+  map = new google.maps.Map(document.getElementById("map"), mapOptions);
 
   let homeMarker = new google.maps.Marker({
     position: home,
     map: map,
     title: 'Home'
   });
-  
+}
+
+let submit = Document.getElementById(submit);
+submit.addEventListener('click', submitDataListener);
+
+function submitDataListener(event) {
+  let hours = Document.getElementById().value;
+  let minutes = Document.getElementById().value;
+  let timeObj = { "hours": hours, "minutes": minutes};
+  // TODO: Here, call Priya's function to get list of places from time object
+  // places = Priya.getPlacesFromTime(timeObj);
+  // populatePlaces(places);
+}
+
+function populatePlaces(placeArray) {
   let i;
   for(i = 0; i < placeArray.length; i++) {
     let name = placeArray[i].name;
