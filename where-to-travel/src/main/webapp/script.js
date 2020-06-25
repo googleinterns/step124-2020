@@ -1,3 +1,4 @@
+//This is the place array from Priya
 const placeArray = [
       {
          "geometry" : {
@@ -101,8 +102,10 @@ const placeArray = [
          "vicinity" : "32 The Promenade, King Street Wharf 5, Sydney"
       }
    ];
+//End the place array
 
-let mapStyles = [
+//This is map stylings for the GMap api
+const mapStyles = [
   {
     "featureType": "landscape",
     "stylers": [
@@ -129,6 +132,21 @@ let mapStyles = [
     ]
   }
 ];
+//End map stylings
+
+const submitId = "submit";
+const hoursId = "hrs";
+const minutesId = "mnts";
+
+let submit = Document.getElementById(submit);
+
+function submitDataListener(event) {
+  let hours = Document.getElementById().value;
+  let minutes = Document.getElementById().value;
+  let timeObj = { "hours": hours, "minutes": minutes};
+  //Here, call Priya's function to get list of places
+}
+
 
 function initialize() {
   let home = {lat: -33.86, lng: 151.2027};
