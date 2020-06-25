@@ -1,14 +1,72 @@
-// Copyright 2019 Google LLC
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//     https://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+let mapStyles = [
+  {
+    "featureType": "landscape",
+    "stylers": [
+      {
+        "visibility": "off"
+      }
+    ]
+  },
+  {
+    "featureType": "poi",
+    "elementType": "labels.icon",
+    "stylers": [
+      {
+        "visibility": "off"
+      }
+    ]
+  },
+  {
+    "featureType": "transit",
+    "stylers": [
+      {
+        "visibility": "off"
+      }
+    ]
+  }
+];
+
+function initialize() {
+let home = {lat: 39.749, lng: -104.994};
+        let place = {lat: 39.8, lng: -104.994};
+    var mapOptions = {
+            center: new google.maps.LatLng(40.435833800555567, -78.44189453125),
+            mapTypeId: google.maps.MapTypeId.ROADMAP,
+            zoom: 11,
+            mapTypeControl: false,
+            styles: myStyles
+          };	 
+  var map = new google.maps.Map(document.getElementById("map"), mapOptions);
+
+  var contentString = 
+    '<div id="content">'+
+      '<div id="siteNotice">'+
+      '</div>'+
+      '<h1 id="firstHeading" class="firstHeading">Place</h1>'+
+      '<div id="bodyContent">'+
+        '<p>Lorem Ipsum</p>'+
+        '<p>more styled text with html <a href=#>link</a></p>'+
+      '</div>'+
+    '</div>';
+
+  var infowindow = new google.maps.InfoWindow({
+    content: contentString
+  });
+
+  var placeMarker = new google.maps.Marker({
+    position: place,
+    map: map,
+    title: 'A place'
+  });
+
+  var homeMarker = new google.maps.Marker({
+    position: home,
+    map: map,
+    title: 'A place'
+  });
+
+  placeMarker.addListener('click', function() {
+    infowindow.open(map, placeMarker);
+  });
+}
  
