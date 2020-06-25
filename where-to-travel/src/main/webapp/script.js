@@ -46,7 +46,7 @@ function getUserLocation() {
 function getLocationFromUserInput() {
   const address = prompt("Please enter a valid address as your start location.");
   if (address == null || address == "") {
-    queryFromInputLocation();
+    getLocationFromUserInput();
   }
  
   const geocoder = new google.maps.Geocoder();
@@ -56,7 +56,7 @@ function getLocationFromUserInput() {
       const lng = results[0].geometry.location.lng;
       return {lat: lat() , lng: lng()};  
     } else {
-      queryFromInputLocation();
+      getLocationFromUserInput();
     }
   });
 }
