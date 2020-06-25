@@ -139,9 +139,14 @@ const hoursId = "hrs";
 const minutesId = "mnts";
 
 let map;
+let home = null;
+
+/**
+  initializes map window, ran on load
+ */
 function initialize() {
   // TODO: Replace this line with getting location from Priya
-  // let home = Priya.getUserLocation();
+  // home = Priya.getUserLocation();
   let home = {lat: -33.86, lng: 151.2027};
   let mapOptions = {
     center: new google.maps.LatLng(-33.868, 151.2),
