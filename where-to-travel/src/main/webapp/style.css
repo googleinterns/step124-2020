@@ -1,7 +1,3 @@
-html { 
-  height: 100%;
-}
-
 body {
   height: 100%;
   margin: 0px;
@@ -13,14 +9,26 @@ body {
   height: 100%;
 }
 
-#nav { 
+html { 
+  height: 100%;
+}
+
+#input-wrap {
+  display: block;
+}
+
+input[type="text"] {
+  width: 30px;
+}
+
+#nav {
   z-index: 100;
   position: absolute; 
   background-color: #fff; 
   border: 1px #000 Solid;
   padding: 5px; 
   height: 100%; 
-  width: 10%; 
+  width: 15%; 
   display: block;
 }
 
