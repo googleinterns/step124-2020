@@ -68,5 +68,7 @@ let home = {lat: 39.749, lng: -104.994};
   placeMarker.addListener('click', function() {
     infowindow.open(map, placeMarker);
   });
+  
+  console.log(places);
 }
  
