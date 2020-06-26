@@ -349,6 +349,7 @@ function queryDirection(lat, lng, place_candidates) {
       for (var i = 0; i < origins.length; i++) {
         var results = response.rows[i].elements;
         for (var j = 0; j < results.length; j++) {
+            var element = results[j];
           
           //Check if the time is within the +- 30 min = 1800 sec range
           if (element.duration.value < time + 1800 && element.duration.value > time - 1800) {
@@ -357,9 +358,9 @@ function queryDirection(lat, lng, place_candidates) {
               "geometry" : {
                 "location" : {
                   "lat" : destination.lat,
-                   "lng" : destination.lng,
-            }
-         },
+                  "lng" : destination.lng,
+                }
+              },
               "timeInSeconds": element.duration.value,
               "timeAsString": element.duration.text
             })
