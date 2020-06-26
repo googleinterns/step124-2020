@@ -2,12 +2,28 @@
 <html>
   <head>
     <meta charset="UTF-8">
-    <title> Where to Travel </title>
+    <title>Where to?</title>
     <link rel="stylesheet" href="style.css">
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDVMBrodYngWBvQuH6Qfl5aKsa6UZ6Bl6I&libraries=places"></script>
+    <script type="text/javascript" src="example_places.js"></script>
+    <script src="script.js"></script>
   </head>
   
-  <body>
-
+  <body onload="initialize();">
+    <div id="container">
+        <div id="nav">
+          <form>
+            <label>Travel time: </label>
+            <div id="input-wrap">
+              <label>Hours</label>
+              <input type="text" name="hours" id="hrs">
+              <label>Minutes</label>
+              <input type="text" name="minutes" id="mnts">
+            </div>
+            <input type="submit" value="Search" id="submit">
+          </form>
+        </div>
+        <div id="map"></div>
+    </div>
   </body>
 </html>
