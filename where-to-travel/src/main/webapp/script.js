@@ -213,13 +213,13 @@ function populatePlaces(placeArray) {
     }
 
    function error() {
-     return getLocationFromUserInput();
+     return resolve(getLocationFromUserInput());
    }
 
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(success, error);
     } else {
-      return getLocationFromUserInput();
+      return resolve(getLocationFromUserInput());
     }
   });
 }
@@ -237,7 +237,7 @@ function getLocationFromUserInput() {
   return new Promise(function(resolve, reject) {
   const address = prompt("Please enter a valid address as your start location.");
   if (address == null || address == "") {
-    return getLocationFromUserInput();
+    return resolve(getLocationFromUserInput());
   }
  
   const geocoder = new google.maps.Geocoder();
@@ -247,7 +247,7 @@ function getLocationFromUserInput() {
       const lng = results[0].geometry.location.lng;
       return resolve({lat: lat() , lng: lng()});  
     } else {
-      return getLocationFromUserInput();
+      return resolve(getLocationFromUserInput());
     }
   });
   });
