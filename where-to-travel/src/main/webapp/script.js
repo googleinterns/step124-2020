@@ -334,20 +334,11 @@ function queryDirection(lat, lng, place_candidates) {
     if (status == 'OK') {
       var origins = response.originAddresses;
       var destinations = response.destinationAddresses;
-     
-      //added for testing
-        var outputDiv = document.getElementById('output');
-            outputDiv.innerHTML = '';
 
       for (var i = 0; i < origins.length; i++) {
         var results = response.rows[i].elements;
         for (var j = 0; j < results.length; j++) {
-          var element = results[j];
-          var distance = element.distance.text;
-          var duration = element.duration.text;
-          var from = origins[i];
-          var to = destinations[j];
-
+          
           //Check if the time is within the +- 30 min = 1800 sec range
           if (element.duration.value < time + 1800 && element.duration.value > time - 1800) {
             acceptablePlaces.push({
@@ -356,10 +347,6 @@ function queryDirection(lat, lng, place_candidates) {
               "timeAsString": element.duration.text
             })
           }
-
-          outputDiv.innerHTML += "Origin" + userLocation + ' to ' + destinations[j] +
-                    '.  Time in seconds:  ' + element.duration.value + '.  Time as String: ' +
-                    results[j].duration.text + '<br>';
         }
       }
     }
