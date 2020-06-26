@@ -134,7 +134,7 @@ const mapStyles = [
 ];
 //End map stylings
 
-const submitId = "submit";
+const submitId = "submitId";
 const hoursId = "hrs";
 const minutesId = "mnts";
 
@@ -145,6 +145,8 @@ let home = null;
   initializes map window, ran on load
  */
 function initialize() {
+  var submit = document.getElementById(submitId);
+  submit.addEventListener('click', submitDataListener);
   home = getUserLocation();     
   
   // Center of Kansas
@@ -165,9 +167,6 @@ function initialize() {
     title: 'Home'
   });
 }
-
-let submit = document.getElementById(submitId);
-submit.addEventListener('click', submitDataListener);
 
 function submitDataListener(event) {
   let hours = document.getElementById(hoursId).value;
