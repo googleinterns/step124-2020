@@ -347,6 +347,12 @@ function queryDirection(lat, lng, place_candidates) {
           if (element.duration.value < time + 1800 && element.duration.value > time - 1800) {
             acceptablePlaces.push({
               "name": listPlaces[j].name,
+              "geometry" : {
+                "location" : {
+                  "lat" : destination.lat,
+                   "lng" : destination.lng,
+            }
+         },
               "timeInSeconds": element.duration.value,
               "timeAsString": element.duration.text
             })
