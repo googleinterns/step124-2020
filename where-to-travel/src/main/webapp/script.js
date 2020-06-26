@@ -11,10 +11,11 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
- function filterByDistance(time, listPlaces, userLocation) {
-  //final list of places accociated with times
-  var acceptablePlaces = {};
 
+ function filterByDistance(time, listPlaces, userLocation) {
+  
+  
+  var acceptablePlaces = {};
   var userDestinations;
 
   //itterate through listPlaces and to get all the destinations
