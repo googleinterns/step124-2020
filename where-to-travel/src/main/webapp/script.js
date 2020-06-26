@@ -233,23 +233,22 @@ function populatePlaces(placeArray) {
  * @return {Object} Contains latitude and longitude corresponding to input address
  */
 function getLocationFromUserInput() {
-  
   return new Promise(function(resolve, reject) {
-  const address = prompt("Please enter a valid address as your start location.");
-  if (address == null || address == "") {
-    return resolve(getLocationFromUserInput());
-  }
- 
-  const geocoder = new google.maps.Geocoder();
-  geocoder.geocode({'address': address}, function(results, status) {
-    if (status == 'OK') {
-      const lat = results[0].geometry.location.lat;
-      const lng = results[0].geometry.location.lng;
-      return resolve({lat: lat() , lng: lng()});  
-    } else {
+    const address = prompt("Please enter a valid address as your start location.");
+    if (address == null || address == "") {
       return resolve(getLocationFromUserInput());
     }
-  });
+ 
+    const geocoder = new google.maps.Geocoder();
+    geocoder.geocode({'address': address}, function(results, status) {
+      if (status == 'OK') {
+        const lat = results[0].geometry.location.lat;
+        const lng = results[0].geometry.location.lng;
+        return resolve({lat: lat() , lng: lng()});  
+      } else {
+        return resolve(getLocationFromUserInput());
+      }
+    });
   });
 }
 
