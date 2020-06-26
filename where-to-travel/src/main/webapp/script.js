@@ -344,11 +344,10 @@ function queryDirection(lat, lng, place_candidates) {
     if (status == 'OK') {
       var origins = response.originAddresses;
       var destinations = response.destinationAddresses;
-
+      
       for (var i = 0; i < origins.length; i++) {
         var results = response.rows[i].elements;
         for (var j = 0; j < results.length; j++) {
-          
           //Check if the time is within the +- 30 min = 1800 sec range
           if (element.duration.value < time + 1800 && element.duration.value > time - 1800) {
             acceptablePlaces.push({
