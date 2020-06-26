@@ -353,4 +353,3 @@ function queryDirection(lat, lng, place_candidates) {
   }
   return acceptablePlaces;
 }
-
