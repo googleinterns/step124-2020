@@ -11,6 +11,7 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
+ 
  priyaTest = [
       {
          "geometry" : {
@@ -114,15 +115,11 @@
          "vicinity" : "32 The Promenade, King Street Wharf 5, Sydney"
       }
    ]
+
 var inputLocation = new google.maps.LatLng(-33, 151)
-
-
 var answer = filterByDistance( 36000, priyaTest, inputLocation);
 
-
  function filterByDistance(time, listPlaces, userLocation) {
-  
-  
   var acceptablePlaces = [];
   var userDestinations = [];
 
@@ -131,6 +128,7 @@ var answer = filterByDistance( 36000, priyaTest, inputLocation);
       let destination = new google.maps.LatLng(listPlaces[i].geometry.location.lat, listPlaces[i].geometry.location.lng)
     userDestinations.push(destination);
   }
+
   var service = new google.maps.DistanceMatrixService();
   service.getDistanceMatrix({
     origins: [userLocation],
@@ -143,6 +141,10 @@ var answer = filterByDistance( 36000, priyaTest, inputLocation);
     if (status == 'OK') {
       var origins = response.originAddresses;
       var destinations = response.destinationAddresses;
+     
+      //added for testing
+        var outputDiv = document.getElementById('output');
+            outputDiv.innerHTML = '';
 
       for (var i = 0; i < origins.length; i++) {
         var results = response.rows[i].elements;
@@ -161,11 +163,13 @@ var answer = filterByDistance( 36000, priyaTest, inputLocation);
               "timeAsString": element.duration.text
             })
           }
+
+          outputDiv.innerHTML += "Origin" + userLocation + ' to ' + destinations[j] +
+                    '.  Time in seconds:  ' + element.duration.value + '.  Time as String: ' +
+                    results[j].duration.text + '<br>';
         }
-        console.log(acceptablePlaces);
       }
     }
   }
   return acceptablePlaces;
-  console.log(acceptablePlaces);
 }
