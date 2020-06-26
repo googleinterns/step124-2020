@@ -145,9 +145,11 @@ let home = null;
   initializes map window, ran on load
  */
 function initialize() {
-  // TODO: Replace this line with getting location from Priya
-  // home = Priya.getUserLocation();
-  let home = {lat: -33.86, lng: 151.2027};
+  home = getUserLocation();     
+  
+  // Center of Kansas
+  //home = {lat: 37.926916, lng: -98.981257};
+
   let mapOptions = {
     center: new google.maps.LatLng(-33.868, 151.2),
     mapTypeId: google.maps.MapTypeId.ROADMAP,
@@ -171,9 +173,8 @@ function submitDataListener(event) {
   let hours = Document.getElementById(hoursId).value;
   let minutes = Document.getElementById(minutesId).value;
   let timeObj = { "hours": hours, "minutes": minutes};
-  // TODO: Here, call Priya's function to get list of places from time object
-  // places = Priya.getPlacesFromTime(timeObj);
-  // populatePlaces(places);
+  places = Priya.getPlacesFromTime(timeObj);
+  populatePlaces(places);
 }
 
 function populatePlaces(placeArray) {
@@ -255,13 +256,9 @@ function getLocationFromUserInput() {
  * @param {object} timeObj Travel time requested by user in hours and mins
  */
 async function getPlacesFromTime(timeObj) {
-  //const userLat = home.lat;
-  //const userLng = home.lng;
+  const userLat = home.lat;
+  const userLng = home.lng;
   
-  // Center of Kansas
-  const userLat = 37.926916;
-  const userLng = -98.981257;
-
   // These spread the search area for the four bounding boxes
   const latSpread = 2
   const lngSpread = 8
@@ -272,8 +269,7 @@ async function getPlacesFromTime(timeObj) {
   place_candidates = await queryDirection(userLat + latSpread, userLng, place_candidates); // East
   place_candidates = await queryDirection(userLat, userLng - lngSpread, place_candidates); // South
 
-  // TODO: Call Emma's function to get list of places that are within time 
-  // return filterByDistance(timeObj, place_candidates);
+  return filterByDistance(timeObj, place_candidates);
 }
 
 /** 
@@ -315,7 +311,7 @@ function queryDirection(lat, lng, place_candidates) {
   });
 }
 
- function filterByDistance(time, listPlaces, home) {
+ function filterByDistance(time, listPlaces) {
   var userLocation = new google.maps.LatLng(home.lat, home.lng)
   var acceptablePlaces = [];
   var userDestinations = [];
@@ -338,11 +334,20 @@ function queryDirection(lat, lng, place_candidates) {
     if (status == 'OK') {
       var origins = response.originAddresses;
       var destinations = response.destinationAddresses;
+     
+      //added for testing
+        var outputDiv = document.getElementById('output');
+            outputDiv.innerHTML = '';
 
       for (var i = 0; i < origins.length; i++) {
         var results = response.rows[i].elements;
         for (var j = 0; j < results.length; j++) {
-        
+          var element = results[j];
+          var distance = element.distance.text;
+          var duration = element.duration.text;
+          var from = origins[i];
+          var to = destinations[j];
+
           //Check if the time is within the +- 30 min = 1800 sec range
           if (element.duration.value < time + 1800 && element.duration.value > time - 1800) {
             acceptablePlaces.push({
@@ -351,6 +356,10 @@ function queryDirection(lat, lng, place_candidates) {
               "timeAsString": element.duration.text
             })
           }
+
+          outputDiv.innerHTML += "Origin" + userLocation + ' to ' + destinations[j] +
+                    '.  Time in seconds:  ' + element.duration.value + '.  Time as String: ' +
+                    results[j].duration.text + '<br>';
         }
       }
     }
