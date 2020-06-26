@@ -144,11 +144,11 @@ let home = null;
 /**
   initializes map window, ran on load
  */
-function initialize() {
+async function initialize() {
   var submit = document.getElementById(submitId);
   submit.addEventListener('click', submitDataListener);
-  home = getUserLocation();     
-  
+  home = await getUserLocation();    
+
   // Center of Kansas
   //home = {lat: 37.926916, lng: -98.981257};
 
@@ -205,20 +205,23 @@ function populatePlaces(placeArray) {
  *
  * @return {Object} Contains latitude and longitude corresponding to user's location
  */
-function getUserLocation() {
+ function getUserLocation() {
+  return new Promise(function(resolve, reject) {
+  
     function success(position) {
-    return {lat: position.coords.latitude, lng: position.coords.longitude};
-  }
+      return resolve({lat: position.coords.latitude, lng: position.coords.longitude});
+    }
 
-  function error() {
-    getLocationFromUserInput();
-  }
+   function error() {
+     return getLocationFromUserInput();
+   }
 
-  if (navigator.geolocation) {
-    navigator.geolocation.getCurrentPosition(success, error);
-  } else {
-    getLocationFromUserInput();
-  }
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(success, error);
+    } else {
+      return getLocationFromUserInput();
+    }
+  });
 }
 
 
@@ -230,9 +233,11 @@ function getUserLocation() {
  * @return {Object} Contains latitude and longitude corresponding to input address
  */
 function getLocationFromUserInput() {
+  
+  return new Promise(function(resolve, reject) {
   const address = prompt("Please enter a valid address as your start location.");
   if (address == null || address == "") {
-    getLocationFromUserInput();
+    return getLocationFromUserInput();
   }
  
   const geocoder = new google.maps.Geocoder();
@@ -240,10 +245,11 @@ function getLocationFromUserInput() {
     if (status == 'OK') {
       const lat = results[0].geometry.location.lat;
       const lng = results[0].geometry.location.lng;
-      return {lat: lat() , lng: lng()};  
+      return resolve({lat: lat() , lng: lng()});  
     } else {
-      getLocationFromUserInput();
+      return getLocationFromUserInput();
     }
+  });
   });
 }
 
@@ -297,7 +303,6 @@ function queryDirection(lat, lng, place_candidates) {
         for (result of results) {
           if (result.business_status == 'OPERATIONAL') {
             place_candidates.push(result);
-            createMarker(result)
           }
         }
       }
