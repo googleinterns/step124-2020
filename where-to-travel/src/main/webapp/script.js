@@ -166,12 +166,12 @@ function initialize() {
   });
 }
 
-let submit = Document.getElementById(submit);
+let submit = document.getElementById(submitId);
 submit.addEventListener('click', submitDataListener);
 
 function submitDataListener(event) {
-  let hours = Document.getElementById(hoursId).value;
-  let minutes = Document.getElementById(minutesId).value;
+  let hours = document.getElementById(hoursId).value;
+  let minutes = document.getElementById(minutesId).value;
   let timeObj = { "hours": hours, "minutes": minutes};
   places = Priya.getPlacesFromTime(timeObj);
   populatePlaces(places);
