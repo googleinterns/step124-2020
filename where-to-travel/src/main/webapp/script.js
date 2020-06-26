@@ -172,7 +172,7 @@ function submitDataListener(event) {
   let hours = document.getElementById(hoursId).value;
   let minutes = document.getElementById(minutesId).value;
   let timeObj = { "hours": hours, "minutes": minutes};
-  places = Priya.getPlacesFromTime(timeObj);
+  places = getPlacesFromTime(timeObj);
   populatePlaces(places);
 }
 
