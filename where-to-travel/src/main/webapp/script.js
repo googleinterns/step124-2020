@@ -314,6 +314,13 @@ function queryDirection(lat, lng, place_candidates) {
   });
 }
 
+/** 
+ * Filter through tourist attractions to find which are in the given time frame of the user.
+ *
+ * @param {number} time How much time the user wants to travel for
+ * @param {array} listPlaces Array of place objects
+ * @return {array} An array promise acceptable places based on the amount of time the user has
+ */
  function filterByDistance(time, listPlaces) {
   var userLocation = new google.maps.LatLng(home.lat, home.lng)
   var acceptablePlaces = [];
@@ -346,6 +353,12 @@ function queryDirection(lat, lng, place_candidates) {
           if (element.duration.value < time + 1800 && element.duration.value > time - 1800) {
             acceptablePlaces.push({
               "name": listPlaces[j].name,
+              "geometry" : {
+                "location" : {
+                  "lat" : destination.lat,
+                   "lng" : destination.lng,
+            }
+         },
               "timeInSeconds": element.duration.value,
               "timeAsString": element.duration.text
             })
