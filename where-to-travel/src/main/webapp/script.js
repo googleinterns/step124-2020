@@ -328,7 +328,7 @@ function queryDirection(lat, lng, place_candidates) {
   var userDestinations = [];
 
   //itterate through listPlaces and to get all the destinations
-  for (var i = 0; i < listPlaces.length; i++) {
+  for (var i = 0; i < listPlaces.length && i < 25 ; i++) {
       let destination = new google.maps.LatLng(listPlaces[i].geometry.location.lat, listPlaces[i].geometry.location.lng)
     userDestinations.push(destination);
   }
