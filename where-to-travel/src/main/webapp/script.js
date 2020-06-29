@@ -320,7 +320,7 @@ function queryDirection(lat, lng, place_candidates) {
  *
  * @param {number} time How much time the user wants to travel for
  * @param {array} listPlaces Array of place objects
- * @return {array} An array promise acceptable places based on the amount of time the user has
+ * @return {array} An array of places objects that are in the given time frame
  */
  function filterByDistance(time, listPlaces) {
   var userLocation = new google.maps.LatLng(home.lat, home.lng)
