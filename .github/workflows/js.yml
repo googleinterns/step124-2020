@@ -13,7 +13,7 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: initialization npm
-      run: npm init
+      run: npm init -y
     - name: Install ESlint
       run: npm install eslint --save-dev
     - name: Run ESlint
