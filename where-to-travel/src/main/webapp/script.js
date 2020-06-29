@@ -47,7 +47,7 @@ async function initialize() {
   //home = {lat: 37.926916, lng: -98.981257};
 
   let mapOptions = {
-    center: new google.maps.LatLng(-33.868, 151.2),
+    center: home, 
     mapTypeId: google.maps.MapTypeId.ROADMAP,
     zoom: 16,
     mapTypeControl: false,
