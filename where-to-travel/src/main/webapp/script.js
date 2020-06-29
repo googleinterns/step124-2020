@@ -271,5 +271,4 @@ function addPlacesFromDirection(lat, lng, place_candidates) {
       resolve(acceptablePlaces);
     }
   });
-  return acceptablePlaces;
 }
