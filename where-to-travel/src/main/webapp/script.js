@@ -48,12 +48,9 @@ document.head.appendChild(script);
  * Initializes map window, ran on load.
  */
 async function initialize() {
-  var submit = document.getElementById(submitId);
+  let submit = document.getElementById(submitId);
   submit.addEventListener('click', submitDataListener);
   home = await getUserLocation();    
-
-  // Center of Kansas
-  //home = {lat: 37.926916, lng: -98.981257};
 
   let mapOptions = {
     center: home, 
