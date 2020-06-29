@@ -28,7 +28,7 @@ const mapStyles = [
 ];
 //End map stylings
 
-const submitId = "submitId";
+const submitId = "submit-id";
 const hoursId = "hrs";
 const minutesId = "mnts";
 
