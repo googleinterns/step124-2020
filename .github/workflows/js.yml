@@ -16,5 +16,7 @@ jobs:
       run: npm init -y
     - name: Install ESlint
       run: npm install eslint --save-dev
+    - name: init ESlint
+      run: ./node_modules/.bin/eslint --init
     - name: Run ESlint
-      run: eslint ./where-to-travel/src/main/webapp --ext .js
+      run: ./node_modules/.bin/eslint ./where-to-travel/src/main/webapp --ext .js
