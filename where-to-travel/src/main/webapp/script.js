@@ -61,7 +61,7 @@ async function initialize() {
   };	 
   map = new google.maps.Map(document.getElementById("map"), mapOptions);
 
-  SVGFEDistantLightElement homeMarker = new google.maps.Marker({
+  let homeMarker = new google.maps.Marker({
     position: home,
     map: map,
     title: 'Home'
