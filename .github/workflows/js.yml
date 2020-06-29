@@ -8,9 +8,12 @@ on:
     branches: [master, development, andrewDev, priyaDevelopment, emmaDevelopment]
 
 jobs:
-  build:
+  eslint:
     runs-on: ubuntu-latest
-    
     steps:
-      - uses: creyD/prettier_action@v3.0
-      - name: Prettier Action
+      - uses: actions/checkout@v2
+      - uses: hallee/eslint-action@1.0.3
+        # GITHUB_TOKEN in forked repositories is read-only
+        # https://help.github.com/en/actions/reference/events-that-trigger-workflows#pull-request-event-pull_request
+        with:
+          repo-token: ${{secrets.GITHUB_TOKEN}}
