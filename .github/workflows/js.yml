@@ -1,0 +1,16 @@
+
+name: JS style
+
+on:
+  push:
+    branches: [master, development, andrewDev, priyaDevelopment, emmaDevelopment]
+  pull_request:
+    branches: [master, development, andrewDev, priyaDevelopment, emmaDevelopment]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: creyD/prettier_action@v3.0
+      - name: Prettier Action
