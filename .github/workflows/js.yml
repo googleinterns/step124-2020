@@ -8,12 +8,13 @@ on:
     branches: [master, development, andrewDev, priyaDevelopment, emmaDevelopment]
 
 jobs:
-  eslint:
+  build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: hallee/eslint-action@1.0.3
-        # GITHUB_TOKEN in forked repositories is read-only
-        # https://help.github.com/en/actions/reference/events-that-trigger-workflows#pull-request-event-pull_request
-        with:
-          repo-token: ${{secrets.GITHUB_TOKEN}}
+    - uses: actions/checkout@v2
+    - name: initialization npm
+      run: npm init
+    - name: Install ESlint
+      run: npm install eslint --save-dev
+    - name: Run ESlint
+      run: eslint ./where-to-travel/src/main/webapp --ext .js
