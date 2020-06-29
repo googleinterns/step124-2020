@@ -355,8 +355,8 @@ function addPlacesFromDirection(lat, lng, place_candidates) {
           var results = response.rows[i].elements;
           for (var j = 0; j < results.length; j++) {
             var element = results[j];
-            //Check if the time is within the +- 30 min = 1800 sec range
-            if (element.duration.value < time + 1800 && element.duration.value > time - 1800) {
+            //Check if the time is within the range of +- 20%
+            if (element.duration.value < time + time*0.2 && element.duration.value > time - time*0.2) {
               acceptablePlaces.push({
                 "name": listPlaces[j].name,
                 "geometry" : listPlaces[j].geometry,
