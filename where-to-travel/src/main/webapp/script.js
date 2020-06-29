@@ -35,15 +35,17 @@ const minutesId = "mnts";
 let map;
 let home = null;
 
-var script = document.createElement('script');
+// Add gmap js library to head of page
+let script = document.createElement('script');
 script.src = 'https://maps.googleapis.com/maps/api/js?key=' 
               + secrets['googleMapsKey'] + '&libraries=places';
 script.defer = true;
 script.async = true;
 
 document.head.appendChild(script);
+
 /**
-  initializes map window, ran on load
+ * Initializes map window, ran on load.
  */
 async function initialize() {
   var submit = document.getElementById(submitId);
