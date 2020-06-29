@@ -15,8 +15,6 @@ jobs:
     - name: initialization npm
       run: npm init -y
     - name: Install ESlint
-      run: npm install eslint --save-dev
-    - name: init ESlint
-      run: ./node_modules/.bin/eslint --init
+      run: npm install --save-dev eslint eslint-config-google
     - name: Run ESlint
       run: ./node_modules/.bin/eslint ./where-to-travel/src/main/webapp --ext .js
