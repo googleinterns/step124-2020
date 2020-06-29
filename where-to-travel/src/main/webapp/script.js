@@ -52,7 +52,7 @@ async function initialize() {
   submit.addEventListener('click', submitDataListener);
   home = await getUserLocation();    
 
-  let mapOptions = {
+  const mapOptions = {
     center: home, 
     mapTypeId: google.maps.MapTypeId.ROADMAP,
     zoom: 16,
@@ -61,7 +61,7 @@ async function initialize() {
   };	 
   map = new google.maps.Map(document.getElementById("map"), mapOptions);
 
-  let homeMarker = new google.maps.Marker({
+  SVGFEDistantLightElement homeMarker = new google.maps.Marker({
     position: home,
     map: map,
     title: 'Home'
@@ -74,9 +74,9 @@ async function initialize() {
  * @param {Event} event click event to respond to
  */
 function submitDataListener(event) {
-  let hours = document.getElementById(hoursId).value;
-  let minutes = document.getElementById(minutesId).value;
-  let timeObj = { "hours": hours, "minutes": minutes };
+  const hours = document.getElementById(hoursId).value;
+  const minutes = document.getElementById(minutesId).value;
+  const timeObj = { "hours": hours, "minutes": minutes };
   getPlacesFromTime(timeObj).then(places => populatePlaces(places));
 }
 
@@ -84,7 +84,7 @@ function submitDataListener(event) {
  * Populates map with pins. Given a list of places, put markers at each
  * lat/long location.
  *
- * @param {array} placeArray array of places to place markers at.
+ * @param {array} placeArray array of places to place markers at
  */
 function populatePlaces(placeArray) {
   let i;
