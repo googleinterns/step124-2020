@@ -68,13 +68,24 @@ async function initialize() {
   });
 }
 
+/**
+ * Responds to click on submit button by getting places and placing pins.
+ *
+ * @param {Event} event click event to respond to
+ */
 function submitDataListener(event) {
   let hours = document.getElementById(hoursId).value;
   let minutes = document.getElementById(minutesId).value;
-  let timeObj = { "hours": hours, "minutes": minutes};
+  let timeObj = { "hours": hours, "minutes": minutes };
   getPlacesFromTime(timeObj).then(places => populatePlaces(places));
 }
 
+/**
+ * Populates map with pins. Given a list of places, put markers at each
+ * lat/long location.
+ *
+ * @param {array} placeArray array of places to place markers at.
+ */
 function populatePlaces(placeArray) {
   let i;
   for(i = 0; i < placeArray.length; i++) {
