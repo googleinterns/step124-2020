@@ -2,15 +2,15 @@ body {
   height: 100%;
   margin: 0px;
   padding: 0px;
-  transition: background-color .5s;
+  transition: background-color 0.5s;
 }
 
-#container { 
+#container {
   height: 100%;
   width: 100%;
 }
 
-html { 
+html {
   height: 100%;
 }
 
@@ -22,10 +22,9 @@ input[type="text"] {
   width: 30px;
 }
 
-<<<<<<< HEAD
 #main {
   height: 100%;
-  transition: margin-left .5s;
+  transition: margin-left 0.5s;
 }
 
 #mapWrap {
@@ -34,8 +33,6 @@ input[type="text"] {
   height: 100%;
 }
 
-=======
->>>>>>> 51de0853a75c15e393c0aa389afb9076324061d2
 #map {
   height: 100%;
   width: 100%;
@@ -46,13 +43,16 @@ input[type="text"] {
   background-color: #fff;
   border: 1px #000 Solid;
   height: 100%;
-<<<<<<< HEAD
   z-index: 1;
 }
 
 @media screen and (max-height: 450px) {
-  .sidenav {padding-top: 15px;}
-  .sidenav a {font-size: 18px;}
+  .sidenav {
+    padding-top: 15px;
+  }
+  .sidenav a {
+    font-size: 18px;
+  }
 }
 
 #over_map {
@@ -61,7 +61,7 @@ input[type="text"] {
   z-index: 0;
   top: 0px;
   left: 0px;
-  transition: background-color .5s;
+  transition: background-color 0.5s;
   height: 100%;
   width: 100%;
 }
@@ -98,10 +98,8 @@ input[type="text"] {
   right: 25px;
   font-size: 36px;
   margin-left: 50px;
-=======
   padding: 5px;
   position: absolute;
   width: 15%;
   z-index: 100;
->>>>>>> 51de0853a75c15e393c0aa389afb9076324061d2
 }
