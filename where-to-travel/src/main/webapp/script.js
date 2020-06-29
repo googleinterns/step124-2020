@@ -78,7 +78,8 @@ function populatePlaces(placeArray) {
     let placeMarker = new google.maps.Marker({
       position: coordinates,
       map: map,
-      title: name
+      title: name,
+      icon: "icons/pin.svg"
     });
 
     let infowindow = new google.maps.InfoWindow({
