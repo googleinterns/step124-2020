@@ -45,7 +45,7 @@ script.async = true;
 document.head.appendChild(script);
 
 /**
- * Initializes map window, ran on load.
+ * Initializes map window, runs on load.
  */
 async function initialize() {
   let submit = document.getElementById(submitId);
@@ -58,7 +58,8 @@ async function initialize() {
     zoom: 16,
     mapTypeControl: false,
     styles: mapStyles
-  };	 
+  };
+  
   map = new google.maps.Map(document.getElementById("map"), mapOptions);
 
   let homeMarker = new google.maps.Marker({
@@ -71,7 +72,7 @@ async function initialize() {
 /**
  * Responds to click on submit button by getting places and placing pins.
  *
- * @param {Event} event click event to respond to
+ * @param {Event} event Click event from which to respond
  */
 function submitDataListener(event) {
   const hours = document.getElementById(hoursId).value;
@@ -167,10 +168,9 @@ function getLocationFromUserInput() {
  * to return places that are close to travel time requested by user. Uses four
  * bounding boxes that lie north, south, east, and west of user's location.
  *
- * @param {object} timeObj Travel time requested by user in hours and mins
+ * @param {object} timeObj Travel time requested by user in hours and minutes
  */
  async function getPlacesFromTime(timeObj) {
-  
   const userLat = home.lat;
   const userLng = home.lng;
   
@@ -199,8 +199,11 @@ function getLocationFromUserInput() {
  */
 function addPlacesFromDirection(lat, lng, place_candidates) {
   return new Promise(function(resolve) {
-    const sw = new google.maps.LatLng(lat - .4, lng - 4);
-    const ne = new google.maps.LatLng(lat + .4, lng + 4); 
+    const halfWidth = 0.5;
+    const halfHeight = 0.5;
+    
+    const sw = new google.maps.LatLng(lat - halfWidth, lng - halfHeight);
+    const ne = new google.maps.LatLng(lat + halfWidth, lng + halfHeight); 
 
     const boundBox = new google.maps.LatLngBounds(sw, ne);
 
@@ -235,21 +238,22 @@ function addPlacesFromDirection(lat, lng, place_candidates) {
  */
  function filterByDistance(timeObj, listPlaces) {
   return new Promise(function(resolve) {
-    var userLocation = new google.maps.LatLng(home.lat, home.lng);
-    var userDestinations = [];
-    var acceptablePlaces = [];
+    const userLocation = new google.maps.LatLng(home.lat, home.lng);
+    let userDestinations = [];
+    let acceptablePlaces = [];
 
     const time = timeObj.hours * 3600 + timeObj.minutes * 60;
     
     //iterate through listPlaces and to get all the destinations
-    for (var i = 0; i < 25; i++) {
+    let i;
+    for (i = 0; i < 25; i++) {
       const lat = listPlaces[i].geometry.location.lat();
       const lng = listPlaces[i].geometry.location.lng();
-      let destination = new google.maps.LatLng(lat, lng);
+      const destination = new google.maps.LatLng(lat, lng);
       userDestinations.push(destination);
     }
 
-    var service = new google.maps.DistanceMatrixService();
+    let service = new google.maps.DistanceMatrixService();
     service.getDistanceMatrix({
       origins: [userLocation],
       destinations: userDestinations,
@@ -259,13 +263,14 @@ function addPlacesFromDirection(lat, lng, place_candidates) {
 
     function callback(response, status) {    
       if (status == 'OK') {
-        var origins = response.originAddresses;
-        var destinations = response.destinationAddresses;
-      
-        for (var i = 0; i < origins.length; i++) {
-          var results = response.rows[i].elements;
-          for (var j = 0; j < results.length; j++) {
-            var element = results[j];
+        const origins = response.originAddresses;
+        
+        let i;
+        for (i = 0; i < origins.length; i++) {
+          const results = response.rows[i].elements;
+          let j;
+          for (j = 0; j < results.length; j++) {
+            const element = results[j];
             //Check if the time is within the +- 30 min = 1800 sec range
             if (element.duration.value < time + 1800 && element.duration.value > time - 1800) {
               acceptablePlaces.push({
