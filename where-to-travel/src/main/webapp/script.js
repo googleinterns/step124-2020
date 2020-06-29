@@ -55,31 +55,38 @@ function closeNav() {
   );
 }
 
-const submitId = "submitId";
+const submitId = "submit-id";
 const hoursId = "hrs";
 const minutesId = "mnts";
 
 let map;
 let home = null;
 
+// Add gmap js library to head of page
+let script = document.createElement('script');
+script.src = 'https://maps.googleapis.com/maps/api/js?key=' 
+              + secrets['googleMapsKey'] + '&libraries=places';
+script.defer = true;
+script.async = true;
+
+document.head.appendChild(script);
+
 /**
-  initializes map window, ran on load
+ * Initializes map window, runs on load.
  */
 async function initialize() {
-  //var submit = document.getElementById(submitId);
-  //submit.addEventListener('click', submitDataListener);
+  let submit = document.getElementById(submitId);
+  submit.addEventListener('click', submitDataListener);
   home = await getUserLocation();    
 
-  // Center of Kansas
-  //home = {lat: 37.926916, lng: -98.981257};
-
-  let mapOptions = {
-    center: home,
+  const mapOptions = {
+    center: home, 
     mapTypeId: google.maps.MapTypeId.ROADMAP,
     zoom: 16,
     mapTypeControl: false,
     styles: mapStyles
-  };	 
+  };
+  
   map = new google.maps.Map(document.getElementById("map"), mapOptions);
 
   let homeMarker = new google.maps.Marker({
@@ -90,13 +97,24 @@ async function initialize() {
   });
 }
 
+/**
+ * Responds to click on submit button by getting places and placing pins.
+ *
+ * @param {Event} event Click event from which to respond
+ */
 function submitDataListener(event) {
-  let hours = document.getElementById(hoursId).value;
-  let minutes = document.getElementById(minutesId).value;
-  let timeObj = { "hours": hours, "minutes": minutes};
+  const hours = document.getElementById(hoursId).value;
+  const minutes = document.getElementById(minutesId).value;
+  const timeObj = { "hours": hours, "minutes": minutes };
   getPlacesFromTime(timeObj).then(places => populatePlaces(places));
 }
 
+/**
+ * Populates map with pins. Given a list of places, put markers at each
+ * lat/long location.
+ *
+ * @param {array} placeArray array of places to place markers at
+ */
 function populatePlaces(placeArray) {
   let i;
   for(i = 0; i < placeArray.length; i++) {
@@ -179,10 +197,9 @@ function getLocationFromUserInput() {
  * to return places that are close to travel time requested by user. Uses four
  * bounding boxes that lie north, south, east, and west of user's location.
  *
- * @param {object} timeObj Travel time requested by user in hours and mins
+ * @param {object} timeObj Travel time requested by user in hours and minutes
  */
  async function getPlacesFromTime(timeObj) {
-  
   const userLat = home.lat;
   const userLng = home.lng;
   
@@ -211,8 +228,11 @@ function getLocationFromUserInput() {
  */
 function addPlacesFromDirection(lat, lng, place_candidates) {
   return new Promise(function(resolve) {
-    const sw = new google.maps.LatLng(lat - .4, lng - 4);
-    const ne = new google.maps.LatLng(lat + .4, lng + 4); 
+    const halfWidth = 0.5;
+    const halfHeight = 0.5;
+    
+    const sw = new google.maps.LatLng(lat - halfWidth, lng - halfHeight);
+    const ne = new google.maps.LatLng(lat + halfWidth, lng + halfHeight); 
 
     const boundBox = new google.maps.LatLngBounds(sw, ne);
 
@@ -243,26 +263,26 @@ function addPlacesFromDirection(lat, lng, place_candidates) {
  *
  * @param {number} time How much time the user wants to travel for
  * @param {array} listPlaces Array of place objects
- * @return {array} An array promise acceptable places based on the amount of time the user has
+ * @return {array} An array of places objects that are in the given time frame
  */
  function filterByDistance(timeObj, listPlaces) {
   return new Promise(function(resolve) {
-    var userLocation = new google.maps.LatLng(home.lat, home.lng);
-    var userDestinations = [];
-    var acceptablePlaces = [];
-
+    const userLocation = new google.maps.LatLng(home.lat, home.lng);
+    let userDestinations = [];
+    let acceptablePlaces = [];
 
     const time = timeObj.hours * 3600 + timeObj.minutes * 60;
     
     //iterate through listPlaces and to get all the destinations
-    for (var i = 0; i < 25; i++) {
+    let i;
+    for (i = 0; i < 25; i++) {
       const lat = listPlaces[i].geometry.location.lat();
       const lng = listPlaces[i].geometry.location.lng();
-      let destination = new google.maps.LatLng(lat, lng);
+      const destination = new google.maps.LatLng(lat, lng);
       userDestinations.push(destination);
     }
 
-    var service = new google.maps.DistanceMatrixService();
+    let service = new google.maps.DistanceMatrixService();
     service.getDistanceMatrix({
       origins: [userLocation],
       destinations: userDestinations,
@@ -272,13 +292,14 @@ function addPlacesFromDirection(lat, lng, place_candidates) {
 
     function callback(response, status) {    
       if (status == 'OK') {
-        var origins = response.originAddresses;
-        var destinations = response.destinationAddresses;
-      
-        for (var i = 0; i < origins.length; i++) {
-          var results = response.rows[i].elements;
-          for (var j = 0; j < results.length; j++) {
-            var element = results[j];
+        const origins = response.originAddresses;
+        
+        let i;
+        for (i = 0; i < origins.length; i++) {
+          const results = response.rows[i].elements;
+          let j;
+          for (j = 0; j < results.length; j++) {
+            const element = results[j];
             //Check if the time is within the +- 30 min = 1800 sec range
             if (element.duration.value < time + 1800 && element.duration.value > time - 1800) {
               acceptablePlaces.push({
