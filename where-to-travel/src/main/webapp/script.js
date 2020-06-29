@@ -328,7 +328,6 @@ function addPlacesFromDirection(lat, lng, place_candidates) {
     var userDestinations = [];
     var acceptablePlaces = [];
 
-
     const time = timeObj.hours * 3600 + timeObj.minutes * 60;
     
     //iterate through listPlaces and to get all the destinations
