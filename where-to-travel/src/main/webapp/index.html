@@ -9,20 +9,20 @@
   </head>
   
   <body onload="initialize();">
-    <div id="container">
-        <div id="nav">
-          <form>
-            <label>Travel time: </label>
-            <div id="input-wrap">
-              <label>Hours</label>
-              <input type="text" name="hours" id="hrs">
-              <label>Minutes</label>
-              <input type="text" name="minutes" id="mnts">
-            </div>
-            <button id="submitId" type="button">Search</button>
-          </form>
-        </div>
+    <div id="mySidenav" class="sidenav">
+      <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+      <a href="#">About</a>
+      <a href="#">Services</a>
+      <a href="#">Clients</a>
+      <a href="#">Contact</a>
+    </div>
+
+    <div id="main">
+      <span style="font-size:30px;cursor:pointer" onclick="openNav()">&#9776;</span>
+      <div id="mapWrap">
         <div id="map"></div>
+        <div id="over_map"></div>
+      </div>
     </div>
   </body>
 </html>
