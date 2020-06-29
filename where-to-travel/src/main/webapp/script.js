@@ -45,7 +45,7 @@ script.async = true;
 document.head.appendChild(script);
 
 /**
- * Initializes map window, ran on load.
+ * Initializes map window, runs on load.
  */
 async function initialize() {
   let submit = document.getElementById(submitId);
