@@ -1,0 +1,25 @@
+<material-drawer persistent #drawer="drawer"
+    [class.custom-width]="customWidth"
+    [attr.end]="end ? '' : null">
+  <material-list *deferredContent>
+    <div group class="mat-drawer-spacer"></div>
+    <div group>
+      <material-list-item>
+        <material-icon icon="inbox"></material-icon>Inbox
+      </material-list-item>
+    </div>
+  </material-list>
+</material-drawer>
+<div class="material-content">
+  <header class="material-header shadow">
+    <div class="material-header-row">
+      <material-button icon
+          class="material-drawer-button" (trigger)="drawer.toggle()">
+        <material-icon icon="menu"></material-icon>
+      </material-button>
+    </div>
+  </header>
+  <div>
+    <gmap></gmap>
+  </div>
+</div>

@@ -1,0 +1,9 @@
+#nav {
+  z-index: 100;
+  position: absolute; 
+  background-color: #fff; 
+  border: 1px #000 Solid; padding: 5px; 
+  height: 100%; 
+  width: 10%; 
+  display: block;
+}
