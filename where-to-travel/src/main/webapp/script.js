@@ -35,6 +35,13 @@ const minutesId = "mnts";
 let map;
 let home = null;
 
+var script = document.createElement('script');
+script.src = 'https://maps.googleapis.com/maps/api/js?key=' 
+              + secrets['googleMapsKey'] + '&libraries=places';
+script.defer = true;
+script.async = true;
+
+document.head.appendChild(script);
 /**
   initializes map window, ran on load
  */
@@ -263,6 +270,6 @@ function addPlacesFromDirection(lat, lng, place_candidates) {
       }
       resolve(acceptablePlaces);
     }
-  }
+  });
   return acceptablePlaces;
 }
