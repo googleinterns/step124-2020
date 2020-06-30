@@ -36,6 +36,7 @@ input[type="text"] {
 #map {
   height: 100%;
   width: 100%;
+  z-index: 1;
 }
 
 #nav {
@@ -57,34 +58,34 @@ input[type="text"] {
 
 #over_map {
   background-color: rgba(0, 0, 0, 0);
-  position: absolute;
-  z-index: 0;
-  top: 0px;
-  left: 0px;
-  transition: background-color 0.5s;
   height: 100%;
+  left: 0px;
+  position: absolute;
+  top: 0px;
+  transition: background-color 0.5s;
   width: 100%;
+  z-index: 0;
 }
 
 .sidenav {
+  background-color: #1E3C19;
   height: 100%;
-  width: 0;
-  position: fixed;
-  z-index: 100;
-  top: 0;
   left: 0;
-  background-color: #111;
   overflow-x: hidden;
-  transition: 0.5s;
+  position: fixed;
   padding-top: 60px;
+  top: 0;
+  transition: 0.5s;
+  width: 0;
+  z-index: 100;
 }
 
 .sidenav a {
-  padding: 8px 8px 8px 32px;
-  text-decoration: none;
-  font-size: 25px;
   color: #818181;
   display: block;
+  font-size: 25px;
+  padding: 8px 8px 8px 32px;
+  text-decoration: none;
   transition: 0.3s;
 }
 
@@ -93,12 +94,12 @@ input[type="text"] {
 }
 
 .sidenav .closebtn {
-  position: absolute;
-  top: 0;
-  right: 25px;
   font-size: 36px;
   margin-left: 50px;
   padding: 5px;
+  position: absolute;
+  right: 25px;
+  top: 0;
   width: 15%;
   z-index: 100;
 }
