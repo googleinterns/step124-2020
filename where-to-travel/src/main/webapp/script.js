@@ -259,13 +259,12 @@ function addPlacesFromDirection(lat, lng, place_candidates) {
 
         function callback(response, status) {
           if (status == 'OK') {
-            const origins = response.originAddresses;
             for (row of responce.rows) {
-              const results = response.rows[row].elements;
+              const results = row.elements;
               for (result of results) {
-                const element = results[result];
+                const element = result;
                 //Check if the time is within the +- 20% of the user's requested time
-                if (element.duration.value < time + time * 0.2 && element.duration.value > time - time * 0.2) {
+                if (element.duration.value <= time + time * 0.2 && element.duration.value >= time - time * 0.2) {
                   acceptablePlaces.push({
                     "name": listPlaces[i].name,
                     "geometry": listPlaces[i].geometry,
