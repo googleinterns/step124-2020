@@ -288,7 +288,7 @@ function filterByDistance(timeObj, listPlaces) {
 
     const time = timeObj.hours * 3600 + timeObj.minutes * 60;
 
-    //iterate through listPlaces and to get all the destinations
+    // iterate through listPlaces and to get all the destinations
     let i;
     for (i = 0; i < 25; i++) {
       const lat = listPlaces[i].geometry.location.lat();
@@ -319,7 +319,7 @@ function filterByDistance(timeObj, listPlaces) {
           for (j = 0; j < results.length; j++) {
             const element = results[j];
             if (element.status == 'OK') {
-              //Check if the time is within the +- 30 min = 1800 sec range
+              // Check if the time is within the +- 30 min = 1800 sec range
               if (element.duration.value < time + 1800 && element.duration.value > time - 1800) {
                 acceptablePlaces.push({
                   name: listPlaces[j].name,
