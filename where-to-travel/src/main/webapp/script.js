@@ -238,7 +238,6 @@ function addPlacesFromDirection(lat, lng, place_candidates) {
  */
  function filterByDistance(timeObj, listPlaces) {
   return new Promise(function(resolve) {
-    const userLocation = new google.maps.LatLng(home.lat, home.lng);
     const time = timeObj.hours * 3600 + timeObj.minutes * 60;
     let userDestinations = [];
     let acceptablePlaces = [];
@@ -251,7 +250,7 @@ function addPlacesFromDirection(lat, lng, place_candidates) {
       if (i == 24 || i == listPlaces.size()-1) {
         let service = new google.maps.DistanceMatrixService();
         service.getDistanceMatrix({
-          origins: [userLocation],
+          origins: [home],
           destinations: userDestinations,
           travelMode: 'DRIVING',
           unitSystem: google.maps.UnitSystem.IMPERIAL,
