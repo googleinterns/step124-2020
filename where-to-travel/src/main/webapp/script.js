@@ -31,7 +31,7 @@ const mapStyles = [
 let open = false;
 // Need to blur header and blur mapwrap
 function openNav() {
-  document.getElementById("mySidenav").style.width = "250px";
+  document.getElementById("sidenav").style.width = "250px";
   document.getElementById("main").style.marginLeft = "250px";
   document.body.style.backgroundColor = "rgba(0,0,0,0.4)";
   mapOverlay = document.getElementById("over_map");
@@ -42,7 +42,7 @@ function openNav() {
 }
 
 function closeNav() {
-  document.getElementById("mySidenav").style.width = "0";
+  document.getElementById("sidenav").style.width = "0";
   document.getElementById("main").style.marginLeft = "0";
   document.body.style.backgroundColor = "white";
   mapOverlay = document.getElementById("over_map");

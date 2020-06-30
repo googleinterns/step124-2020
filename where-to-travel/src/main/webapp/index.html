@@ -3,31 +3,48 @@
   <head>
     <meta charset="UTF-8" />
     <title>Where to?</title>
+    <link rel="stylesheet" href="https://unpkg.com/bootstrap-material-design@4.1.1/dist/css/bootstrap-material-design.min.css" integrity="sha384-wXznGJNEXNG1NFsbm0ugrLFMQPWswR3lds2VeinahP8N0zJw9VWSopbjv2x7WCvX" crossorigin="anonymous">
     <link rel="stylesheet" href="style.css" />
     <script src="secrets.json"></script>
     <script src="script.js"></script>
   </head>
 
   <body onload="initialize();">
-    <div id="mySidenav" class="sidenav">
+    <div id="sidenav" class="sidenav">
       <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">
         &times;
       </a>
-      <a href="#">link</a>
-      <a href="#">link</a>
-      <a href="#">link</a>
-      <a href="#">link</a>
+      <form class="form-inline" style="margin: auto">
+        <div style="margin: auto; width: 20%" class="form-group">
+          <label style="color: #1E3C19;" for="hours" class="bmd-label-floating">HH</label>
+          <input style="width: 100%; margin-right:0px;" type="text" class="form-control">
+        </div>
+        <div style="font-size: 24px; padding-top: 10%; color: #1E3C19; margin-left: 5px; margin-right: 5px" class="form-group bmd-label-static">
+          :
+        </div>
+        <div style="margin: auto; width: 20%" class="form-group">
+          <label style="color: #1E3C19;" for="minutes" class="bmd-label-floating">MM</label>
+          <input style="width: 100%; margin-right:0px;" type="text" class="form-control">
+        </div>
+        <span style="margin: auto; margin-right: 5px;" class="form-group bmd-form-group">
+          <button type="submit" class="btn btn-primary">Search</button>
+        </span>
+      </form>
     </div>
     <div id="main">
       <div id="header">
         <span style="font-size: 30px; cursor: pointer" onclick="openNav()">
           &#9776;
         </span>
-      <div>
+      </div>
       <div id="mapWrap">
         <div id="map"></div>
         <div id="over_map"></div>
       </div>
     </div>
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/popper.js@1.12.6/dist/umd/popper.js" integrity="sha384-fA23ZRQ3G/J53mElWqVJEGJzU0sTs+SvzG8fXVWP+kJQ1lwFAOkcUOysnlKJC33U" crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/bootstrap-material-design@4.1.1/dist/js/bootstrap-material-design.js" integrity="sha384-CauSuKpEqAFajSpkdjv3z9t8E7RlpJ1UP0lKM/+NdtSarroVKu069AlsRPKkFBz9" crossorigin="anonymous"></script>
+    <script>$(document).ready(function() { $('body').bootstrapMaterialDesign(); });</script>
   </body>
 </html>
