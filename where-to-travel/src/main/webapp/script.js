@@ -18,10 +18,10 @@ const mapStyles = [
     ]
   },
   {
-    featureType: "transit",
+    featureType: 'transit',
     stylers: [
       {
-        visibility: "off"
+        visibility: 'off'
       }
     ]
   }
@@ -63,6 +63,8 @@ const minutesId = "mnts";
 let map;
 let home = null;
 
+const markers = [];
+
 // Add gmap js library to head of page
 let script = document.createElement("script");
 script.src =
@@ -74,14 +76,11 @@ script.async = true;
 
 document.head.appendChild(script);
 
-/**
- * Initializes map window, runs on load.
- */
+/** Initializes map window, runs on load. */
 async function initialize() {
   let submit = document.getElementById(submitId);
   submit.addEventListener("click", submitDataListener);
   home = await getUserLocation();
-
   const mapOptions = {
     center: home,
     mapTypeId: google.maps.MapTypeId.ROADMAP,
@@ -90,7 +89,7 @@ async function initialize() {
     styles: mapStyles,
   };
 
-  map = new google.maps.Map(document.getElementById("map"), mapOptions);
+  map = new google.maps.Map(document.getElementById('map'), mapOptions);
 
   let homeMarker = new google.maps.Marker({
     position: home,
@@ -108,8 +107,11 @@ async function initialize() {
 function submitDataListener(event) {
   const hours = document.getElementById(hoursId).value;
   const minutes = document.getElementById(minutesId).value;
-  const timeObj = { hours: hours, minutes: minutes };
-  getPlacesFromTime(timeObj).then((places) => populatePlaces(places));
+  const timeObj = {hours: hours, minutes: minutes };
+  getPlacesFromTime(timeObj).then(places => {
+    clearPlaces();
+    populatePlaces(places);
+  });
 }
 
 /**
@@ -137,6 +139,15 @@ function populatePlaces(placeArray) {
     placeMarker.addListener("click", function () {
       infowindow.open(map, placeMarker);
     });
+
+    markers.push(placeMarker);
+  }
+}
+
+/** Clears all markers on map except for home marker. */
+function clearPlaces() {
+  for (marker of markers) {
+    marker.setMap(null);
   }
 }
 
@@ -176,17 +187,15 @@ function getUserLocation() {
  * @return {Object} Contains latitude and longitude corresponding to input address
  */
 function getLocationFromUserInput() {
-  return new Promise(function (resolve, reject) {
-    const address = prompt(
-      "Please enter a valid address as your start location."
-    );
-    if (address == null || address == "") {
+  return new Promise(function(resolve, reject) {
+    const address = prompt('Please enter a valid address as your start location.');
+    if (address == null || address == '') {
       return resolve(getLocationFromUserInput());
     }
 
     const geocoder = new google.maps.Geocoder();
-    geocoder.geocode({ address: address }, function (results, status) {
-      if (status == "OK") {
+    geocoder.geocode({address: address}, function(results, status) {
+      if (status == 'OK') {
         const lat = results[0].geometry.location.lat;
         const lng = results[0].geometry.location.lng;
         return resolve({ lat: lat(), lng: lng() });
@@ -202,37 +211,23 @@ function getLocationFromUserInput() {
  * to return places that are close to travel time requested by user. Uses four
  * bounding boxes that lie north, south, east, and west of user's location.
  *
- * @param {object} timeObj Travel time requested by user in hours and minutes
+ * @param {Object} timeObj Travel time requested by user in hours and minutes
+ * @return {Promise} An array promise of places that lie within time requested
  */
 async function getPlacesFromTime(timeObj) {
   const userLat = home.lat;
   const userLng = home.lng;
 
   // These spread the search area for the four bounding boxes
-  const latSpread = 2;
-  const lngSpread = 8;
+  const latSpread = 4;
+  const lngSpread = 4;
 
   let place_candidates = [];
-  place_candidates = await addPlacesFromDirection(
-    userLat - latSpread,
-    userLng,
-    place_candidates
-  ); // West
-  place_candidates = await addPlacesFromDirection(
-    userLat,
-    userLng + lngSpread,
-    place_candidates
-  ); // North
-  place_candidates = await addPlacesFromDirection(
-    userLat + latSpread,
-    userLng,
-    place_candidates
-  ); // East
-  place_candidates = await addPlacesFromDirection(
-    userLat,
-    userLng - lngSpread,
-    place_candidates
-  ); // South
+
+  place_candidates = await addPlacesFromDirection(userLat, userLng + lngSpread, place_candidates); // East
+  place_candidates = await addPlacesFromDirection(userLat + latSpread, userLng, place_candidates); // North
+  place_candidates = await addPlacesFromDirection(userLat, userLng - lngSpread, place_candidates); // West
+  place_candidates = await addPlacesFromDirection(userLat - latSpread, userLng, place_candidates); // South
 
   return filterByDistance(timeObj, place_candidates);
 }
@@ -323,17 +318,16 @@ function filterByDistance(timeObj, listPlaces) {
           let j;
           for (j = 0; j < results.length; j++) {
             const element = results[j];
-            // Check if the time is within the +- 30 min = 1800 sec range
-            if (
-              element.duration.value < time + 1800 &&
-              element.duration.value > time - 1800
-            ) {
-              acceptablePlaces.push({
-                name: listPlaces[j].name,
-                geometry: listPlaces[j].geometry,
-                timeInSeconds: element.duration.value,
-                timeAsString: element.duration.text,
-              });
+            if (element.status == 'OK') {
+              //Check if the time is within the +- 30 min = 1800 sec range
+              if (element.duration.value < time + 1800 && element.duration.value > time - 1800) {
+                acceptablePlaces.push({
+                  name: listPlaces[j].name,
+                  geometry: listPlaces[j].geometry,
+                  timeInSeconds: element.duration.value,
+                  timeAsString: element.duration.text
+                });
+              }
             }
           }
         }
