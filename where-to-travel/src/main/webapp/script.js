@@ -4,27 +4,27 @@ const mapStyles = [
     featureType: "landscape",
     stylers: [
       {
-        visibility: "off",
-      },
-    ],
+        visibility: "off"
+      }
+    ]
   },
   {
     featureType: "poi",
     elementType: "labels.icon",
     stylers: [
       {
-        visibility: "off",
-      },
-    ],
+        visibility: "off"
+      }
+    ]
   },
   {
     featureType: "transit",
     stylers: [
       {
-        visibility: "off",
-      },
-    ],
-  },
+        visibility: "off"
+      }
+    ]
+  }
 ];
 //End map stylings
 
