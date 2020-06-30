@@ -39,21 +39,19 @@ const markers = [];
 
 // Add gmap js library to head of page
 const script = document.createElement('script');
-script.src = 'https://maps.googleapis.com/maps/api/js?key=' 
-  + secrets.googleMapsKey + '&libraries=places';
+script.src = 'https://maps.googleapis.com/maps/api/js?key=' +
+  secrets.googleMapsKey + '&libraries=places';
 script.defer = true;
 script.async = true;
 
 document.head.appendChild(script);
 
-/**
- * Initializes map window, runs on load.
- */
+/** Initializes map window, runs on load. */
 async function initialize() {
   const submit = document.getElementById(submitId);
   submit.addEventListener('click', submitDataListener);
   home = await getUserLocation();    
-
+  
   const mapOptions = {
     center: home, 
     mapTypeId: google.maps.MapTypeId.ROADMAP,
@@ -61,9 +59,9 @@ async function initialize() {
     mapTypeControl: false,
     styles: mapStyles
   };
-  
-  map = new google.maps.Map(document.getElementById('map'), mapOptions);
 
+  map = new google.maps.Map(document.getElementById('map'), mapOptions);
+  
   let homeMarker = new google.maps.Marker({
     position: home,
     map: map,
@@ -102,7 +100,6 @@ function populatePlaces(placeArray) {
       map: map,
       title: name
     });
-
 
     let infowindow = new google.maps.InfoWindow({
       content: name
@@ -198,7 +195,6 @@ function getLocationFromUserInput() {
   place_candidates = await addPlacesFromDirection(userLat, userLng + lngSpread, place_candidates); // North
   place_candidates = await addPlacesFromDirection(userLat + latSpread, userLng, place_candidates); // East
   place_candidates = await addPlacesFromDirection(userLat, userLng - lngSpread, place_candidates); // South
-
 
   return filterByDistance(timeObj, place_candidates);
 }
