@@ -99,7 +99,6 @@ input[type="text"] {
   font-size: 36px;
   margin-left: 50px;
   padding: 5px;
-  position: absolute;
   width: 15%;
   z-index: 100;
 }
