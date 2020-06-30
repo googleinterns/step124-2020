@@ -1,39 +1,41 @@
-//This is map stylings for the GMap api
+// This is map stylings for the GMap api
 const mapStyles = [
   {
-    "featureType": "landscape",
-    "stylers": [
+    featureType: 'landscape',
+    stylers: [
       {
-        "visibility": "off"
+        visibility: 'off'
       }
     ]
   },
   {
-    "featureType": "poi",
-    "elementType": "labels.icon",
-    "stylers": [
+    featureType: 'poi',
+    elementType: 'labels.icon',
+    stylers: [
       {
-        "visibility": "off"
+        visibility: 'off'
       }
     ]
   },
   {
-    "featureType": "transit",
-    "stylers": [
+    featureType: 'transit',
+    stylers: [
       {
-        "visibility": "off"
+        visibility: 'off'
       }
     ]
   }
 ];
 //End map stylings
 
-const submitId = "submit-id";
-const hoursId = "hrs";
-const minutesId = "mnts";
+const submitId = 'submit-id';
+const hoursId = 'hrs';
+const minutesId = 'mnts';
 
 let map;
 let home = null;
+
+let markers = [];
 
 // Add gmap js library to head of page
 let script = document.createElement('script');
@@ -60,7 +62,7 @@ async function initialize() {
     styles: mapStyles
   };
   
-  map = new google.maps.Map(document.getElementById("map"), mapOptions);
+  map = new google.maps.Map(document.getElementById('map'), mapOptions);
 
   let homeMarker = new google.maps.Marker({
     position: home,
@@ -77,8 +79,11 @@ async function initialize() {
 function submitDataListener(event) {
   const hours = document.getElementById(hoursId).value;
   const minutes = document.getElementById(minutesId).value;
-  const timeObj = { "hours": hours, "minutes": minutes };
-  getPlacesFromTime(timeObj).then(places => populatePlaces(places));
+  const timeObj = {hours: hours, minutes: minutes };
+  getPlacesFromTime(timeObj).then(places => {
+    clearPlaces();
+    populatePlaces(places); 
+  }); 
 }
 
 /**
@@ -98,6 +103,7 @@ function populatePlaces(placeArray) {
       title: name
     });
 
+
     let infowindow = new google.maps.InfoWindow({
       content: name
     });
@@ -105,9 +111,17 @@ function populatePlaces(placeArray) {
     placeMarker.addListener('click', function() {
       infowindow.open(map, placeMarker);
     });
+
+    markers.push(placeMarker);
   }
 }
- 
+
+/** Clears all markers on map except for home marker. */
+function clearPlaces() {
+  for (marker of markers) {
+    marker.setMap(null);
+  }
+} 
 
 /** 
  * If browser supports geolocation and user provides permissions, obtains user's 
@@ -145,13 +159,13 @@ function populatePlaces(placeArray) {
  */
 function getLocationFromUserInput() {
   return new Promise(function(resolve, reject) {
-    const address = prompt("Please enter a valid address as your start location.");
-    if (address == null || address == "") {
+    const address = prompt('Please enter a valid address as your start location.');
+    if (address == null || address == '') {
       return resolve(getLocationFromUserInput());
     }
  
     const geocoder = new google.maps.Geocoder();
-    geocoder.geocode({'address': address}, function(results, status) {
+    geocoder.geocode({address: address}, function(results, status) {
       if (status == 'OK') {
         const lat = results[0].geometry.location.lat;
         const lng = results[0].geometry.location.lng;
@@ -168,7 +182,8 @@ function getLocationFromUserInput() {
  * to return places that are close to travel time requested by user. Uses four
  * bounding boxes that lie north, south, east, and west of user's location.
  *
- * @param {object} timeObj Travel time requested by user in hours and minutes
+ * @param {Object} timeObj Travel time requested by user in hours and minutes
+ * @return {Promise} An array promise of places that lie within time requested
  */
  async function getPlacesFromTime(timeObj) {
   const userLat = home.lat;
@@ -176,7 +191,7 @@ function getLocationFromUserInput() {
   
   // These spread the search area for the four bounding boxes
   const latSpread = 2
-  const lngSpread = 8
+  const lngSpread = 2
 
   let place_candidates = [];
   place_candidates = await addPlacesFromDirection(userLat - latSpread, userLng, place_candidates); // West
@@ -274,10 +289,10 @@ function addPlacesFromDirection(lat, lng, place_candidates) {
             //Check if the time is within the +- 30 min = 1800 sec range
             if (element.duration.value < time + 1800 && element.duration.value > time - 1800) {
               acceptablePlaces.push({
-                "name": listPlaces[j].name,
-                "geometry" : listPlaces[j].geometry,
-                "timeInSeconds": element.duration.value,
-                "timeAsString": element.duration.text
+                name: listPlaces[j].name,
+                geometry: listPlaces[j].geometry,
+                timeInSeconds: element.duration.value,
+                timeAsString: element.duration.text
               });
             }
           }
