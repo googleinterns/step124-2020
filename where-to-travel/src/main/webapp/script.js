@@ -191,10 +191,11 @@ function getLocationFromUserInput() {
   const lngSpread = 2;
 
   let place_candidates = [];
-  place_candidates = await addPlacesFromDirection(userLat - latSpread, userLng, place_candidates); // West
-  place_candidates = await addPlacesFromDirection(userLat, userLng + lngSpread, place_candidates); // North
-  place_candidates = await addPlacesFromDirection(userLat + latSpread, userLng, place_candidates); // East
-  place_candidates = await addPlacesFromDirection(userLat, userLng - lngSpread, place_candidates); // South
+ 
+  place_candidates = await addPlacesFromDirection(userLat, userLng + lngSpread, place_candidates); // East
+  place_candidates = await addPlacesFromDirection(userLat + latSpread, userLng, place_candidates); // North
+  place_candidates = await addPlacesFromDirection(userLat, userLng - lngSpread, place_candidates); // West
+  place_candidates = await addPlacesFromDirection(userLat - latSpread, userLng, place_candidates); // South
 
   return filterByDistance(timeObj, place_candidates);
 }
