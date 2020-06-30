@@ -17,17 +17,17 @@
       <form class="form-inline" style="margin: auto">
         <div style="margin: auto; width: 20%" class="form-group">
           <label style="color: #1E3C19;" for="hours" class="bmd-label-floating">HH</label>
-          <input style="width: 100%; margin-right:0px;" type="text" class="form-control">
+          <input id="hrs" style="width: 100%; margin-right:0px;" type="text" class="form-control">
         </div>
         <div style="font-size: 24px; padding-top: 10%; color: #1E3C19; margin-left: 5px; margin-right: 5px" class="form-group bmd-label-static">
           :
         </div>
         <div style="margin: auto; width: 20%" class="form-group">
           <label style="color: #1E3C19;" for="minutes" class="bmd-label-floating">MM</label>
-          <input style="width: 100%; margin-right:0px;" type="text" class="form-control">
+          <input id="mnts" style="width: 100%; margin-right:0px;" type="text" class="form-control">
         </div>
         <span style="margin: auto; margin-right: 5px;" class="form-group bmd-form-group">
-          <button type="submit" class="btn btn-primary">Search</button>
+          <button type="button" id="submit" class="btn btn-primary">Search</button>
         </span>
       </form>
     </div>
@@ -39,7 +39,7 @@
       </div>
       <div id="mapWrap">
         <div id="map"></div>
-        <div id="over_map"></div>
+        <div id="over-map"></div>
       </div>
     </div>
     <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>

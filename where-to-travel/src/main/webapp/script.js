@@ -51,12 +51,12 @@ function closeNav() {
   open = false;
   mapOverlay.addEventListener("transitionend", (event) => {
     if (!open) {
-      event.target.style.zIndex = "0";
+      event.target.style.zIndex = "-1";
     }
   });
 }
 
-const submitId = "submit-id";
+const submitId = "submit";
 const hoursId = "hrs";
 const minutesId = "mnts";
 
@@ -78,8 +78,8 @@ document.head.appendChild(script);
  * Initializes map window, runs on load.
  */
 async function initialize() {
-  // let submit = document.getElementById(submitId);
-  // submit.addEventListener("click", submitDataListener);
+  let submit = document.getElementById(submitId);
+  submit.addEventListener("click", submitDataListener);
   home = await getUserLocation();
 
   const mapOptions = {

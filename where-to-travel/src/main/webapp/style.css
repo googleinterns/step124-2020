@@ -10,7 +10,7 @@ body {
   color: #1E3C19;
   padding: 15px;
   width: 100%;
-  z-index: 0;
+  z-index: 3;
 }
 
 #header span {
@@ -40,9 +40,8 @@ input[type="text"] {
 }
 
 #mapWrap {
-  position: relative;
   width: 100%;
-  height: 100%;
+  height: 94%;
 }
 
 #map {
@@ -68,7 +67,7 @@ input[type="text"] {
   }
 }
 
-#over_map {
+#over-map {
   background-color: rgba(0, 0, 0, 0);
   height: 100%;
   left: 0px;
@@ -76,7 +75,7 @@ input[type="text"] {
   top: 0px;
   transition: background-color 0.5s;
   width: 100%;
-  z-index: 0;
+  z-index: -1;
 }
 
 .sidenav {
