@@ -1,19 +1,19 @@
 // This is map stylings for the GMap api
 const mapStyles = [
   {
-    featureType: "landscape",
+    featureType: 'landscape',
     stylers: [
       {
-        visibility: "off"
+        visibility: 'off'
       }
     ]
   },
   {
-    featureType: "poi",
-    elementType: "labels.icon",
+    featureType: 'poi',
+    elementType: 'labels.icon',
     stylers: [
       {
-        visibility: "off"
+        visibility: 'off'
       }
     ]
   },
@@ -31,34 +31,34 @@ const mapStyles = [
 let open = false;
 // Need to blur header and blur mapwrap
 function openNav() {
-  document.getElementById("sidenav").style.width = "250px";
-  document.getElementById("main").style.marginLeft = "250px";
-  document.body.style.backgroundColor = "rgba(0,0,0,0.4)";
-  mapOverlay = document.getElementById("over_map");
-  mapOverlay.style.zIndex = "5";
-  mapOverlay.style.transition = "background-color .5s";
-  mapOverlay.style.backgroundColor = "rgba(0,0,0,0.4)";
+  document.getElementById('sidenav').style.width = '250px';
+  document.getElementById('main').style.marginLeft = '250px';
+  document.body.style.backgroundColor = 'rgba(0,0,0,0.4)';
+  mapOverlay = document.getElementById('over_map');
+  mapOverlay.style.zIndex = '5';
+  mapOverlay.style.transition = 'background-color .5s';
+  mapOverlay.style.backgroundColor = 'rgba(0,0,0,0.4)';
   open = true;
 }
 
 function closeNav() {
-  document.getElementById("sidenav").style.width = "0";
-  document.getElementById("main").style.marginLeft = "0";
-  document.body.style.backgroundColor = "white";
-  mapOverlay = document.getElementById("over_map");
-  mapOverlay.style.transition = "background-color .5s";
-  mapOverlay.style.backgroundColor = "rgba(0, 0, 0, 0)";
+  document.getElementById('sidenav').style.width = '0';
+  document.getElementById('main').style.marginLeft = '0';
+  document.body.style.backgroundColor = 'white';
+  mapOverlay = document.getElementById('over_map');
+  mapOverlay.style.transition = 'background-color .5s';
+  mapOverlay.style.backgroundColor = 'rgba(0, 0, 0, 0)';
   open = false;
-  mapOverlay.addEventListener("transitionend", (event) => {
+  mapOverlay.addEventListener('transitionend', (event) => {
     if (!open) {
-      event.target.style.zIndex = "-1";
+      event.target.style.zIndex = '-1';
     }
   });
 }
 
-const submitId = "submit";
-const hoursId = "hrs";
-const minutesId = "mnts";
+const submitId = 'submit';
+const hoursId = 'hrs';
+const minutesId = 'mnts';
 
 let map;
 let home = null;
@@ -66,11 +66,11 @@ let home = null;
 const markers = [];
 
 // Add gmap js library to head of page
-let script = document.createElement("script");
+let script = document.createElement('script');
 script.src =
-  "https://maps.googleapis.com/maps/api/js?key=" +
-  secrets["googleMapsKey"] +
-  "&libraries=places";
+  'https://maps.googleapis.com/maps/api/js?key=' +
+  secrets['googleMapsKey'] +
+  '&libraries=places';
 script.defer = true;
 script.async = true;
 
@@ -79,7 +79,7 @@ document.head.appendChild(script);
 /** Initializes map window, runs on load. */
 async function initialize() {
   let submit = document.getElementById(submitId);
-  submit.addEventListener("click", submitDataListener);
+  submit.addEventListener('click', submitDataListener);
   home = await getUserLocation();
   const mapOptions = {
     center: home,
@@ -93,9 +93,9 @@ async function initialize() {
 
   let homeMarker = new google.maps.Marker({
     position: home,
-    icon: "icons/home.svg",
+    icon: 'icons/home.svg',
     map: map,
-    title: "Home",
+    title: 'Home',
   });
 }
 
@@ -129,14 +129,14 @@ function populatePlaces(placeArray) {
       position: coordinates,
       map: map,
       title: name,
-      icon: "icons/pin.svg",
+      icon: 'icons/pin.svg',
     });
 
     let infowindow = new google.maps.InfoWindow({
       content: name,
     });
 
-    placeMarker.addListener("click", function () {
+    placeMarker.addListener('click', function () {
       infowindow.open(map, placeMarker);
     });
 
@@ -252,14 +252,14 @@ function addPlacesFromDirection(lat, lng, place_candidates) {
     const boundBox = new google.maps.LatLngBounds(sw, ne);
 
     const request = {
-      query: "Tourist Attractions",
+      query: 'Tourist Attractions',
       bounds: boundBox,
     };
 
     function callback(results, status) {
       if (status == google.maps.places.PlacesServiceStatus.OK) {
         for (result of results) {
-          if (result.business_status == "OPERATIONAL") {
+          if (result.business_status == 'OPERATIONAL') {
             place_candidates.push(result);
           }
         }
@@ -302,14 +302,14 @@ function filterByDistance(timeObj, listPlaces) {
       {
         origins: [userLocation],
         destinations: userDestinations,
-        travelMode: "DRIVING",
+        travelMode: 'DRIVING',
         unitSystem: google.maps.UnitSystem.IMPERIAL,
       },
       callback
     );
 
     function callback(response, status) {
-      if (status == "OK") {
+      if (status == 'OK') {
         const origins = response.originAddresses;
 
         let i;
