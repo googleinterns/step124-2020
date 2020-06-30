@@ -323,7 +323,7 @@ function filterByDistance(timeObj, listPlaces) {
           let j;
           for (j = 0; j < results.length; j++) {
             const element = results[j];
-            //Check if the time is within the +- 30 min = 1800 sec range
+            // Check if the time is within the +- 30 min = 1800 sec range
             if (
               element.duration.value < time + 1800 &&
               element.duration.value > time - 1800
