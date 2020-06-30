@@ -187,8 +187,8 @@ function getLocationFromUserInput() {
   const userLng = home.lng;
   
   // These spread the search area for the four bounding boxes
-  const latSpread = 2;
-  const lngSpread = 2;
+  const latSpread = 4;
+  const lngSpread = 4;
 
   let place_candidates = [];
  
@@ -283,14 +283,16 @@ function addPlacesFromDirection(lat, lng, place_candidates) {
           let j;
           for (j = 0; j < results.length; j++) {
             const element = results[j];
-            //Check if the time is within the +- 30 min = 1800 sec range
-            if (element.duration.value < time + 1800 && element.duration.value > time - 1800) {
-              acceptablePlaces.push({
-                name: listPlaces[j].name,
-                geometry: listPlaces[j].geometry,
-                timeInSeconds: element.duration.value,
-                timeAsString: element.duration.text
-              });
+            if (element.status == 'OK') {
+              //Check if the time is within the +- 30 min = 1800 sec range
+              if (element.duration.value < time + 1800 && element.duration.value > time - 1800) {
+                acceptablePlaces.push({
+                  name: listPlaces[j].name,
+                  geometry: listPlaces[j].geometry,
+                  timeInSeconds: element.duration.value,
+                  timeAsString: element.duration.text
+                });
+              }
             }
           }
         }
