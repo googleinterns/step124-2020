@@ -107,7 +107,7 @@ async function initialize() {
 function submitDataListener(event) {
   const hours = document.getElementById(hoursId).value;
   const minutes = document.getElementById(minutesId).value;
-  const timeObj = {hours: hours, minutes: minutes };
+  const timeObj = { hours: hours, minutes: minutes };
   getPlacesFromTime(timeObj).then(places => {
     clearPlaces();
     populatePlaces(places);
