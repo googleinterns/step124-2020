@@ -248,7 +248,7 @@ function addPlacesFromDirection(lat, lng, place_candidates) {
       const lng = listPlaces[i].geometry.location.lng();
       const destination = new google.maps.LatLng(lat, lng);
       userDestinations.push(destination);
-      if (i == 24 || i == listPlaces.size() - 1) {
+      if (i == 24 || i == listPlaces.size()-1) {
         let service = new google.maps.DistanceMatrixService();
         service.getDistanceMatrix({
           origins: [userLocation],
@@ -264,7 +264,7 @@ function addPlacesFromDirection(lat, lng, place_candidates) {
               for (result of results) {
                 const element = result;
                 //Check if the time is within the +- 20% of the user's requested time
-                if (element.duration.value <= time + time * 0.2 && element.duration.value >= time - time * 0.2) {
+                if (element.duration.value <= time + time*0.2 && element.duration.value >= time - time*0.2) {
                   acceptablePlaces.push({
                     "name": listPlaces[i].name,
                     "geometry": listPlaces[i].geometry,
