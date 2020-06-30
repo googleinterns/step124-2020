@@ -28,6 +28,8 @@ const mapStyles = [
 ];
 // End map stylings
 
+const placesThreshold = 10;
+
 const submitId = 'submit-id';
 const hoursId = 'hrs';
 const minutesId = 'mnts';
@@ -185,19 +187,45 @@ function getLocationFromUserInput() {
  async function getPlacesFromTime(timeObj) {
   const userLat = home.lat;
   const userLng = home.lng;
+
+  const time = timeObj.hours * 3600 + timeObj.minutes * 60;
   
   // These spread the search area for the four bounding boxes
-  const latSpread = 2;
-  const lngSpread = 2;
+  let latSpread = 1;
+  let lngSpread = 1;
 
-  let place_candidates = [];
+  let places = [];
+
+  while (places.length < placesThreshold) {
+    let place_candidates = [];
  
-  place_candidates = await addPlacesFromDirection(userLat, userLng + lngSpread, place_candidates); // East
-  place_candidates = await addPlacesFromDirection(userLat + latSpread, userLng, place_candidates); // North
-  place_candidates = await addPlacesFromDirection(userLat, userLng - lngSpread, place_candidates); // West
-  place_candidates = await addPlacesFromDirection(userLat - latSpread, userLng, place_candidates); // South
+    place_candidates = await addPlacesFromDirection(userLat, userLng + lngSpread, place_candidates); // East
+    place_candidates = await addPlacesFromDirection(userLat + latSpread, userLng, place_candidates); // North
+    place_candidates = await addPlacesFromDirection(userLat, userLng - lngSpread, place_candidates); // West
+    place_candidates = await addPlacesFromDirection(userLat - latSpread, userLng, place_candidates); // South
 
-  return filterByDistance(timeObj, place_candidates);
+    const filterResults = await filterByDistance(timeObj, place_candidates);
+  
+    places = places.concat(filterResults.places);
+
+    let numPlaces = filterResults.places.length;
+
+    let avg_time = 0;
+    if (numPlaces != 0) {
+      avg_time = filterResults.total_time/numPlaces;
+    }
+
+    if (avg_time > time) {
+      latSpread -= 0.5;
+      lngSpread -= 0.5;
+    } else {
+      latSpread += 0.5;
+      lngSpread += 0.5;
+    }
+  }
+  
+  return places;
+  
 }
 
 /** 
@@ -248,35 +276,47 @@ function addPlacesFromDirection(lat, lng, place_candidates) {
  * @param {array} listPlaces Array of place objects
  * @return {array} An array of places objects that are in the given time frame
  */
- function filterByDistance(timeObj, listPlaces) {
-  return new Promise(function(resolve) {
-    const userLocation = new google.maps.LatLng(home.lat, home.lng);
-    let userDestinations = [];
-    let acceptablePlaces = [];
-
+async function filterByDistance(timeObj, listPlaces) {
+    
     const time = timeObj.hours * 3600 + timeObj.minutes * 60;
+    let filterInfo = {total_time: 0, places: []};
+
+    let i;
+    for (i = 0; i < listPlaces.length; i += 25) {
+      filterInfo = await addAcceptablePlaces(time, listPlaces.slice(i, i + 25), filterInfo);
+    }
+
+    return filterInfo;
+}
+
+
+function addAcceptablePlaces(time, places, info) {
+    return new Promise(function(resolve) {
+    
+    let userDestinations = [];
     
     //iterate through listPlaces and to get all the destinations
-    let i;
-    for (i = 0; i < 25; i++) {
-      const lat = listPlaces[i].geometry.location.lat();
-      const lng = listPlaces[i].geometry.location.lng();
+    
+    for (place of places) {
+      const lat = place.geometry.location.lat();
+      const lng = place.geometry.location.lng();
       const destination = new google.maps.LatLng(lat, lng);
       userDestinations.push(destination);
     }
 
     let service = new google.maps.DistanceMatrixService();
     service.getDistanceMatrix({
-      origins: [userLocation],
+      origins: [home],
       destinations: userDestinations,
       travelMode: 'DRIVING',
       unitSystem: google.maps.UnitSystem.IMPERIAL,
     }, callback);
 
     function callback(response, status) {    
+      let total_time = 0;
+      
       if (status == 'OK') {
         const origins = response.originAddresses;
-        
         let i;
         for (i = 0; i < origins.length; i++) {
           const results = response.rows[i].elements;
@@ -285,11 +325,13 @@ function addPlacesFromDirection(lat, lng, place_candidates) {
             const element = results[j];
 
             if (element.status == 'OK') {
+              total_time += element.duration.value;
+            
               //Check if the time is within the +- 30 min = 1800 sec range
               if (element.duration.value < time + 1800 && element.duration.value > time - 1800) {
-                acceptablePlaces.push({
-                  name: listPlaces[j].name,
-                  geometry: listPlaces[j].geometry,
+                info.places.push({
+                  name: places[j].name,
+                  geometry: places[j].geometry,
                   timeInSeconds: element.duration.value,
                   timeAsString: element.duration.text
                 });
@@ -298,7 +340,10 @@ function addPlacesFromDirection(lat, lng, place_candidates) {
           }
         }
       }
-      resolve(acceptablePlaces);
+
+      info.total_time = total_time;
+      
+      resolve(info);
     }
   });
 }
