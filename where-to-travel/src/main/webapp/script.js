@@ -26,7 +26,7 @@ const mapStyles = [
     ]
   }
 ];
-//End map stylings
+// End map stylings
 
 const submitId = 'submit-id';
 const hoursId = 'hrs';
@@ -35,12 +35,12 @@ const minutesId = 'mnts';
 let map;
 let home = null;
 
-let markers = [];
+const markers = [];
 
 // Add gmap js library to head of page
-let script = document.createElement('script');
+const script = document.createElement('script');
 script.src = 'https://maps.googleapis.com/maps/api/js?key=' 
-              + secrets['googleMapsKey'] + '&libraries=places';
+  + secrets.googleMapsKey + '&libraries=places';
 script.defer = true;
 script.async = true;
 
@@ -50,7 +50,7 @@ document.head.appendChild(script);
  * Initializes map window, runs on load.
  */
 async function initialize() {
-  let submit = document.getElementById(submitId);
+  const submit = document.getElementById(submitId);
   submit.addEventListener('click', submitDataListener);
   home = await getUserLocation();    
 
