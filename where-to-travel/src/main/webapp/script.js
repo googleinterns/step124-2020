@@ -234,7 +234,7 @@ function addPlacesFromDirection(lat, lng, place_candidates) {
  *
  * @param {number} time How much time the user wants to travel for
  * @param {array} listPlaces Array of place objects
- * @return {array} An array of places objects that are in the given time frame
+ * @return {array} An array of it objects in the given time frame. Includes all aspects of place object as well as time value in seconds and time as string.
  */
  function filterByDistance(timeObj, listPlaces) {
   return new Promise(function(resolve) {
@@ -244,8 +244,8 @@ function addPlacesFromDirection(lat, lng, place_candidates) {
     let acceptablePlaces = [];
     let i = 0;
     for (i; i < listPlaces.size(); i++) {
-      const lat = listPlaces[i % 25].geometry.location.lat();
-      const lng = listPlaces[i % 25].geometry.location.lng();
+      const lat = listPlaces[i].geometry.location.lat();
+      const lng = listPlaces[i].geometry.location.lng();
       const destination = new google.maps.LatLng(lat, lng);
       userDestinations.push(destination);
       if (i == 24 || i == listPlaces.size() - 1) {
