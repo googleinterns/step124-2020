@@ -1,4 +1,4 @@
-//This is map stylings for the GMap api
+// This is map stylings for the GMap api
 const mapStyles = [
   {
     featureType: "landscape",
@@ -26,7 +26,7 @@ const mapStyles = [
     ]
   }
 ];
-//End map stylings
+// End map stylings
 
 let open = false;
 // Need to blur header and blur mapwrap
