@@ -264,12 +264,10 @@ function addPlacesFromDirection(lat, lng, place_candidates) {
     function callback(response, status) {    
       if (status == 'OK') {
         const origins = response.originAddresses;
-        let i;
-        for (i = 0; i < origins.length; i++) {
-          const results = response.rows[i].elements;
-          let j;
-          for (j = 0; j < results.length; j++) {
-            const element = results[j];
+        for (row of responce.rows) {
+          const results = response.rows[row].elements;
+          for (result of results) {
+            const element = results[result];
             //Check if the time is within the +- 30 min = 1800 sec range
             if (element.duration.value < time + 1800 && element.duration.value > time - 1800) {
               acceptablePlaces.push({
