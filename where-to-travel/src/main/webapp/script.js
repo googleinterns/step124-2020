@@ -1,57 +1,57 @@
-//This is map stylings for the GMap api
+// This is map stylings for the GMap api
 const mapStyles = [
   {
-    "featureType": "landscape",
-    "stylers": [
+    featureType: 'landscape',
+    stylers: [
       {
-        "visibility": "off"
+        visibility: 'off'
       }
     ]
   },
   {
-    "featureType": "poi",
-    "elementType": "labels.icon",
-    "stylers": [
+    featureType: 'poi',
+    elementType: 'labels.icon',
+    stylers: [
       {
-        "visibility": "off"
+        visibility: 'off'
       }
     ]
   },
   {
-    "featureType": "transit",
-    "stylers": [
+    featureType: 'transit',
+    stylers: [
       {
-        "visibility": "off"
+        visibility: 'off'
       }
     ]
   }
 ];
-//End map stylings
+// End map stylings
 
-const submitId = "submit-id";
-const hoursId = "hrs";
-const minutesId = "mnts";
+const submitId = 'submit-id';
+const hoursId = 'hrs';
+const minutesId = 'mnts';
 
 let map;
 let home = null;
 
+const markers = [];
+
 // Add gmap js library to head of page
-let script = document.createElement('script');
-script.src = 'https://maps.googleapis.com/maps/api/js?key=' 
-              + secrets['googleMapsKey'] + '&libraries=places';
+const script = document.createElement('script');
+script.src = 'https://maps.googleapis.com/maps/api/js?key=' +
+  secrets.googleMapsKey + '&libraries=places';
 script.defer = true;
 script.async = true;
 
 document.head.appendChild(script);
 
-/**
- * Initializes map window, runs on load.
- */
+/** Initializes map window, runs on load. */
 async function initialize() {
-  let submit = document.getElementById(submitId);
+  const submit = document.getElementById(submitId);
   submit.addEventListener('click', submitDataListener);
   home = await getUserLocation();    
-
+  
   const mapOptions = {
     center: home, 
     mapTypeId: google.maps.MapTypeId.ROADMAP,
@@ -59,9 +59,9 @@ async function initialize() {
     mapTypeControl: false,
     styles: mapStyles
   };
-  
-  map = new google.maps.Map(document.getElementById("map"), mapOptions);
 
+  map = new google.maps.Map(document.getElementById('map'), mapOptions);
+  
   let homeMarker = new google.maps.Marker({
     position: home,
     map: map,
@@ -77,8 +77,11 @@ async function initialize() {
 function submitDataListener(event) {
   const hours = document.getElementById(hoursId).value;
   const minutes = document.getElementById(minutesId).value;
-  const timeObj = { "hours": hours, "minutes": minutes };
-  getPlacesFromTime(timeObj).then(places => populatePlaces(places));
+  const timeObj = {hours: hours, minutes: minutes };
+  getPlacesFromTime(timeObj).then(places => {
+    clearPlaces();
+    populatePlaces(places); 
+  }); 
 }
 
 /**
@@ -105,9 +108,17 @@ function populatePlaces(placeArray) {
     placeMarker.addListener('click', function() {
       infowindow.open(map, placeMarker);
     });
+
+    markers.push(placeMarker);
   }
 }
- 
+
+/** Clears all markers on map except for home marker. */
+function clearPlaces() {
+  for (marker of markers) {
+    marker.setMap(null);
+  }
+} 
 
 /** 
  * If browser supports geolocation and user provides permissions, obtains user's 
@@ -145,13 +156,13 @@ function populatePlaces(placeArray) {
  */
 function getLocationFromUserInput() {
   return new Promise(function(resolve, reject) {
-    const address = prompt("Please enter a valid address as your start location.");
-    if (address == null || address == "") {
+    const address = prompt('Please enter a valid address as your start location.');
+    if (address == null || address == '') {
       return resolve(getLocationFromUserInput());
     }
  
     const geocoder = new google.maps.Geocoder();
-    geocoder.geocode({'address': address}, function(results, status) {
+    geocoder.geocode({address: address}, function(results, status) {
       if (status == 'OK') {
         const lat = results[0].geometry.location.lat;
         const lng = results[0].geometry.location.lng;
@@ -168,22 +179,23 @@ function getLocationFromUserInput() {
  * to return places that are close to travel time requested by user. Uses four
  * bounding boxes that lie north, south, east, and west of user's location.
  *
- * @param {object} timeObj Travel time requested by user in hours and minutes
+ * @param {Object} timeObj Travel time requested by user in hours and minutes
+ * @return {Promise} An array promise of places that lie within time requested
  */
  async function getPlacesFromTime(timeObj) {
   const userLat = home.lat;
   const userLng = home.lng;
   
   // These spread the search area for the four bounding boxes
-  const latSpread = 2
-  const lngSpread = 8
+  const latSpread = 4;
+  const lngSpread = 4;
 
   let place_candidates = [];
-  place_candidates = await addPlacesFromDirection(userLat - latSpread, userLng, place_candidates); // West
-  place_candidates = await addPlacesFromDirection(userLat, userLng + lngSpread, place_candidates); // North
-  place_candidates = await addPlacesFromDirection(userLat + latSpread, userLng, place_candidates); // East
-  place_candidates = await addPlacesFromDirection(userLat, userLng - lngSpread, place_candidates); // South
-
+ 
+  place_candidates = await addPlacesFromDirection(userLat, userLng + lngSpread, place_candidates); // East
+  place_candidates = await addPlacesFromDirection(userLat + latSpread, userLng, place_candidates); // North
+  place_candidates = await addPlacesFromDirection(userLat, userLng - lngSpread, place_candidates); // West
+  place_candidates = await addPlacesFromDirection(userLat - latSpread, userLng, place_candidates); // South
 
   return filterByDistance(timeObj, place_candidates);
 }
@@ -255,7 +267,7 @@ function addPlacesFromDirection(lat, lng, place_candidates) {
           travelMode: 'DRIVING',
           unitSystem: google.maps.UnitSystem.IMPERIAL,
         }, callback);
-
+        
         function callback(response, status) {
           if (status == 'OK') {
             for (row of responce.rows) {
