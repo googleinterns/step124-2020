@@ -66,7 +66,7 @@ let home = null;
 const markers = [];
 
 // Add gmap js library to head of page
-let script = document.createElement('script');
+const script = document.createElement('script');
 script.src =
   'https://maps.googleapis.com/maps/api/js?key=' +
   secrets['googleMapsKey'] +
@@ -78,7 +78,7 @@ document.head.appendChild(script);
 
 /** Initializes map window, runs on load. */
 async function initialize() {
-  let submit = document.getElementById(submitId);
+  const submit = document.getElementById(submitId);
   submit.addEventListener('click', submitDataListener);
   home = await getUserLocation();
   const mapOptions = {
