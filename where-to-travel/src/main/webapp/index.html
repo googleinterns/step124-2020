@@ -14,16 +14,16 @@
       <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">
         &times;
       </a>
-      <form class="form-inline" style="margin: auto">
-        <div style="margin: auto; width: 20%" class="form-group">
-          <label style="color: #1E3C19;" for="hours" class="bmd-label-floating">HH</label>
+      <form class="form-inline form-mixin">
+        <div class="form-group fg-mixin">
+          <label for="hours" class="bmd-label-floating label-color">HH</label>
           <input id="hrs" style="width: 100%; margin-right:0px;" type="text" class="form-control">
         </div>
-        <div style="font-size: 24px; padding-top: 10%; color: #1E3C19; margin-left: 5px; margin-right: 5px" class="form-group bmd-label-static">
+        <div id="colon" class="form-group bmd-label-static">
           :
         </div>
-        <div style="margin: auto; width: 20%" class="form-group">
-          <label style="color: #1E3C19;" for="minutes" class="bmd-label-floating">MM</label>
+        <div class="form-group fg-mixin">
+          <label for="minutes" class="bmd-label-floating label-color">MM</label>
           <input id="mnts" style="width: 100%; margin-right:0px;" type="text" class="form-control">
         </div>
         <span style="margin: auto; margin-right: 5px;" class="form-group bmd-form-group">
@@ -33,7 +33,7 @@
     </div>
     <div id="main">
       <div id="header">
-        <span style="font-size: 30px; cursor: pointer" onclick="openNav()">
+        <span onclick="openNav()">
           &#9776;
         </span>
       </div>

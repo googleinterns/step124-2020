@@ -5,6 +5,23 @@ body {
   transition: background-color 0.5s;
 }
 
+#colon {
+  font-size: 24px;
+  padding-top: 10%;
+  color: #1E3C19;
+  margin-left: 5px;
+  margin-right: 5px
+}
+
+.fg-mixin {
+  margin: auto;
+  width: 20%
+}
+
+.form-mixin {
+  margin: auto;
+}
+
 #header {
   background-color: white;
   color: #1E3C19;
@@ -15,6 +32,8 @@ body {
 
 #header span {
   color: #1E3C19;
+  cursor: pointer;
+  font-size: 30px;
   transition: 0.3s;
 }
 
@@ -26,12 +45,8 @@ html {
   height: 100%;
 }
 
-#input-wrap {
-  display: block;
-}
-
-input[type="text"] {
-  width: 30px;
+.label-color {
+  color: #1E3C19;
 }
 
 #main {
