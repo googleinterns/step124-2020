@@ -239,48 +239,47 @@ function addPlacesFromDirection(lat, lng, place_candidates) {
  function filterByDistance(timeObj, listPlaces) {
   return new Promise(function(resolve) {
     const userLocation = new google.maps.LatLng(home.lat, home.lng);
+    const time = timeObj.hours * 3600 + timeObj.minutes * 60;
     let userDestinations = [];
     let acceptablePlaces = [];
-
-    const time = timeObj.hours * 3600 + timeObj.minutes * 60;
-    
-    //iterate through listPlaces and to get all the destinations
-    let i;
-    for (i = 0; i < 25; i++) {
-      const lat = listPlaces[i].geometry.location.lat();
-      const lng = listPlaces[i].geometry.location.lng();
+    let i = 0;
+    for (i; i < listPlaces.size(); i++) {
+      const lat = listPlaces[i % 25].geometry.location.lat();
+      const lng = listPlaces[i % 25].geometry.location.lng();
       const destination = new google.maps.LatLng(lat, lng);
       userDestinations.push(destination);
-    }
+      if (i == 24 || i == listPlaces.size() - 1) {
+        let service = new google.maps.DistanceMatrixService();
+        service.getDistanceMatrix({
+          origins: [userLocation],
+          destinations: userDestinations,
+          travelMode: 'DRIVING',
+          unitSystem: google.maps.UnitSystem.IMPERIAL,
+        }, callback);
 
-    let service = new google.maps.DistanceMatrixService();
-    service.getDistanceMatrix({
-      origins: [userLocation],
-      destinations: userDestinations,
-      travelMode: 'DRIVING',
-      unitSystem: google.maps.UnitSystem.IMPERIAL,
-    }, callback);
-
-    function callback(response, status) {    
-      if (status == 'OK') {
-        const origins = response.originAddresses;
-        for (row of responce.rows) {
-          const results = response.rows[row].elements;
-          for (result of results) {
-            const element = results[result];
-            //Check if the time is within the +- 30 min = 1800 sec range
-            if (element.duration.value < time + 1800 && element.duration.value > time - 1800) {
-              acceptablePlaces.push({
-                "name": listPlaces[j].name,
-                "geometry" : listPlaces[j].geometry,
-                "timeInSeconds": element.duration.value,
-                "timeAsString": element.duration.text
-              });
+        function callback(response, status) {
+          if (status == 'OK') {
+            const origins = response.originAddresses;
+            for (row of responce.rows) {
+              const results = response.rows[row].elements;
+              for (result of results) {
+                const element = results[result];
+                //Check if the time is within the +- 20% of the user's requested time
+                if (element.duration.value < time + time * 0.2 && element.duration.value > time - time * 0.2) {
+                  acceptablePlaces.push({
+                    "name": listPlaces[i].name,
+                    "geometry": listPlaces[i].geometry,
+                    "timeInSeconds": element.duration.value,
+                    "timeAsString": element.duration.text
+                  });
+                }
+              }
             }
           }
         }
+        userDestinations = [];
       }
-      resolve(acceptablePlaces);
     }
+    resolve(acceptablePlaces);
   });
 }
