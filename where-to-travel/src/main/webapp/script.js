@@ -271,8 +271,8 @@ function addPlacesFromDirection(lat, lng, place_candidates) {
             //Check if the time is within the +- 20% of the user's requested time
             if (element.duration.value < time+time*0.2 && element.duration.value > time-time*0.2) {
               acceptablePlaces.push({
-                "name": listPlaces[j].name,
-                "geometry" : listPlaces[j].geometry,
+                "name": listPlaces[element].name,
+                "geometry" : listPlaces[element].geometry,
                 "timeInSeconds": element.duration.value,
                 "timeAsString": element.duration.text
               });
