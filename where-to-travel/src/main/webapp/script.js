@@ -187,8 +187,8 @@ function getLocationFromUserInput() {
   const userLng = home.lng;
   
   // These spread the search area for the four bounding boxes
-  const latSpread = 2
-  const lngSpread = 2
+  const latSpread = 2;
+  const lngSpread = 2;
 
   let place_candidates = [];
   place_candidates = await addPlacesFromDirection(userLat - latSpread, userLng, place_candidates); // West
