@@ -28,7 +28,8 @@ const mapStyles = [
 ];
 // End map stylings
 
-const placesThreshold = 10;
+const placesThreshold = 30;
+const attemptsThreshold = 10;
 
 const submitId = 'submit-id';
 const hoursId = 'hrs';
@@ -77,11 +78,11 @@ async function initialize() {
  * @param {Event} event Click event from which to respond
  */
 function submitDataListener(event) {
+  clearPlaces(); 
   const hours = document.getElementById(hoursId).value;
   const minutes = document.getElementById(minutesId).value;
   const timeObj = {hours: hours, minutes: minutes };
   getPlacesFromTime(timeObj).then(places => {
-    clearPlaces();
     populatePlaces(places); 
   }); 
 }
@@ -191,28 +192,31 @@ function getLocationFromUserInput() {
   const time = timeObj.hours * 3600 + timeObj.minutes * 60;
   
   // These spread the search area for the four bounding boxes
-  let latSpread = 1;
-  let lngSpread = 1;
+  let latSpread = Math.max(1, Math.floor(time/7200));
+  let lngSpread = Math.max(1, Math.floor(time/7200));
 
   let places = [];
+  let attempts = 0;
 
-  while (places.length < placesThreshold) {
+  while (attempts < attemptsThreshold && places.length < placesThreshold) {
+    console.log(latSpread);
+    
     let place_candidates = [];
  
-    place_candidates = await addPlacesFromDirection(userLat, userLng + lngSpread, place_candidates); // East
     place_candidates = await addPlacesFromDirection(userLat + latSpread, userLng, place_candidates); // North
+    place_candidates = await addPlacesFromDirection(userLat, userLng + lngSpread, place_candidates); // East
     place_candidates = await addPlacesFromDirection(userLat, userLng - lngSpread, place_candidates); // West
     place_candidates = await addPlacesFromDirection(userLat - latSpread, userLng, place_candidates); // South
-
+   
     const filterResults = await filterByDistance(timeObj, place_candidates);
   
     places = places.concat(filterResults.places);
 
-    let numPlaces = filterResults.places.length;
+    let num_candidates = place_candidates.length;
 
     let avg_time = 0;
-    if (numPlaces != 0) {
-      avg_time = filterResults.total_time/numPlaces;
+    if (num_candidates != 0) {
+      avg_time = filterResults.total_time/num_candidates;
     }
 
     if (avg_time > time) {
@@ -222,6 +226,8 @@ function getLocationFromUserInput() {
       latSpread += 0.5;
       lngSpread += 0.5;
     }
+
+    attempts += 1;
   }
   
   return places;
@@ -259,6 +265,9 @@ function addPlacesFromDirection(lat, lng, place_candidates) {
             place_candidates.push(result);
           }
         }
+      }
+      else {
+        console.log(status);
       }
 
       resolve(place_candidates);
@@ -328,7 +337,7 @@ function addAcceptablePlaces(time, places, info) {
               total_time += element.duration.value;
             
               //Check if the time is within the +- 30 min = 1800 sec range
-              if (element.duration.value < time + 1800 && element.duration.value > time - 1800) {
+              if (element.duration.value <= 1.2 * time  && element.duration.value >= 0.8 * time) {
                 info.places.push({
                   name: places[j].name,
                   geometry: places[j].geometry,
