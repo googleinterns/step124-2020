@@ -124,7 +124,10 @@ function populatePlaces(placeArray) {
   let i;
   for (i = 0; i < placeArray.length; i++) {
     let name = placeArray[i].name;
+    let address = placeArray[i].address;
     let coordinates = placeArray[i].geometry.location;
+    let timeStr = placeArray[i].timeAsString;
+
     let placeMarker = new google.maps.Marker({
       position: coordinates,
       map: map,
@@ -132,8 +135,19 @@ function populatePlaces(placeArray) {
       icon: 'icons/pin.svg',
     });
 
+    const contentHtml = '' +
+      '<div id="content">'+
+          '<div id="siteNotice">'+
+          '</div>'+
+          '<h1 id="firstHeading" class="firstHeading">${name}</h1>'+
+          '<div id="bodyContent">'+
+            '<p>${address}</p>'+
+            '<p>${timeStr} away from you</p>'+
+          '</div>'+
+      '</div>';
+
     let infowindow = new google.maps.InfoWindow({
-      content: name,
+      content: contentHtml,
     });
 
     placeMarker.addListener('click', function () {
@@ -323,6 +337,7 @@ function filterByDistance(timeObj, listPlaces) {
               if (element.duration.value < time + 1800 && element.duration.value > time - 1800) {
                 acceptablePlaces.push({
                   name: listPlaces[j].name,
+                  address: listPlaces[j].adr_address,
                   geometry: listPlaces[j].geometry,
                   timeInSeconds: element.duration.value,
                   timeAsString: element.duration.text
