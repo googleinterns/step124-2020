@@ -314,9 +314,19 @@ function addPlacesFromDirection(lat, lng, place_candidates) {
 
   // Get elements
   const txtEmail = document.getElementById('txtEmail');
-  const txtPassword = document.getElementById('txtPasseord');
+  const txtPassword = document.getElementById('txtPassword');
   const btnLogin = document.getElementById('btnLogin');
-  const btnSignUP = document.getElementById('btnSignUp');
+  const btnSignUp = document.getElementById('btnSignUp');
   const btnLogout = document.getElementById('btnLogout');
+  
+  // Add login event
+  btnLogin.addEventListener('click', e => {
+    const email = txtEmail.value;
+    const pass = txtPassword.value;
+    const auth = firebase.auth();
+    // Sign in
+    const promise = auth.signInWithEmailAndPAssword(email, pass);
+    promise.catch(e => console.log(e.message));
+  });
 
 }());
