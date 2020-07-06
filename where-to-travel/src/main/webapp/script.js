@@ -329,4 +329,16 @@ function addPlacesFromDirection(lat, lng, place_candidates) {
     promise.catch(e => console.log(e.message));
   });
 
+  // Add signup event
+  btnSignUp.addEventListener('click', e => {
+    //TODO: Check for read emails
+    const email = textEmail.value;
+    const pass = textPassword.value;
+    const auth = firebase.auth();
+
+    // Sign in
+    const promise = auth.createUserWithEmailAndPassword(email,pass);
+    promise.catch(e => console.log(e.message));
+  });
+
 }());
