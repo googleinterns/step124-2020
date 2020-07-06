@@ -341,4 +341,18 @@ function addPlacesFromDirection(lat, lng, place_candidates) {
     promise.catch(e => console.log(e.message));
   });
 
+  btnLogout.addEventListener('click', e => {
+    firebase.auth().signOut();
+  });
+
+  // Add a realtime listener
+  firebase.auth().onAuthStateChanged(firebaseUser => {
+    if(firebaseUser) {
+      console.log(firebaseUser);
+      btnLogout.classList.remove('hide');
+    } else {
+      console.log('not logged in');
+      btnLogout.classList.ass('hide');
+    }
+  });
 }());
