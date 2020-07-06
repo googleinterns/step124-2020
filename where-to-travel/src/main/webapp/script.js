@@ -295,3 +295,28 @@ function addPlacesFromDirection(lat, lng, place_candidates) {
     resolve(acceptablePlaces);
   });
 }
+
+//Authentication using Firebase
+(function() {
+
+  // Initialice Firebase
+  const firebaseConfig = {
+  apiKey: "AIzaSyBWdvjzcH9EEGrqCG0ca8G8VDZwCSyAL-k",
+  authDomain: "where-to-8d512.firebaseapp.com",
+  databaseURL: "https://where-to-8d512.firebaseio.com",
+  projectId: "where-to-8d512",
+  storageBucket: "where-to-8d512.appspot.com",
+  messagingSenderId: "561353405828",
+  appId: "1:561353405828:web:e821cd8d130cd7714919d1",
+  measurementId: "G-KR73M56G0S"
+  };
+  firebase.initializApp(config);
+
+  // Get elements
+  const txtEmail = document.getElementById('txtEmail');
+  const txtPassword = document.getElementById('txtPasseord');
+  const btnLogin = document.getElementById('btnLogin');
+  const btnSignUP = document.getElementById('btnSignUp');
+  const btnLogout = document.getElementById('btnLogout');
+
+}());
