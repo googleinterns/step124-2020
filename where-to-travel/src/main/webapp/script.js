@@ -192,8 +192,8 @@ function getLocationFromUserInput() {
   const time = timeObj.hours * 3600 + timeObj.minutes * 60;
   
   // These spread the search area for the four bounding boxes
-  let latSpread = Math.max(1, Math.floor(time/7200));
-  let lngSpread = Math.max(1, Math.floor(time/7200));
+  let latSpread = Math.max(1, time/7200);
+  let lngSpread = Math.max(1, time/7200);
 
   let places = [];
   let attempts = 0;
@@ -212,7 +212,7 @@ function getLocationFromUserInput() {
   
     places = places.concat(filterResults.places);
 
-    let num_candidates = place_candidates.length;
+    const num_candidates = place_candidates.length;
 
     let avg_time = 0;
     if (num_candidates != 0) {
@@ -220,11 +220,11 @@ function getLocationFromUserInput() {
     }
 
     if (avg_time > time) {
-      latSpread -= 0.5;
-      lngSpread -= 0.5;
+      latSpread -= 1;
+      lngSpread -= 1;
     } else {
-      latSpread += 0.5;
-      lngSpread += 0.5;
+      latSpread += 1;
+      lngSpread += 1;
     }
 
     attempts += 1;
@@ -283,7 +283,7 @@ function addPlacesFromDirection(lat, lng, place_candidates) {
  *
  * @param {number} time How much time the user wants to travel for
  * @param {array} listPlaces Array of place objects
- * @return {array} An array of places objects that are in the given time frame
+ * @return {Object} Contains total time of all places and an array of places objects that within 20% of given time
  */
 async function filterByDistance(timeObj, listPlaces) {
     
@@ -336,7 +336,7 @@ function addAcceptablePlaces(time, places, info) {
             if (element.status == 'OK') {
               total_time += element.duration.value;
             
-              //Check if the time is within the +- 30 min = 1800 sec range
+              //Check if the time is within the +- 20% range
               if (element.duration.value <= 1.2 * time  && element.duration.value >= 0.8 * time) {
                 info.places.push({
                   name: places[j].name,
