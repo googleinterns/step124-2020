@@ -309,7 +309,7 @@ function filterByDistance(timeObj, listPlaces) {
     );
 
     function callback(response, status) {
-      if (status == 'OK') {
+      if (status === 'OK') {
         const origins = response.originAddresses;
         let i;
         for (i = 0; i < origins.length; i++) {
@@ -317,7 +317,7 @@ function filterByDistance(timeObj, listPlaces) {
           let j;
           for (j = 0; j < results.length; j++) {
             const element = results[j];
-            if (element.status == 'OK') {
+            if (element.status === 'OK') {
               // Check if the time is within the +- 30 min = 1800 sec range
               if (element.duration.value < time + 1800 && element.duration.value > time - 1800) {
                 acceptablePlaces.push({
