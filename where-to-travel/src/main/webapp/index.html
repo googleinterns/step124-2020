@@ -1,51 +1,73 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="UTF-8" />
-    <title>Where to?</title>
-    <link rel="icon" href="icons/pin.svg">
-    <link rel="stylesheet" href="https://unpkg.com/bootstrap-material-design@4.1.1/dist/css/bootstrap-material-design.min.css" integrity="sha384-wXznGJNEXNG1NFsbm0ugrLFMQPWswR3lds2VeinahP8N0zJw9VWSopbjv2x7WCvX" crossorigin="anonymous">
-    <link rel="stylesheet" href="style.css">
-    <script src="secrets.json"></script>
-    <script src="script.js"></script>
-  </head>
 
-  <body onload="initialize();">
-    <div id="sidenav" class="sidenav">
-      <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">
-        &times;
-      </a>
-      <form class="form-inline form-mixin">
-        <div class="form-group fg-mixin">
-          <label for="hours" class="bmd-label-floating label-color">HH</label>
-          <input id="hrs" style="width: 100%; margin-right:0px;" type="text" class="form-control">
+<head>
+  <meta charset="UTF-8">
+  <title>Where to?</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="secrets.json"></script>
+</head>
+
+<body onload="initialize();">
+  <div id="container">
+    <div id="nav">
+      <form>
+        <label>Travel time: </label>
+        <div id="input-wrap">
+          <label>Hours</label>
+          <input type="text" name="hours" id="hrs">
+          <label>Minutes</label>
+          <input type="text" name="minutes" id="mnts">
         </div>
-        <div id="colon" class="form-group bmd-label-static">
-          :
-        </div>
-        <div class="form-group fg-mixin">
-          <label for="minutes" class="bmd-label-floating label-color">MM</label>
-          <input id="mnts" style="width: 100%; margin-right:0px;" type="text" class="form-control">
-        </div>
-        <span style="margin: auto; margin-right: 5px;" class="form-group bmd-form-group">
-          <button type="button" id="submit" class="btn btn-primary">Search</button>
-        </span>
+        <button id="submit-id" type="button">Search</button>
       </form>
-    </div>
-    <div id="main">
-      <div id="header">
-        <span onclick="openNav()">
-          &#9776;
-        </span>
+      <div class="container">
+        <input id="textEmail" type="email" placeholder="Email">
+
+        <input id="textPassword" type="password" placeholder="Password">
+
+        <button id="btnLogin" cleass "btn btn-action">
+          Log in
+        </button>
+
+        <button id="btnSignUp" class="btn btn-secondary">
+          Sign Up
+        </button>
+
+        <button id="btnLogout" class="btn btn-action hide">
+          Log out
+        </button>
       </div>
-      <div id="map-wrap">
-        <div id="map"></div>
-        <div id="over-map"></div>
-      </div>
     </div>
-    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
-    <script src="https://unpkg.com/popper.js@1.12.6/dist/umd/popper.js" integrity="sha384-fA23ZRQ3G/J53mElWqVJEGJzU0sTs+SvzG8fXVWP+kJQ1lwFAOkcUOysnlKJC33U" crossorigin="anonymous"></script>
-    <script src="https://unpkg.com/bootstrap-material-design@4.1.1/dist/js/bootstrap-material-design.js" integrity="sha384-CauSuKpEqAFajSpkdjv3z9t8E7RlpJ1UP0lKM/+NdtSarroVKu069AlsRPKkFBz9" crossorigin="anonymous"></script>
-    <script>$(document).ready(function() { $('body').bootstrapMaterialDesign(); });</script>
-  </body>
+    <div id="map"></div>
+  </div>
+  <!-- The core Firebase JS SDK is always required and must be listed first -->
+  <script src="https://www.gstatic.com/firebasejs/7.15.5/firebase-app.js"></script>
+
+  <!-- TODO: Add SDKs for Firebase products that you want to use
+     https://firebase.google.com/docs/web/setup#available-libraries -->
+  <script src="https://www.gstatic.com/firebasejs/7.15.5/firebase-analytics.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/7.15.5/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/7.15.5/firebase-database.js"></script>
+
+  <script>
+    // Your web app's Firebase configuration
+    var firebaseConfig = {
+      apiKey: "AIzaSyBWdvjzcH9EEGrqCG0ca8G8VDZwCSyAL-k",
+      authDomain: "where-to-8d512.firebaseapp.com",
+      databaseURL: "https://where-to-8d512.firebaseio.com",
+      projectId: "where-to-8d512",
+      storageBucket: "where-to-8d512.appspot.com",
+      messagingSenderId: "561353405828",
+      appId: "1:561353405828:web:e821cd8d130cd7714919d1",
+      measurementId: "G-KR73M56G0S"
+    };
+    
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    firebase.analytics();
+  </script>
+  <script src="script.js"></script>
+</body>
+
 </html>
