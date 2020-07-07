@@ -296,63 +296,48 @@ function addPlacesFromDirection(lat, lng, place_candidates) {
   });
 }
 
-//Authentication using Firebase
-(function() {
+// Get elements for authentication
+const textEmail = document.getElementById('textEmail');
+const textPassword = document.getElementById('textPassword');
+const btnLogin = document.getElementById('btnLogin');
+const btnSignUp = document.getElementById('btnSignUp');
+const btnLogout = document.getElementById('btnLogout');
 
-  // Initialice Firebase
-  const firebaseConfig = {
-  apiKey: "AIzaSyBWdvjzcH9EEGrqCG0ca8G8VDZwCSyAL-k",
-  authDomain: "where-to-8d512.firebaseapp.com",
-  databaseURL: "https://where-to-8d512.firebaseio.com",
-  projectId: "where-to-8d512",
-  storageBucket: "where-to-8d512.appspot.com",
-  messagingSenderId: "561353405828",
-  appId: "1:561353405828:web:e821cd8d130cd7714919d1",
-  measurementId: "G-KR73M56G0S"
-  };
-  firebase.initializApp(config);
-
-  // Get elements
-  const txtEmail = document.getElementById('txtEmail');
-  const txtPassword = document.getElementById('txtPassword');
-  const btnLogin = document.getElementById('btnLogin');
-  const btnSignUp = document.getElementById('btnSignUp');
-  const btnLogout = document.getElementById('btnLogout');
+// Add login event
+btnLogin.addEventListener('click', e => {
+  const email = textEmail.value;
+  const pass = textPassword.value;
+  const auth = firebase.auth();
   
-  // Add login event
-  btnLogin.addEventListener('click', e => {
-    const email = txtEmail.value;
-    const pass = txtPassword.value;
-    const auth = firebase.auth();
-    // Sign in
-    const promise = auth.signInWithEmailAndPAssword(email, pass);
-    promise.catch(e => console.log(e.message));
-  });
+  // Sign in
+  const promise = auth.signInWithEmailAndPAssword(email, pass);
+  promise.catch(e => console.log(e.message));
+});
 
-  // Add signup event
-  btnSignUp.addEventListener('click', e => {
-    //TODO: Check for read emails
-    const email = textEmail.value;
-    const pass = textPassword.value;
-    const auth = firebase.auth();
+// Add signup event
+btnSignUp.addEventListener('click', e => {
+  //TODO: Check for real emails
+  const email = textEmail.value;
+  const pass = textPassword.value;
+  const auth = firebase.auth();
 
-    // Sign in
-    const promise = auth.createUserWithEmailAndPassword(email,pass);
-    promise.catch(e => console.log(e.message));
-  });
+  // Sign up
+  const promise = auth.createUserWithEmailAndPassword(email, pass);
+  promise.catch(e => console.log(e.message));
+});
 
-  btnLogout.addEventListener('click', e => {
-    firebase.auth().signOut();
-  });
+// Log out
+btnLogout.addEventListener('click', e => {
+  firebase.auth().signOut();
+});
 
-  // Add a realtime listener
-  firebase.auth().onAuthStateChanged(firebaseUser => {
-    if(firebaseUser) {
-      console.log(firebaseUser);
-      btnLogout.classList.remove('hide');
-    } else {
-      console.log('not logged in');
-      btnLogout.classList.ass('hide');
-    }
-  });
-}());
+// Add a realtime listener to monotor the state of log out button 
+firebase.auth().onAuthStateChanged(firebaseUser => {
+  if (firebaseUser) {
+    console.log(firebaseUser);
+    btnLogout.classList.remove('hide');
+  } else {
+    console.log('not logged in');
+    btnLogout.classList.add('hide');
+  }
+});
