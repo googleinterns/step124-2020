@@ -28,7 +28,35 @@ const mapStyles = [
 ];
 // End map stylings
 
-const submitId = 'submit-id';
+let open = false;
+// Need to blur header and blur mapwrap
+function openNav() {
+  document.getElementById('sidenav').style.width = '250px';
+  document.getElementById('main').style.marginLeft = '250px';
+  document.body.style.backgroundColor = 'rgba(0,0,0,0.4)';
+  mapOverlay = document.getElementById('over_map');
+  mapOverlay.style.zIndex = '5';
+  mapOverlay.style.transition = 'background-color .5s';
+  mapOverlay.style.backgroundColor = 'rgba(0,0,0,0.4)';
+  open = true;
+}
+
+function closeNav() {
+  document.getElementById('sidenav').style.width = '0';
+  document.getElementById('main').style.marginLeft = '0';
+  document.body.style.backgroundColor = 'white';
+  mapOverlay = document.getElementById('over_map');
+  mapOverlay.style.transition = 'background-color .5s';
+  mapOverlay.style.backgroundColor = 'rgba(0, 0, 0, 0)';
+  open = false;
+  mapOverlay.addEventListener('transitionend', (event) => {
+    if (!open) {
+      event.target.style.zIndex = '-1';
+    }
+  });
+}
+
+const submitId = 'submit';
 const hoursId = 'hrs';
 const minutesId = 'mnts';
 
@@ -39,8 +67,10 @@ const markers = [];
 
 // Add gmap js library to head of page
 const script = document.createElement('script');
-script.src = 'https://maps.googleapis.com/maps/api/js?key=' +
-  secrets.googleMapsKey + '&libraries=places';
+script.src =
+  'https://maps.googleapis.com/maps/api/js?key=' +
+  secrets['googleMapsKey'] +
+  '&libraries=places';
 script.defer = true;
 script.async = true;
 
@@ -50,22 +80,22 @@ document.head.appendChild(script);
 async function initialize() {
   const submit = document.getElementById(submitId);
   submit.addEventListener('click', submitDataListener);
-  home = await getUserLocation();    
-  
+  home = await getUserLocation();
   const mapOptions = {
-    center: home, 
+    center: home,
     mapTypeId: google.maps.MapTypeId.ROADMAP,
     zoom: 16,
     mapTypeControl: false,
-    styles: mapStyles
+    styles: mapStyles,
   };
 
   map = new google.maps.Map(document.getElementById('map'), mapOptions);
-  
+
   let homeMarker = new google.maps.Marker({
     position: home,
+    icon: 'icons/home.svg',
     map: map,
-    title: 'Home'
+    title: 'Home',
   });
 }
 
@@ -77,11 +107,11 @@ async function initialize() {
 function submitDataListener(event) {
   const hours = document.getElementById(hoursId).value;
   const minutes = document.getElementById(minutesId).value;
-  const timeObj = {hours: hours, minutes: minutes };
+  const timeObj = { hours: hours, minutes: minutes };
   getPlacesFromTime(timeObj).then(places => {
     clearPlaces();
-    populatePlaces(places); 
-  }); 
+    populatePlaces(places);
+  });
 }
 
 /**
@@ -92,20 +122,35 @@ function submitDataListener(event) {
  */
 function populatePlaces(placeArray) {
   let i;
-  for(i = 0; i < placeArray.length; i++) {
+  for (i = 0; i < placeArray.length; i++) {
     let name = placeArray[i].name;
+    let address = placeArray[i].address;
     let coordinates = placeArray[i].geometry.location;
+    let timeStr = placeArray[i].timeAsString;
+
     let placeMarker = new google.maps.Marker({
       position: coordinates,
       map: map,
-      title: name
+      title: name,
+      icon: 'icons/pin.svg',
     });
+
+    const contentHtml = '' +
+      '<div id="content">'+
+          '<div id="siteNotice">'+
+          '</div>'+
+          '<h1 id="firstHeading" class="firstHeading">${name}</h1>'+
+          '<div id="bodyContent">'+
+            '<p>${address}</p>'+
+            '<p>${timeStr} away from you</p>'+
+          '</div>'+
+      '</div>';
 
     let infowindow = new google.maps.InfoWindow({
-      content: name
+      content: contentHtml,
     });
 
-    placeMarker.addListener('click', function() {
+    placeMarker.addListener('click', function () {
       infowindow.open(map, placeMarker);
     });
 
@@ -118,25 +163,27 @@ function clearPlaces() {
   for (marker of markers) {
     marker.setMap(null);
   }
-} 
+}
 
-/** 
- * If browser supports geolocation and user provides permissions, obtains user's 
+/**
+ * If browser supports geolocation and user provides permissions, obtains user's
  * latitude and longitude. Otherwise, asks user to input address and converts input
  * to latitude and longitude.
  *
  * @return {Object} Contains latitude and longitude corresponding to user's location
  */
- function getUserLocation() {
-  return new Promise(function(resolve, reject) {
-  
+function getUserLocation() {
+  return new Promise(function (resolve, reject) {
     function success(position) {
-      return resolve({lat: position.coords.latitude, lng: position.coords.longitude});
+      return resolve({
+        lat: position.coords.latitude,
+        lng: position.coords.longitude,
+      });
     }
 
-   function error() {
-     return resolve(getLocationFromUserInput());
-   }
+    function error() {
+      return resolve(getLocationFromUserInput());
+    }
 
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(success, error);
@@ -146,8 +193,7 @@ function clearPlaces() {
   });
 }
 
-
-/** 
+/**
  * If browser does not support geolocation or user does not provide permissions,
  * asks user to input address and utilizes Geocoding API to convert address to
  * latitude and longitude. User will be prompted until they provide a valid address.
@@ -160,13 +206,13 @@ function getLocationFromUserInput() {
     if (address == null || address == '') {
       return resolve(getLocationFromUserInput());
     }
- 
+
     const geocoder = new google.maps.Geocoder();
     geocoder.geocode({address: address}, function(results, status) {
       if (status == 'OK') {
         const lat = results[0].geometry.location.lat;
         const lng = results[0].geometry.location.lng;
-        return resolve({lat: lat() , lng: lng()});  
+        return resolve({ lat: lat(), lng: lng() });
       } else {
         return resolve(getLocationFromUserInput());
       }
@@ -174,7 +220,7 @@ function getLocationFromUserInput() {
   });
 }
 
-/** 
+/**
  * Finds places centered around user's position and passes to filter function
  * to return places that are close to travel time requested by user. Uses four
  * bounding boxes that lie north, south, east, and west of user's location.
@@ -182,16 +228,16 @@ function getLocationFromUserInput() {
  * @param {Object} timeObj Travel time requested by user in hours and minutes
  * @return {Promise} An array promise of places that lie within time requested
  */
- async function getPlacesFromTime(timeObj) {
+async function getPlacesFromTime(timeObj) {
   const userLat = home.lat;
   const userLng = home.lng;
-  
+
   // These spread the search area for the four bounding boxes
   const latSpread = 4;
   const lngSpread = 4;
 
   let place_candidates = [];
- 
+
   place_candidates = await addPlacesFromDirection(userLat, userLng + lngSpread, place_candidates); // East
   place_candidates = await addPlacesFromDirection(userLat + latSpread, userLng, place_candidates); // North
   place_candidates = await addPlacesFromDirection(userLat, userLng - lngSpread, place_candidates); // West
@@ -200,7 +246,7 @@ function getLocationFromUserInput() {
   return filterByDistance(timeObj, place_candidates);
 }
 
-/** 
+/**
  * Finds tourist attractions constrained to bounding box centered at provided latitude
  * and longitude. Adds all places with operational business status to array of place candidates.
  *
@@ -210,18 +256,18 @@ function getLocationFromUserInput() {
  * @return {Promise} An array promise of added place candidates
  */
 function addPlacesFromDirection(lat, lng, place_candidates) {
-  return new Promise(function(resolve) {
+  return new Promise(function (resolve) {
     const halfWidth = 0.5;
     const halfHeight = 0.5;
-    
+
     const sw = new google.maps.LatLng(lat - halfWidth, lng - halfHeight);
-    const ne = new google.maps.LatLng(lat + halfWidth, lng + halfHeight); 
+    const ne = new google.maps.LatLng(lat + halfWidth, lng + halfHeight);
 
     const boundBox = new google.maps.LatLngBounds(sw, ne);
 
     const request = {
-      query: 'Tourist Attractions', 
-      bounds: boundBox
+      query: 'Tourist Attractions',
+      bounds: boundBox,
     };
 
     function callback(results, status) {
@@ -241,7 +287,7 @@ function addPlacesFromDirection(lat, lng, place_candidates) {
   });
 }
 
-/** 
+/**
  * Filter through tourist attractions to find which are in the given time frame of the user.
  *
  * @param {number} time How much time the user wants to travel for
@@ -270,7 +316,7 @@ function addPlacesFromDirection(lat, lng, place_candidates) {
         
         function callback(response, status) {
           if (status == 'OK') {
-            for (row of responce.rows) {
+            for (row of response.rows) {
               const results = row.elements;
               for (result of results) {
                 const element = result;

@@ -1,0 +1,19 @@
+name: JS style
+
+on:
+  push:
+    branches: [master, development, andrewDev, priyaDevelopment, emmaDevelopment]
+  pull_request:
+    branches: [master, development, andrewDev, priyaDevelopment, emmaDevelopment]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: initialization npm
+      run: npm init -y
+    - name: Install standard
+      run: npm install standard --save-dev
+    - name: Run standard
+      run: npx standard
