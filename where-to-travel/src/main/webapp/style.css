@@ -2,28 +2,67 @@ body {
   height: 100%;
   margin: 0px;
   padding: 0px;
+  transition: background-color 0.5s;
 }
 
-#container { 
-  height: 100%;
+#colon {
+  font-size: 24px;
+  padding-top: 10%;
+  color: #1E3C19;
+  margin-left: 5px;
+  margin-right: 5px
+}
+
+.fg-mixin {
+  margin: auto;
+  width: 20%
+}
+
+.form-mixin {
+  margin: auto;
+}
+
+#header {
+  background-color: white;
+  color: #1E3C19;
+  padding: 15px;
   width: 100%;
+  z-index: 3;
 }
 
-html { 
+#header span {
+  color: #1E3C19;
+  cursor: pointer;
+  font-size: 30px;
+  transition: 0.3s;
+}
+
+#header span:hover {
+  color: #049485;
+}
+
+html {
   height: 100%;
 }
 
-#input-wrap {
-  display: block;
+.label-color {
+  color: #1E3C19;
 }
 
-input[type="text"] {
-  width: 30px;
+#main {
+  height: 100%;
+  transition: margin-left 0.5s;
+}
+
+#map-wrap {
+  width: 100%;
+  height: 94%;
 }
 
 #map {
   height: 100%;
   width: 100%;
+  z-index: 1;
 }
 
 #nav {
@@ -31,8 +70,63 @@ input[type="text"] {
   background-color: #fff;
   border: 1px #000 Solid;
   height: 100%;
+  z-index: 1;
+}
+
+@media screen and (max-height: 450px) {
+  .sidenav {
+    padding-top: 15px;
+  }
+  .sidenav a {
+    font-size: 18px;
+  }
+}
+
+#over-map {
+  background-color: rgba(0, 0, 0, 0);
+  height: 100%;
+  left: 0px;
+  position: absolute;
+  top: 0px;
+  transition: background-color 0.5s;
+  width: 100%;
+  z-index: -1;
+}
+
+.sidenav {
+  background-color: white;
+  box-shadow: 10px 10px 5px grey;
+  height: 100%;
+  left: 0;
+  overflow-x: hidden;
+  position: fixed;
+  padding-top: 60px;
+  top: 0;
+  transition: 0.5s;
+  width: 0;
+  z-index: 100;
+}
+
+.sidenav a {
+  color: #1E3C19;
+  display: block;
+  font-size: 25px;
+  padding: 8px 8px 8px 32px;
+  text-decoration: none;
+  transition: 0.3s;
+}
+
+.sidenav a:hover {
+  color: #049485;
+}
+
+.sidenav .closebtn {
+  font-size: 36px;
+  margin-left: 50px;
   padding: 5px;
   position: absolute;
+  right: 25px;
+  top: 0;
   width: 15%;
   z-index: 100;
 }
