@@ -311,7 +311,6 @@ function filterByDistance(timeObj, listPlaces) {
     function callback(response, status) {
       if (status == 'OK') {
         const origins = response.originAddresses;
-
         let i;
         for (i = 0; i < origins.length; i++) {
           const results = response.rows[i].elements;
