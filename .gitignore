@@ -1,3 +1,4 @@
 *.json
 *.yaml
 where-to-travel/target/
+where-to-travel/bower_components/
