@@ -28,34 +28,6 @@ const mapStyles = [
 ];
 // End map stylings
 
-let open = false;
-// Need to blur header and blur mapwrap
-function openNav() {
-  document.getElementById('sidenav').style.width = '250px';
-  document.getElementById('main').style.marginLeft = '250px';
-  document.body.style.backgroundColor = 'rgba(0,0,0,0.4)';
-  mapOverlay = document.getElementById('over_map');
-  mapOverlay.style.zIndex = '5';
-  mapOverlay.style.transition = 'background-color .5s';
-  mapOverlay.style.backgroundColor = 'rgba(0,0,0,0.4)';
-  open = true;
-}
-
-function closeNav() {
-  document.getElementById('sidenav').style.width = '0';
-  document.getElementById('main').style.marginLeft = '0';
-  document.body.style.backgroundColor = 'white';
-  mapOverlay = document.getElementById('over_map');
-  mapOverlay.style.transition = 'background-color .5s';
-  mapOverlay.style.backgroundColor = 'rgba(0, 0, 0, 0)';
-  open = false;
-  mapOverlay.addEventListener('transitionend', (event) => {
-    if (!open) {
-      event.target.style.zIndex = '-1';
-    }
-  });
-}
-
 const submitId = 'submit';
 const hoursId = 'hrs';
 const minutesId = 'mnts';
