@@ -42,3 +42,8 @@ html {
   width: 100%;
   z-index: 1;
 }
+
+#nav-text {
+  margin-right: 10px;
+  margin-left: 10px;
+}
