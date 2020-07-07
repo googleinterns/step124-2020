@@ -26,6 +26,17 @@ html {
   color: #1E3C19;
 }
 
+.over-card {
+  position: absolute;
+	top:0;
+	bottom: 0;
+	left: 0;
+	right: 0;
+  width: fit-content;
+  height: fit-content;
+	margin: auto;
+}
+
 #map {
   height: 100%;
   width: 100%;
