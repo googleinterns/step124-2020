@@ -1,78 +1,30 @@
-[debug] [2020-07-03T14:32:03.865Z] ----------------------------------------------------------------------
-[debug] [2020-07-03T14:32:03.867Z] Command:       /usr/local/nvm/versions/node/v10.14.2/bin/node /usr/local/nvm/versions/node/v10.14.2/bin/firebase login
-[debug] [2020-07-03T14:32:03.868Z] CLI Version:   8.4.3
-[debug] [2020-07-03T14:32:03.868Z] Platform:      linux
-[debug] [2020-07-03T14:32:03.868Z] Node Version:  v10.14.2
-[debug] [2020-07-03T14:32:03.868Z] Time:          Fri Jul 03 2020 14:32:03 GMT+0000 (Coordinated Universal Time)
-[debug] [2020-07-03T14:32:03.868Z] ----------------------------------------------------------------------
-[debug] [2020-07-03T14:32:03.869Z] 
-[info] i  Firebase optionally collects CLI usage and error reporting information to help improve our products. Data is collected in accordance with Google's privacy policy (https://policies.google.com/privacy) and is not used to identify you.
- 
-[info] i  To change your data collection preference at any time, run `firebase logout` and log in again. 
+[debug] [2020-07-06T16:49:09.293Z] ----------------------------------------------------------------------
+[debug] [2020-07-06T16:49:09.296Z] Command:       /usr/local/nvm/versions/node/v10.14.2/bin/node /usr/local/nvm/versions/node/v10.14.2/bin/firebase init
+[debug] [2020-07-06T16:49:09.296Z] CLI Version:   8.4.3
+[debug] [2020-07-06T16:49:09.296Z] Platform:      linux
+[debug] [2020-07-06T16:49:09.296Z] Node Version:  v10.14.2
+[debug] [2020-07-06T16:49:09.299Z] Time:          Mon Jul 06 2020 16:49:09 GMT+0000 (Coordinated Universal Time)
+[debug] [2020-07-06T16:49:09.299Z] ----------------------------------------------------------------------
+[debug] [2020-07-06T16:49:09.299Z] 
+[debug] [2020-07-06T16:49:09.307Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2020-07-06T16:49:09.307Z] > authorizing via signed-in user
 [info] 
-[info] Visit this URL on this device to log in:
-[info] https://accounts.google.com/o/oauth2/auth?client_id=563584335869-fgrhgmd47bqnekij5i8b5pr03ho849e6.apps.googleusercontent.com&scope=email%20openid%20https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fcloudplatformprojects.readonly%20https%3A%2F%2Fwww.googleapis.com%2Fauth%2Ffirebase%20https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fcloud-platform&response_type=code&state=595339799&redirect_uri=http%3A%2F%2Flocalhost%3A9005
-[info] 
-[info] Waiting for authentication...
-[debug] [2020-07-03T14:36:46.301Z] ----------------------------------------------------------------------
-[debug] [2020-07-03T14:36:46.306Z] Command:       /usr/local/nvm/versions/node/v10.14.2/bin/node /usr/local/nvm/versions/node/v10.14.2/bin/firebase login
-[debug] [2020-07-03T14:36:46.307Z] CLI Version:   8.4.3
-[debug] [2020-07-03T14:36:46.307Z] Platform:      linux
-[debug] [2020-07-03T14:36:46.307Z] Node Version:  v10.14.2
-[debug] [2020-07-03T14:36:46.308Z] Time:          Fri Jul 03 2020 14:36:46 GMT+0000 (Coordinated Universal Time)
-[debug] [2020-07-03T14:36:46.308Z] ----------------------------------------------------------------------
-[debug] [2020-07-03T14:36:46.308Z] 
-[info] i  Firebase optionally collects CLI usage and error reporting information to help improve our products. Data is collected in accordance with Google's privacy policy (https://policies.google.com/privacy) and is not used to identify you.
- 
-[info] i  To change your data collection preference at any time, run `firebase logout` and log in again. 
-[info] 
-[info] Visit this URL on this device to log in:
-[info] https://accounts.google.com/o/oauth2/auth?client_id=563584335869-fgrhgmd47bqnekij5i8b5pr03ho849e6.apps.googleusercontent.com&scope=email%20openid%20https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fcloudplatformprojects.readonly%20https%3A%2F%2Fwww.googleapis.com%2Fauth%2Ffirebase%20https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fcloud-platform&response_type=code&state=779878765&redirect_uri=http%3A%2F%2Flocalhost%3A9005
-[info] 
-[info] Waiting for authentication...
-[debug] [2020-07-03T15:15:33.969Z] ----------------------------------------------------------------------
-[debug] [2020-07-03T15:15:33.971Z] Command:       /usr/local/nvm/versions/node/v10.14.2/bin/node /usr/local/nvm/versions/node/v10.14.2/bin/firebase login
-[debug] [2020-07-03T15:15:33.972Z] CLI Version:   8.4.3
-[debug] [2020-07-03T15:15:33.972Z] Platform:      linux
-[debug] [2020-07-03T15:15:33.972Z] Node Version:  v10.14.2
-[debug] [2020-07-03T15:15:33.996Z] Time:          Fri Jul 03 2020 15:15:33 GMT+0000 (Coordinated Universal Time)
-[debug] [2020-07-03T15:15:33.996Z] ----------------------------------------------------------------------
-[debug] [2020-07-03T15:15:33.996Z] 
-[info] i  Firebase optionally collects CLI usage and error reporting information to help improve our products. Data is collected in accordance with Google's privacy policy (https://policies.google.com/privacy) and is not used to identify you.
- 
-[info] i  To change your data collection preference at any time, run `firebase logout` and log in again. 
-[info] 
-[info] Visit this URL on this device to log in:
-[info] https://accounts.google.com/o/oauth2/auth?client_id=563584335869-fgrhgmd47bqnekij5i8b5pr03ho849e6.apps.googleusercontent.com&scope=email%20openid%20https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fcloudplatformprojects.readonly%20https%3A%2F%2Fwww.googleapis.com%2Fauth%2Ffirebase%20https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fcloud-platform&response_type=code&state=490851982&redirect_uri=http%3A%2F%2Flocalhost%3A9005
-[info] 
-[info] Waiting for authentication...
-[debug] [2020-07-03T15:26:48.405Z] ----------------------------------------------------------------------
-[debug] [2020-07-03T15:26:48.408Z] Command:       /usr/local/nvm/versions/node/v10.14.2/bin/node /usr/local/nvm/versions/node/v10.14.2/bin/firebase login
-[debug] [2020-07-03T15:26:48.408Z] CLI Version:   8.4.3
-[debug] [2020-07-03T15:26:48.409Z] Platform:      linux
-[debug] [2020-07-03T15:26:48.409Z] Node Version:  v10.14.2
-[debug] [2020-07-03T15:26:48.409Z] Time:          Fri Jul 03 2020 15:26:48 GMT+0000 (Coordinated Universal Time)
-[debug] [2020-07-03T15:26:48.409Z] ----------------------------------------------------------------------
-[debug] [2020-07-03T15:26:48.409Z] 
-[info] i  Firebase optionally collects CLI usage and error reporting information to help improve our products. Data is collected in accordance with Google's privacy policy (https://policies.google.com/privacy) and is not used to identify you.
- 
-[info] 
-[info] Visit this URL on this device to log in:
-[info] https://accounts.google.com/o/oauth2/auth?client_id=563584335869-fgrhgmd47bqnekij5i8b5pr03ho849e6.apps.googleusercontent.com&scope=email%20openid%20https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fcloudplatformprojects.readonly%20https%3A%2F%2Fwww.googleapis.com%2Fauth%2Ffirebase%20https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fcloud-platform&response_type=code&state=969619797&redirect_uri=http%3A%2F%2Flocalhost%3A9005
-[info] 
-[info] Waiting for authentication...
-[debug] [2020-07-03T15:39:05.424Z] ----------------------------------------------------------------------
-[debug] [2020-07-03T15:39:05.427Z] Command:       /usr/local/nvm/versions/node/v10.14.2/bin/node /usr/local/nvm/versions/node/v10.14.2/bin/firebase login
-[debug] [2020-07-03T15:39:05.428Z] CLI Version:   8.4.3
-[debug] [2020-07-03T15:39:05.428Z] Platform:      linux
-[debug] [2020-07-03T15:39:05.429Z] Node Version:  v10.14.2
-[debug] [2020-07-03T15:39:05.429Z] Time:          Fri Jul 03 2020 15:39:05 GMT+0000 (Coordinated Universal Time)
-[debug] [2020-07-03T15:39:05.429Z] ----------------------------------------------------------------------
-[debug] [2020-07-03T15:39:05.429Z] 
-[info] i  Firebase optionally collects CLI usage and error reporting information to help improve our products. Data is collected in accordance with Google's privacy policy (https://policies.google.com/privacy) and is not used to identify you.
- 
-[info] 
-[info] Visit this URL on this device to log in:
-[info] https://accounts.google.com/o/oauth2/auth?client_id=563584335869-fgrhgmd47bqnekij5i8b5pr03ho849e6.apps.googleusercontent.com&scope=email%20openid%20https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fcloudplatformprojects.readonly%20https%3A%2F%2Fwww.googleapis.com%2Fauth%2Ffirebase%20https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fcloud-platform&response_type=code&state=1061354248&redirect_uri=http%3A%2F%2Flocalhost%3A9005
-[info] 
-[info] Waiting for authentication...
+     ######## #### ########  ######## ########     ###     ######  ########
+     ##        ##  ##     ## ##       ##     ##  ##   ##  ##       ##
+     ######    ##  ########  ######   ########  #########  ######  ######
+     ##        ##  ##    ##  ##       ##     ## ##     ##       ## ##
+     ##       #### ##     ## ######## ########  ##     ##  ######  ########
+
+You're about to initialize a Firebase project in this directory:
+
+  /home/emmapaczkowski/step124-2020/where-to-travel
+
+[debug] [2020-07-06T17:23:58.146Z] TypeError: Cannot read property 'setRawMode' of null
+    at ReadStream.setRawMode (tty.js:66:28)
+    at Interface._setRawMode (readline.js:251:16)
+    at Interface.close (readline.js:376:10)
+    at ReadStream.ontermend (readline.js:164:10)
+    at ReadStream.emit (events.js:187:15)
+    at ReadStream.EventEmitter.emit (domain.js:441:20)
+    at endReadableNT (_stream_readable.js:1094:12)
+    at process._tickCallback (internal/process/next_tick.js:63:19)

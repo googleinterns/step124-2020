@@ -1,43 +1,73 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="UTF-8">
-    <title>Where to?</title>
-    <link rel="stylesheet" href="style.css">
-    <script src="secrets.json"></script>
-    <script src="script.js"></script>
-    <!-- The core Firebase JS SDK is always required and must be listed first -->
-    <script src="/__/firebase/7.15.5/firebase-app.js"></script>
 
-    <!-- TODO: Add SDKs for Firebase products that you want to use
-     https://firebase.google.com/docs/web/setup#available-libraries -->
-    <script src="/__/firebase/7.15.5/firebase-analytics.js"></script>
+<head>
+  <meta charset="UTF-8">
+  <title>Where to?</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="secrets.json"></script>
+</head>
 
-    <!-- Initialize Firebase -->
-    <script src="/__/firebase/init.js"></script>
-
-    <script src="https://cdn.firebase.com/libs/firebaseui/3.5.2/firebaseui.js"></script>
-    <link type="text/css" rel="stylesheet" href="https://cdn.firebase.com/libs/firebaseui/3.5.2/firebaseui.css" />
-
-    <script src="bower_components/firebaseui/dist/firebaseui.js"></script>
-    <link type="text/css" rel="stylesheet" href="bower_components/firebaseui/dist/firebaseui.css" />
-  </head>
-  
-  <body onload="initialize();">
-    <div id="container">
-        <div id="nav">
-          <form>
-            <label>Travel time: </label>
-            <div id="input-wrap">
-              <label>Hours</label>
-              <input type="text" name="hours" id="hrs">
-              <label>Minutes</label>
-              <input type="text" name="minutes" id="mnts">
-            </div>
-            <button id="submit-id" type="button">Search</button>
-          </form>
+<body onload="initialize();">
+  <div id="container">
+    <div id="nav">
+      <form>
+        <label>Travel time: </label>
+        <div id="input-wrap">
+          <label>Hours</label>
+          <input type="text" name="hours" id="hrs">
+          <label>Minutes</label>
+          <input type="text" name="minutes" id="mnts">
         </div>
-        <div id="map"></div>
+        <button id="submit-id" type="button">Search</button>
+      </form>
+      <div class="container">
+        <input id="textEmail" type="email" placeholder="Email">
+
+        <input id="textPassword" type="password" placeholder="Password">
+
+        <button id="btnLogin" cleass "btn btn-action">
+          Log in
+        </button>
+
+        <button id="btnSignUp" class="btn btn-secondary">
+          Sign Up
+        </button>
+
+        <button id="btnLogout" class="btn btn-action hide">
+          Log out
+        </button>
+      </div>
     </div>
-  </body>
+    <div id="map"></div>
+  </div>
+  <!-- The core Firebase JS SDK is always required and must be listed first -->
+  <script src="https://www.gstatic.com/firebasejs/7.15.5/firebase-app.js"></script>
+
+  <!-- TODO: Add SDKs for Firebase products that you want to use
+     https://firebase.google.com/docs/web/setup#available-libraries -->
+  <script src="https://www.gstatic.com/firebasejs/7.15.5/firebase-analytics.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/7.15.5/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/7.15.5/firebase-database.js"></script>
+
+  <script>
+    // Your web app's Firebase configuration
+    var firebaseConfig = {
+      apiKey: "AIzaSyBWdvjzcH9EEGrqCG0ca8G8VDZwCSyAL-k",
+      authDomain: "where-to-8d512.firebaseapp.com",
+      databaseURL: "https://where-to-8d512.firebaseio.com",
+      projectId: "where-to-8d512",
+      storageBucket: "where-to-8d512.appspot.com",
+      messagingSenderId: "561353405828",
+      appId: "1:561353405828:web:e821cd8d130cd7714919d1",
+      measurementId: "G-KR73M56G0S"
+    };
+    
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    firebase.analytics();
+  </script>
+  <script src="script.js"></script>
+</body>
+
 </html>
