@@ -216,7 +216,7 @@ function getLocationFromUserInput() {
     }
   }
     
-  // Inital distance from the user's location for the bounding boxes
+  // Initial distance from the user's location for the bounding boxes
   const initSpread = Math.max(1, Math.ceil(time/7200));
   
   let places = [];
