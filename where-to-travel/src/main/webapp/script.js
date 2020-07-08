@@ -249,8 +249,8 @@ function getLocationFromUserInput() {
 
       // If bounding box does not contain enough results, update position of box for next iteration
       if (filterResults.places.length < directionThreshold) {        
-        // If average time in bounding box is greater than requested time, move bounding box closer
-        // to user otherwise move bounding box farther away from user. 
+        /* If average time in bounding box is greater than requested time, move bounding box closer
+         to user otherwise move bounding box farther away from user. */
         if (filterResults.avg_time > time) {
           if (latSpread != 0) {
             latSpread = latSpread < 0 ? latSpread + 1 : latSpread - 1;
