@@ -1,28 +1,105 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <meta charset="UTF-8">
+    <meta charset="UTF-8" />
     <title>Where to?</title>
+    <link rel="icon" href="icons/pin.svg">
+    <link rel="stylesheet" href="https://unpkg.com/bootstrap-material-design@4.1.1/dist/css/bootstrap-material-design.min.css" integrity="sha384-wXznGJNEXNG1NFsbm0ugrLFMQPWswR3lds2VeinahP8N0zJw9VWSopbjv2x7WCvX" crossorigin="anonymous">
     <link rel="stylesheet" href="style.css">
     <script src="secrets.json"></script>
     <script src="script.js"></script>
   </head>
-  
   <body onload="initialize();">
-    <div id="container">
-        <div id="nav">
-          <form>
-            <label>Travel time: </label>
-            <div id="input-wrap">
-              <label>Hours</label>
-              <input type="text" name="hours" id="hrs">
-              <label>Minutes</label>
-              <input type="text" name="minutes" id="mnts">
-            </div>
-            <button id="submit-id" type="button">Search</button>
-          </form>
+    <div class="bmd-layout-container bmd-drawer-f-l bmd-drawer-overlay">
+      <header class="bmd-layout-header">
+        <div class="navbar navbar-dark bg-faded">
+          <button class="navbar-toggler" type="button" data-toggle="drawer" data-target="#dw-s2">
+            <span class="sr-only">Toggle drawer</span>
+            <span class="btn text-color" style="font-size: 1.2em; color: #049688">
+              &#9776;
+            </span>
+          </button>
+          <ul class="nav navbar-nav">
+            <li class="nav-item">
+                <img class="btn btn-icon" src="icons/help.svg">
+              <a class="btn btn-outline-primary" style="text-align: center" href="login.html">Login</a>
+              <span id="nav-text">or</span>
+              <a class="btn btn-outline-primary" href="signup.html">Sign up</a>
+            </li>
+          </ul>
         </div>
+      </header>
+      <div id="dw-s2" class="bmd-layout-drawer bg-faded">
+        <header>
+          <a class="navbar-brand">Search Settings</a>
+        </header>
+        <div id="accordion">
+          <div class="card">
+            <div class="card-header" id="headingOne">
+              <h1 class="mb-0">
+                <button class="btn btn-link collapsed text-color" data-toggle="collapse" data-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
+                  Travel Time
+                </button>
+              </h1>
+            </div>
+            <div id="collapseOne" class="collapse" aria-labelledby="headingOne" data-parent="#accordion">
+              <div class="card-body">
+                <form class="form-inline form-mixin">
+                  <div class="form-group fg-mixin">
+                    <label for="hours" class="bmd-label-floating text-color">HH</label>
+                    <input id="hrs" style="width: 100%; margin-right:0px;" type="text" class="form-control">
+                  </div>
+                  <div id="colon" class="form-group bmd-label-static">
+                    :
+                  </div>
+                  <div class="form-group fg-mixin">
+                    <label for="minutes" class="bmd-label-floating text-color">MM</label>
+                    <input id="mnts" style="width: 100%; margin-right:0px;" type="text" class="form-control">
+                  </div>
+                  </form>
+              </div>
+            </div>
+            <div class="card">
+              <div class="card-header" id="headingTwo">
+                <h1 class="mb-0">
+                  <button class="btn btn-link collapsed text-color" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                    Home Location
+                  </button>
+                </h1>
+              </div>
+              <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordion">
+                <div class="card-body text-color">
+                  Home location selector
+                </div>
+              </div>
+            </div>
+            <div class="card">
+              <div class="card-header" id="headingThree">
+                <h1 class="mb-0">
+                  <button class="btn btn-link collapsed text-color" data-toggle="collapse" data-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+                    Option 3
+                  </button>
+                </h1>
+              </div>
+              <div id="collapseThree" class="collapse" aria-labelledby="headingThree" data-parent="#accordion">
+                <div class="card-body text-color">
+                  Another search option
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <span style="margin-top: 10px; margin-left: auto; margin-right: auto">
+          <button type="button" id="submit" class="btn btn-primary">Search</button>
+        </span>
+      </div>
+      <main class="bmd-layout-content">
         <div id="map"></div>
+      </main>
     </div>
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/popper.js@1.12.6/dist/umd/popper.js" integrity="sha384-fA23ZRQ3G/J53mElWqVJEGJzU0sTs+SvzG8fXVWP+kJQ1lwFAOkcUOysnlKJC33U" crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/bootstrap-material-design@4.1.1/dist/js/bootstrap-material-design.js" integrity="sha384-CauSuKpEqAFajSpkdjv3z9t8E7RlpJ1UP0lKM/+NdtSarroVKu069AlsRPKkFBz9" crossorigin="anonymous"></script>
+    <script>$(document).ready(function() { $('body').bootstrapMaterialDesign(); });</script>
   </body>
 </html>

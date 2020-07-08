@@ -2,37 +2,50 @@ body {
   height: 100%;
   margin: 0px;
   padding: 0px;
+  transition: background-color 0.5s;
+  color: #1E3C19;
 }
 
-#container { 
+.btn-icon {
+  margin-right: 15px
+}
+
+#colon {
+  font-size: 24px;
+  padding-top: 10%;
+}
+
+.fg-mixin {
+  margin: auto;
+  width: 20%
+}
+
+html {
   height: 100%;
-  width: 100%;
 }
 
-html { 
-  height: 100%;
+.text-color {
+  color: #1E3C19;
 }
 
-#input-wrap {
-  display: block;
-}
-
-input[type="text"] {
-  width: 30px;
+.over-card {
+  bottom: 0;
+  height: fit-content;
+	left: 0;
+  margin: auto;
+  position: absolute;
+	right: 0;
+  top:0;
+  width: fit-content;
 }
 
 #map {
   height: 100%;
   width: 100%;
+  z-index: 1;
 }
 
-#nav {
-  display: block;
-  background-color: #fff;
-  border: 1px #000 Solid;
-  height: 100%;
-  padding: 5px;
-  position: absolute;
-  width: 15%;
-  z-index: 100;
+#nav-text {
+  margin-right: 10px;
+  margin-left: 10px;
 }
