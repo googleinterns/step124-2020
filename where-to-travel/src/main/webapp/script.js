@@ -305,8 +305,6 @@ function addPlacesFromDirection(lat, lng, place_candidates) {
             }
           }
         }
-          }
-        }
         userDestinations = [];
       }
     }
