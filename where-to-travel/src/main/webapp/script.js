@@ -138,7 +138,7 @@ function populatePlaces(placeArray) {
       content: contentHtml,
     });
 
-    placeMarker.addListener('click', function () {
+    placeMarker.addListener('click', function() {
       infowindow.open(map, placeMarker);
     });
 
