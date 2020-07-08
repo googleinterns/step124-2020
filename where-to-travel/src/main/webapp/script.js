@@ -423,16 +423,19 @@ function addAcceptablePlaces(time, places, acceptablePlacesInfo) {
 }
 
 // Get elements for authentication
-const textEmail = document.getElementById('textEmail');
-const textPassword = document.getElementById('textPassword');
-const btnLogin = document.getElementById('btnLogin');
-const btnSignUp = document.getElementById('btnSignUp');
-const btnLogout = document.getElementById('btnLogout');
+const emailSignUp = document.getElementById('emailSignUp');
+const emailLogin = document.getElementById('emailLogin');
+const passwordSignUp = document.getElementById('passwordSignUp');
+const passwordLogin = document.getElementById('passwordLogin');
+const passwordConfirmation = document.getElementById('passwordConfirmation');
+const btnLogin = document.getElementById('login');
+const btnSignUp = document.getElementById('signUp');
+//const btnLogout = document.getElementById('logout');
 
 // Add login event
 btnLogin.addEventListener('click', e => {
-  const email = textEmail.value;
-  const pass = textPassword.value;
+  const email = emailLogin.value;
+  const pass = passwordLogin.value;
   const auth = firebase.auth();
   
   // Sign in
@@ -443,8 +446,8 @@ btnLogin.addEventListener('click', e => {
 // Add signup event
 btnSignUp.addEventListener('click', e => {
   //TODO: Check for real emails
-  const email = textEmail.value;
-  const pass = textPassword.value;
+  const email = emailSignUp.value;
+  const pass = passwordSignUp.value;
   const auth = firebase.auth();
 
   // Sign up
@@ -452,10 +455,11 @@ btnSignUp.addEventListener('click', e => {
   promise.catch(e => console.log(e.message));
 });
 
-// Log out
-btnLogout.addEventListener('click', e => {
-  firebase.auth().signOut();
-});
+//TODO: Uncomment when Andrew makes the Logout button
+// // Log out
+// btnLogout.addEventListener('click', e => {
+//   firebase.auth().signOut();
+// });
 
 // Add a realtime listener to monotor the state of log out button 
 firebase.auth().onAuthStateChanged(firebaseUser => {
