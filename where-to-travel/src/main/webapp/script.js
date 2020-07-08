@@ -87,7 +87,13 @@ async function initialize() {
     map: map,
     title: 'Home',
   });
+  map.addListener('click', function () {
+    focussedPin.setIcon('icons/pin.svg');
+    focussedCard.classList.remove('active');
 
+    focussedCard = null;
+    focussedPin = null;
+  });
   populatePlaces(examplePlaces);
 }
 
@@ -129,8 +135,14 @@ function populatePlaces(placeArray) {
 
     const htmlContent = getLocationCardHtml(name, address, timeStr);
 
-    // For the material bootstrap library, the preferred method of dom interaction is jquery, esp for adding elements
-    $('#' + scrollId).append(htmlContent);
+    // For the material bootstrap library, the preferred method of dom interaction is jquery,
+    // especially for adding elements.
+    let cardElement = $(htmlContent).click(function() {
+        selectLocationMarker(name);
+        $(this).addClass('active');
+        focussedCard = this;
+    });
+    $('#' + scrollId).append(cardElement);
 
     placeMarker.addListener('click', function () {
       focussedPin = placeMarker;
@@ -161,6 +173,15 @@ function getLocationCardHtml(title, address, timeStr) {
         <p>${timeStr}</p>
       </div>
     </div>`;
+}
+
+function selectLocationMarker(title) {
+  for (marker of markers) {
+    if (marker.getTitle() == title) {
+      focussedPin = marker;
+      marker.setIcon('icons/selectedPin.svg');
+    }
+  }
 }
 
 function selectLocationCard(title) {

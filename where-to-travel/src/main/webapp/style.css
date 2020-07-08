@@ -1,9 +1,8 @@
 .active {
-  border: 5px solid #6CC551;
+  outline: 5px solid #6CC551;
   margin-bottom: 10px;
   margin-top: 10px;
-  box-shadow: 5px 10px 8px #888888;
-  padding: 10px;
+  box-shadow: 6px 12px 9px #888888;
   z-index: 500;
 }
 
