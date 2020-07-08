@@ -339,15 +339,6 @@ function getPlacesFromDirection(lat, lng) {
   });
 }
 
-
-/** 
- * Filters through tourist attractions to find which are in the given time frame of the user. Places array is sectioned into 
- * groups of 25 or less because the places are passed into the Distance Matrix API which has a limit of 25 destinations per query
- *
- * @param {number} time How much time the user wants to travel for
- * @param {array} listPlaces Array of place objects
- * @return {Object} Contains total time of all places and an array of places objects that within 20% of given time
- */
 async function filterByTime(time, listPlaces) {
     let filterInfo = {avg_time: 0, places: []};
 
@@ -430,3 +421,49 @@ function addAcceptablePlaces(time, places, acceptablePlacesInfo) {
     }    
   });
 }
+
+// Get elements for authentication
+const textEmail = document.getElementById('textEmail');
+const textPassword = document.getElementById('textPassword');
+const btnLogin = document.getElementById('btnLogin');
+const btnSignUp = document.getElementById('btnSignUp');
+const btnLogout = document.getElementById('btnLogout');
+
+// Add login event
+btnLogin.addEventListener('click', e => {
+  const email = textEmail.value;
+  const pass = textPassword.value;
+  const auth = firebase.auth();
+  
+  // Sign in
+  const promise = auth.signInWithEmailAndPAssword(email, pass);
+  promise.catch(e => console.log(e.message));
+});
+
+// Add signup event
+btnSignUp.addEventListener('click', e => {
+  //TODO: Check for real emails
+  const email = textEmail.value;
+  const pass = textPassword.value;
+  const auth = firebase.auth();
+
+  // Sign up
+  const promise = auth.createUserWithEmailAndPassword(email, pass);
+  promise.catch(e => console.log(e.message));
+});
+
+// Log out
+btnLogout.addEventListener('click', e => {
+  firebase.auth().signOut();
+});
+
+// Add a realtime listener to monotor the state of log out button 
+firebase.auth().onAuthStateChanged(firebaseUser => {
+  if (firebaseUser) {
+    console.log(firebaseUser);
+    btnLogout.classList.remove('hide');
+  } else {
+    console.log('not logged in');
+    btnLogout.classList.add('hide');
+  }
+});
