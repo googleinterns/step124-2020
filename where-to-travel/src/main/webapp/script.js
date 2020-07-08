@@ -286,25 +286,25 @@ function addPlacesFromDirection(lat, lng, place_candidates) {
           unitSystem: google.maps.UnitSystem.IMPERIAL,
         }, callback);
         
-        function callback(response, status) {
+       function callback(response, status) {
           if (status == 'OK') {
-            for (row of response.rows) {
-              const results = row.elements;
-              for (result of results) {
-                const element = result;
-                if(element.status=='OK') {
-                  //Check if the time is within the +- 20% of the user's requested time
-                  if (element.duration.value <= time + time*0.2 && element.duration.value >= time - time*0.2) {
-                    acceptablePlaces.push({
-                      "name": listPlaces[i].name,
-                      "geometry": listPlaces[i].geometry,
-                      "timeInSeconds": element.duration.value,
-                      "timeAsString": element.duration.text
-                    });
-                  }
+            const results = response.row.elements;
+            for (result of results) {
+              const element = result;
+              if(element.status=='OK') {
+                //Check if the time is within the +- 20% of the user's requested time
+                if (element.duration.value <= time + time*0.2 && element.duration.value >= time - time*0.2) {
+                  acceptablePlaces.push({
+                  "name": listPlaces[i].name,
+                  "geometry": listPlaces[i].geometry,
+                  "timeInSeconds": element.duration.value,
+                  "timeAsString": element.duration.text
+                  });
                 }
               }
             }
+          }
+        }
           }
         }
         userDestinations = [];
