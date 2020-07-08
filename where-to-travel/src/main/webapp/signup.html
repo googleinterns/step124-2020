@@ -7,7 +7,6 @@
     <link rel="stylesheet" href="https://unpkg.com/bootstrap-material-design@4.1.1/dist/css/bootstrap-material-design.min.css" integrity="sha384-wXznGJNEXNG1NFsbm0ugrLFMQPWswR3lds2VeinahP8N0zJw9VWSopbjv2x7WCvX" crossorigin="anonymous">
     <link rel="stylesheet" href="style.css">
     <script src="secrets.json"></script>
-    <script src="script.js"></script>
   </head>
   <body>
     <div class="card over-card">
@@ -16,18 +15,18 @@
         <form style="margin: auto">
           <div class="form-group">
             <label for="emailInput" class="bmd-label-floating">Email address</label>
-            <input type="email" class="form-control" id="emailInput">
+            <input type="email" class="form-control" id="emailSignUp">
           </div>
           <div class="form-group">
             <label for="passwordInput" class="bmd-label-floating">Password</label>
-            <input type="password" class="form-control" id="passwordInput">
+            <input type="password" class="form-control" id="passwordSignUp">
           </div>
           <div class="form-group">
             <label for="passwordInput" class="bmd-label-floating">Confirm password</label>
-            <input type="password" class="form-control" id="passwordInput">
+            <input type="password" class="form-control" id="passwordConfirmation">
           </div>
         </form>
-        <button type="button" id="login" class="btn btn-primary">sign up</button>
+        <button type="button" id="signUp" class="btn btn-primary">sign up</button>
         <button type="button" id="back" onclick="location.href='index.html'" class="btn btn-primary" href="index.html">back to map</button>
       </div>
     </div>
@@ -35,5 +34,30 @@
     <script src="https://unpkg.com/popper.js@1.12.6/dist/umd/popper.js" integrity="sha384-fA23ZRQ3G/J53mElWqVJEGJzU0sTs+SvzG8fXVWP+kJQ1lwFAOkcUOysnlKJC33U" crossorigin="anonymous"></script>
     <script src="https://unpkg.com/bootstrap-material-design@4.1.1/dist/js/bootstrap-material-design.js" integrity="sha384-CauSuKpEqAFajSpkdjv3z9t8E7RlpJ1UP0lKM/+NdtSarroVKu069AlsRPKkFBz9" crossorigin="anonymous"></script>
     <script>$(document).ready(function() { $('body').bootstrapMaterialDesign(); });</script>
+    <!-- The core Firebase JS SDK is always required and must be listed first -->
+    <script src="https://www.gstatic.com/firebasejs/7.15.5/firebase-app.js"></script>
+    <!-- TODO: Add SDKs for Firebase products that you want to use
+      https://firebase.google.com/docs/web/setup#available-libraries -->
+    <script src="https://www.gstatic.com/firebasejs/7.15.5/firebase-analytics.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/7.15.5/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/7.15.5/firebase-database.js"></script>
+    <script>
+      // Your web app's Firebase configuration
+      var firebaseConfig = {
+        apiKey: "AIzaSyBWdvjzcH9EEGrqCG0ca8G8VDZwCSyAL-k",
+        authDomain: "where-to-8d512.firebaseapp.com",
+        databaseURL: "https://where-to-8d512.firebaseio.com",
+        projectId: "where-to-8d512",
+        storageBucket: "where-to-8d512.appspot.com",
+        messagingSenderId: "561353405828",
+        appId: "1:561353405828:web:e821cd8d130cd7714919d1",
+        measurementId: "G-KR73M56G0S"
+      };
+
+      // Initialize Firebase
+      firebase.initializeApp(firebaseConfig);
+      firebase.analytics();
+    </script>
+    <script src="signup.js"></script>
   </body>
 </html>
