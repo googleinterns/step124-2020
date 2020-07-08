@@ -26,14 +26,32 @@ const mapStyles = [
     ]
   }
 ];
-// End map stylings
+
+const examplePlaces = [
+  {
+    name: 'place',
+    address: '123 xyz street',
+    geometry: {
+      location: {
+        lat: 41.1745937,
+        lng: -96.0450083
+      }
+    },
+    timeAsString: '47'
+  }
+];
+
 
 const submitId = 'submit';
 const hoursId = 'hrs';
 const minutesId = 'mnts';
+const scrollId = 'scroller';
 
 let map;
 let home = null;
+
+let focussedCard;
+let focussedPin;
 
 const markers = [];
 
@@ -69,6 +87,8 @@ async function initialize() {
     map: map,
     title: 'Home',
   });
+
+  populatePlaces(examplePlaces);
 }
 
 /**
@@ -107,31 +127,59 @@ function populatePlaces(placeArray) {
       icon: 'icons/pin.svg',
     });
 
-    const contentHtml = '' +
-      '<div id="content">'+
-          '<div id="siteNotice">'+
-          '</div>'+
-          '<h1 id="firstHeading" class="firstHeading">${name}</h1>'+
-          '<div id="bodyContent">'+
-            '<p>${address}</p>'+
-            '<p>${timeStr} away from you</p>'+
-          '</div>'+
-      '</div>';
+    const htmlContent = getLocationCardHtml(name, address, timeStr);
 
-    let infowindow = new google.maps.InfoWindow({
-      content: contentHtml,
-    });
+    // For the material bootstrap library, the preferred method of dom interaction is jquery, esp for adding elements
+    $('#' + scrollId).append(htmlContent);
 
     placeMarker.addListener('click', function () {
-      infowindow.open(map, placeMarker);
+      focussedPin = placeMarker;
+      selectLocationCard(placeMarker.getTitle());
+      placeMarker.setIcon('icons/selectedPin.svg');
+    });
+
+    placeMarker.addListener('mouseover', function () {
+      placeMarker.setIcon('icons/selectedPin.svg');
+    });
+
+    placeMarker.addListener('mouseout', function () {
+      if (placeMarker != focussedPin) {
+        placeMarker.setIcon('icons/pin.svg');
+      }
     });
 
     markers.push(placeMarker);
   }
 }
 
-/** Clears all markers on map except for home marker. */
+function getLocationCardHtml(title, address, timeStr) {
+  return innerHtml = '' +
+    `<div class="card location-card" placeName="${title}">
+      <div class="card-body">
+        <h5 class="card-title">${title}</h5>
+        <p>${address}</p>
+        <p>${timeStr}</p>
+      </div>
+    </div>`;
+}
+
+function selectLocationCard(title) {
+  scrollWindow = document.getElementById(scrollId);
+  for (locationCard of scrollWindow.childNodes) {
+    if (locationCard.hasChildNodes() && locationCard.getAttribute("placeName") == title) {
+      locationCard.classList.add("active");
+      focussedCard = locationCard;
+    }
+  }
+}
+
+/** Clears all place cards that are currently displayed. */
 function clearPlaces() {
+  const parent = document.getElementById(scrollId);
+  while (parent.firstChild) {
+      parent.firstChild.remove();
+  }
+
   for (marker of markers) {
     marker.setMap(null);
   }

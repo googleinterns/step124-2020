@@ -1,3 +1,12 @@
+.active {
+  border: 5px solid #6CC551;
+  margin-bottom: 10px;
+  margin-top: 10px;
+  box-shadow: 5px 10px 8px #888888;
+  padding: 10px;
+  z-index: 500;
+}
+
 body {
   height: 100%;
   margin: 0px;
@@ -41,8 +50,8 @@ html {
 }
 
 .location-card {
-  margin-top: 10px;
   margin-bottom: 10px;
+  margin-top: 10px;
 }
 
 .over-card {
