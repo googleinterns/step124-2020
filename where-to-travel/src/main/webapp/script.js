@@ -93,6 +93,8 @@ function submitDataListener(event) {
   const time = hours * 3600 + minutes * 60;
   getPlacesFromTime(time).then(places => {
     populatePlaces(places); 
+    // Zoom out once results are found
+    map.setZoom(7);
   }); 
 }
 
@@ -421,7 +423,7 @@ function addAcceptablePlaces(time, places, acceptablePlacesInfo) {
     }    
   });
 }
-
+/*
 // Get elements for authentication
 const textEmail = document.getElementById('textEmail');
 const textPassword = document.getElementById('textPassword');
@@ -467,3 +469,4 @@ firebase.auth().onAuthStateChanged(firebaseUser => {
     btnLogout.classList.add('hide');
   }
 });
+*/
