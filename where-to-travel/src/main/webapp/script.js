@@ -277,6 +277,7 @@ function addPlacesFromDirection(lat, lng, place_candidates) {
       const lng = listPlaces[i].geometry.location.lng();
       const destination = new google.maps.LatLng(lat, lng);
       userDestinations.push(destination);
+      // The distance Matrix API can only take 25 destinations at a time.
       if (i%25 == 24 || i == listPlaces.size()-1) {
         let service = new google.maps.DistanceMatrixService();
         service.getDistanceMatrix({
