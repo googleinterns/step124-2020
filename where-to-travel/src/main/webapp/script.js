@@ -53,6 +53,7 @@ const minutesId = 'mnts';
 const scrollId = 'scroller';
 
 let map;
+let user;
 let home = null;
 
 let focussedCard;
@@ -93,9 +94,13 @@ async function initialize() {
     title: 'Home',
   });
   map.addListener('click', function () {
-    focussedPin.setIcon('icons/pin.svg');
-    focussedCard.classList.remove('active');
+    if (focussedCard != null) {
+      focussedCard.classList.remove('active');
+    }
 
+    if (focussedPin != null) {
+      focussedIcon.setIcon('icons/pin.svg');
+    }
     focussedCard = null;
     focussedPin = null;
   });
