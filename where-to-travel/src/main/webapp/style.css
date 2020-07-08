@@ -10,6 +10,18 @@ body {
   margin-right: 15px
 }
 
+.card-scroller {
+  background-color: rgba(0, 0, 0, 0);
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: fit-content;
+  min-width: 5px;
+  height: 100%;
+  z-index: 20;
+  overflow: scroll;
+}
+
 #colon {
   font-size: 24px;
   padding-top: 10%;
@@ -26,6 +38,11 @@ html {
 
 .text-color {
   color: #1E3C19;
+}
+
+.location-card {
+  margin-top: 10px;
+  margin-bottom: 10px;
 }
 
 .over-card {
