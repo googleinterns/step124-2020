@@ -41,8 +41,6 @@ const examplePlaces = [
   }
 ];
 
-
-
 // Thresholds for termination of search algorithm
 const placesThreshold = 30;
 const attemptsThreshold = 10;
@@ -138,7 +136,7 @@ function populatePlaces(placeArray) {
     // TODO: Use this link to provide directions to user
     let directionsLink = 'https://www.google.com/maps/dir/' +
       home.lat + ',' + home.lng + '/' +
-      coordinates.lat() + ',' + coordinates.lng();
+      coordinates.lat + ',' + coordinates.lng;
 
     let timeStr = placeArray[i].timeAsString;
 
@@ -174,6 +172,7 @@ function populatePlaces(placeArray) {
       if (placeMarker != focussedPin) {
         placeMarker.setIcon('icons/pin.svg');
       }
+    });
 
     markers.push(placeMarker);
   }
