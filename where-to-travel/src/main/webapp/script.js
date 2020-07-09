@@ -142,7 +142,7 @@ function populatePlaces(placeArray) {
     // TODO: Use this link to provide directions to user
     let directionsLink = 'https://www.google.com/maps/dir/' +
       home.lat + ',' + home.lng + '/' +
-      coordinates.lat + ',' + coordinates.lng;
+      coordinates.lat() + ',' + coordinates.lng();
 
     console.log(directionsLink);
     let timeStr = placeArray[i].timeAsString;
