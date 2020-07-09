@@ -195,9 +195,11 @@ function openModal(content) {
  */
 function submitDataListener(event) {
   if (home == null) {
-      // TODO: handle this situation
+    const content = '<p> No home location found. Please set a home location and try again.</p>';
+    openModal(content);
   }
   else {
+    $('#dw-s2').data('bmd.drawer').hide();
     clearPlaces(); 
     const hours = document.getElementById(hoursId).value;
     const minutes = document.getElementById(minutesId).value;
