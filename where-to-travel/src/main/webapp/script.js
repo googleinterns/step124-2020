@@ -27,20 +27,6 @@ const mapStyles = [
   }
 ];
 
-const examplePlaces = [
-  {
-    name: 'place',
-    address: '123 xyz street',
-    geometry: {
-      location: {
-        lat: 41.1745937,
-        lng: -96.0450083
-      }
-    },
-    timeAsString: '47'
-  }
-];
-
 // Thresholds for termination of search algorithm
 const placesThreshold = 30;
 const attemptsThreshold = 10;
@@ -99,7 +85,6 @@ async function initialize() {
     title: 'Home',
   });
   map.addListener('click', toggleFocusOff);
-  populatePlaces(examplePlaces);
 }
 
 function addLoginButtons() {
