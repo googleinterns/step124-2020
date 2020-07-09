@@ -39,9 +39,10 @@ const submitId = 'submit';
 const hoursId = 'hrs';
 const minutesId = 'mnts';
 
+
 let map;
 let home = null;
-
+let homeMarker = null;
 let markers = [];
 
 // Add gmap js library to head of page
@@ -59,24 +60,114 @@ document.head.appendChild(script);
 async function initialize() {
   const submit = document.getElementById(submitId);
   submit.addEventListener('click', submitDataListener);
-  home = await getUserLocation();
+ 
   const mapOptions = {
-    center: home,
+    center: {lat: 36.150813, lng: -40.352239},
     mapTypeId: google.maps.MapTypeId.ROADMAP,
-    zoom: 16,
+    zoom: 4,
     mapTypeControl: false,
     styles: mapStyles,
   };
 
-  map = new google.maps.Map(document.getElementById('map'), mapOptions);
+  map = new google.maps.Map(document.getElementById('map'), mapOptions); 
+}
 
-  let homeMarker = new google.maps.Marker({
-    position: home,
-    icon: 'icons/home.svg',
-    map: map,
-    title: 'Home',
+function useLocation() {
+  getUserLocation().then(homeObject => {
+    home = homeObject;
+    setHomeMarker(); 
+  }).catch(message => {
+      // TODO: create a pop-up to notify user what happened.
+      console.log(message);
+  })
+}
+
+/**
+ * If browser supports geolocation and user provides permissions, obtains user's
+ * latitude and longitude. Otherwise, asks user to input address and converts input
+ * to latitude and longitude.
+ *
+ * @return {Object} Contains latitude and longitude corresponding to user's location
+ */
+function getUserLocation() {
+  return new Promise(function(resolve, reject) {
+    function success(position) {
+      resolve({
+        lat: position.coords.latitude,
+        lng: position.coords.longitude,
+      });
+    }
+
+    function deniedAccessUserLocation() {
+      reject('Browser does not have permission to access location.' +
+             'Please enable location permissions or enter an address to' + 
+             'set a home location');
+    }
+
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(success, deniedAccessUserLocation);
+    } else {
+      reject('Browser does not support geolocation. Please enter an' +
+             'address to set a home location.');
+    }
   });
 }
+
+function useAddress() {
+  const address = document.getElementById('addressInput').value;  
+  getLocationFromAddress(address).then(homeObject => {
+    home = homeObject;
+    setHomeMarker(); 
+  }).catch(message => {
+    // TODO: create a pop-up to notify user what happened.
+    console.log(message);
+  })
+}
+
+
+/**
+ * If browser does not support geolocation or user does not provide permissions,
+ * asks user to input address and utilizes Geocoding API to convert address to
+ * latitude and longitude. User will be prompted until they provide a valid address.
+ *
+ * @return {Object} Contains latitude and longitude corresponding to input address
+ */
+function getLocationFromAddress(address) {
+  return new Promise(function(resolve, reject) {
+    if (address == null || address == '') {
+      reject('Entered address is empty. Please enter a non-empty address and try again.');
+    }
+
+    const geocoder = new google.maps.Geocoder();
+    geocoder.geocode({address: address}, function(results, status) {
+      if (status == 'OK') {
+        const lat = results[0].geometry.location.lat;
+        const lng = results[0].geometry.location.lng;
+        resolve({ lat: lat(), lng: lng() });
+      } else {
+        reject('Entered address is not valid. Please enter a valid address and try again.');
+      }
+    });
+  });
+}
+
+function setHomeMarker() {
+  if (homeMarker != null) {
+    homeMarker.setMap(null);
+  }
+
+  if (home != null) {
+    homeMarker = new google.maps.Marker({
+      position: home,
+      icon: 'icons/home.svg',
+      map: map,
+      title: 'Home',
+    });
+
+    map.setCenter(home);
+    map.setZoom(7);
+  }
+} 
 
 /**
  * Responds to click on submit button by getting input time from user,
@@ -86,16 +177,19 @@ async function initialize() {
  * @param {Event} event Click event from which to respond
  */
 function submitDataListener(event) {
-  clearPlaces(); 
-  const hours = document.getElementById(hoursId).value;
-  const minutes = document.getElementById(minutesId).value;
-  // Convert hours and minutes into seconds
-  const time = hours * 3600 + minutes * 60;
-  getPlacesFromTime(time).then(places => {
-    populatePlaces(places); 
-    // Zoom out once results are found
-    map.setZoom(7);
-  }); 
+  if (home == null) {
+      // TODO: handle this situation
+  }
+  else {
+    clearPlaces(); 
+    const hours = document.getElementById(hoursId).value;
+    const minutes = document.getElementById(minutesId).value;
+    // Convert hours and minutes into seconds
+    const time = hours * 3600 + minutes * 60;
+    getPlacesFromTime(time).then(places => {
+      populatePlaces(places); 
+    }); 
+  }
 }
 
 /**
@@ -156,60 +250,9 @@ function clearPlaces() {
   markers = [];
 } 
 
-/**
- * If browser supports geolocation and user provides permissions, obtains user's
- * latitude and longitude. Otherwise, asks user to input address and converts input
- * to latitude and longitude.
- *
- * @return {Object} Contains latitude and longitude corresponding to user's location
- */
-function getUserLocation() {
-  return new Promise(function(resolve) {
-    function success(position) {
-      return resolve({
-        lat: position.coords.latitude,
-        lng: position.coords.longitude,
-      });
-    }
 
-    function deniedAccessUserLocation() {
-      return resolve(getLocationFromUserInput());
-    }
 
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(success, deniedAccessUserLocation);
-    } else {
-      return resolve(getLocationFromUserInput());
-    }
-  });
-}
 
-/**
- * If browser does not support geolocation or user does not provide permissions,
- * asks user to input address and utilizes Geocoding API to convert address to
- * latitude and longitude. User will be prompted until they provide a valid address.
- *
- * @return {Object} Contains latitude and longitude corresponding to input address
- */
-function getLocationFromUserInput() {
-  return new Promise(function(resolve, reject) {
-    const address = prompt('Please enter a valid address as your start location.');
-    if (address == null || address == '') {
-      return resolve(getLocationFromUserInput());
-    }
-
-    const geocoder = new google.maps.Geocoder();
-    geocoder.geocode({address: address}, function(results, status) {
-      if (status == 'OK') {
-        const lat = results[0].geometry.location.lat;
-        const lng = results[0].geometry.location.lng;
-        return resolve({ lat: lat(), lng: lng() });
-      } else {
-        return resolve(getLocationFromUserInput());
-      }
-    });
-  });
-}
 
 /** 
  * Finds and returns places centered around user's position that are within 
@@ -389,7 +432,7 @@ function addAcceptablePlaces(time, places, acceptablePlacesInfo) {
       if (status == 'OK') {
         // There is only one origin
         let results = response.rows[0].elements;
-        const ThirtyMinsInSecs = 1800;
+        const FifteenMinsInSecs = 900;
 
         for (let j = 0; j < results.length; j++) {
           let destination_info = results[j];
@@ -401,7 +444,7 @@ function addAcceptablePlaces(time, places, acceptablePlacesInfo) {
             total_places += 1;
 
             // Check if the destination time is within +- 30 minutes of requested travel time
-            if (destination_time <= time + ThirtyMinsInSecs && destination_time >= time - ThirtyMinsInSecs) {
+            if (destination_time <= time + FifteenMinsInSecs && destination_time >= time - FifteenMinsInSecs) {
               acceptablePlacesInfo.places.push({
                 name: places[j].name,
                 geometry: places[j].geometry,
