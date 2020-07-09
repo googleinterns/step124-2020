@@ -99,7 +99,7 @@ async function initialize() {
     }
 
     if (focussedPin != null) {
-      focussedIcon.setIcon('icons/pin.svg');
+      focussedPin.setIcon('icons/pin.svg');
     }
     focussedCard = null;
     focussedPin = null;
