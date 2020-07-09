@@ -54,7 +54,7 @@ const scrollId = 'scroller';
 const dashId = 'dashboard';
 
 let map;
-let user;
+let user = false;
 let home = null;
 
 let focussedCard;
@@ -75,7 +75,7 @@ document.head.appendChild(script);
 
 /** Initializes map window, runs on load. */
 async function initialize() {
-  if (user == null) {
+  if (!user) {
     addLoginButtons();
   } else {
     addUserDash();
