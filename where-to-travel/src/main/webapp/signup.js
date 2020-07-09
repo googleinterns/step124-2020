@@ -18,7 +18,7 @@ btnSignUp.addEventListener('click', e => {
   else if(pass != passConfirmation) {
     alert("Your passwords do not match. Please try again.");
   }
-  // Passwords must be at least 6 characters in length
+  // Password must be at least 6 characters in length
   else if(pass.length < 6) {
     alert("Your password must be at least 6 characters long. Please try again");
   }
@@ -32,7 +32,7 @@ btnSignUp.addEventListener('click', e => {
   }
 });
 
-// Verrify that the email adresss is properly formated using a regular expression
+// Verify that the email address is properly formatted using a regular expression
 function validateEmail(email) {
     const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
     return re.test(email);
