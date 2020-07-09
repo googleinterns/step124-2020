@@ -31,7 +31,7 @@ const mapStyles = [
 
 // Thresholds for termination of search algorithm
 const placesThreshold = 30;
-const attemptsThreshold = 10;
+const attemptsThreshold = 5;
 const directionThreshold = 5;
 
 // Document ids for user input elements
@@ -248,8 +248,9 @@ function getLocationFromUserInput() {
     [-initSpread, -initSpread] // Southwest
   ];
 
-
   while (attempts < attemptsThreshold && places.length < placesThreshold) {
+    console.log(attempts);
+    console.log(directions.length);
     let new_directions = [];
 
     for (direction of directions) {      
@@ -344,8 +345,7 @@ function getPlacesFromDirection(lat, lng) {
 async function filterByTime(time, listPlaces) {
     let filterInfo = {avg_time: 0, places: []};
 
-    let i;
-    for (i = 0; i < listPlaces.length; i += 25) {
+    for (let i = 0; i < listPlaces.length; i += 25) {
       filterInfo = await addAcceptablePlaces(time, listPlaces.slice(i, i + 25), filterInfo);
     }
 
@@ -362,7 +362,7 @@ async function filterByTime(time, listPlaces) {
  * @return {Object} Contains total time of all places and an array of places objects that within 20% of given time
  */
 function addAcceptablePlaces(time, places, acceptablePlacesInfo) {
-    return new Promise(function(resolve) {
+  return new Promise(function(resolve) {
     
     let destinations = [];
     
@@ -423,6 +423,7 @@ function addAcceptablePlaces(time, places, acceptablePlacesInfo) {
     }    
   });
 }
+
 /*
 // Get elements for authentication
 const textEmail = document.getElementById('textEmail');
