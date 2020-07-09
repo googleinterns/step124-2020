@@ -26,7 +26,7 @@ btnSignUp.addEventListener('click', e => {
     // Sign up
     const promise = auth.createUserWithEmailAndPassword(email, pass);
     promise.then(e => {
-      alert("You have sucessfully signed up!")
+      alert("You have sucessfully signed up!");
     });
     promise.catch(e => console.log(e.message));
   }
@@ -44,7 +44,7 @@ function validate() {
     return true;
   } else {
     document.getElementById("result").innerHTML=emailSignUp.value + " is NOT a valid email address";
-    return false
+    return false;
   }
   return false;
 }

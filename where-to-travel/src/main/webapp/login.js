@@ -11,6 +11,12 @@ btnLogin.addEventListener('click', e => {
   const auth = firebase.auth();
   
   // Login 
-  const promise = auth.signInWithEmailAndPAssword(email, pass);
-  promise.catch(e => console.log(e.message));
+  const promise = auth.signInWithEmailAndPassword(email, pass);
+  promise.then(e => {
+      alert("You have sucessfully loged in!");
+  });
+  promise.catch(e => {
+    console.log(e.message);
+    alert(e.message);
+  });
 });
