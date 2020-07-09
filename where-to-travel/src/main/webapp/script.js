@@ -51,6 +51,7 @@ const submitId = 'submit';
 const hoursId = 'hrs';
 const minutesId = 'mnts';
 const scrollId = 'scroller';
+const dashId = 'dashboard';
 
 let map;
 let user;
@@ -74,6 +75,11 @@ document.head.appendChild(script);
 
 /** Initializes map window, runs on load. */
 async function initialize() {
+  if (user == null) {
+    addLoginButtons();
+  } else {
+    addUserDash();
+  }
   const submit = document.getElementById(submitId);
   submit.addEventListener('click', submitDataListener);
   home = await getUserLocation();
@@ -84,7 +90,6 @@ async function initialize() {
     mapTypeControl: false,
     styles: mapStyles,
   };
-
   map = new google.maps.Map(document.getElementById('map'), mapOptions);
 
   let homeMarker = new google.maps.Marker({
@@ -95,6 +100,16 @@ async function initialize() {
   });
   map.addListener('click', toggleFocusOff);
   populatePlaces(examplePlaces);
+}
+
+function addLoginButtons() {
+  let dashElement = $(getLoginHtml());
+  $('#' + dashId).append(dashElement);
+}
+
+function addUserDash() {
+  let dashElement = $(getUserDashHtml(user));
+  $('#' + dashId).append(dashElement);
 }
 
 /** Toggle the focussed pin/card off */
@@ -214,6 +229,16 @@ function getLocationCardHtml(title, directionsLink, timeStr) {
         <i></i>
       </div>
     </div>`;
+}
+
+function getLoginHtml() {
+  return `<a class="btn btn-outline-primary" style="text-align: center" href="login.html">Login</a>
+          <span id="nav-text">or</span>
+          <a class="btn btn-outline-primary" href="signup.html">Sign up</a>`;
+}
+
+function getUserDashHtml(user) {
+  return '<a class="btn btn-outline-primary" style="text-align: center" href="login.html">Logout</a>';
 }
 
 /**
