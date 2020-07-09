@@ -93,8 +93,12 @@ async function initialize() {
     map: map,
     title: 'Home',
   });
-  map.addListener('click', function () {
-    if (focussedCard != null) {
+  map.addListener('click', toggleFocusOff);
+  populatePlaces(examplePlaces);
+}
+
+function toggleFocusOff() {
+  if (focussedCard != null) {
       focussedCard.classList.remove('active');
     }
 
@@ -103,8 +107,6 @@ async function initialize() {
     }
     focussedCard = null;
     focussedPin = null;
-  });
-  populatePlaces(examplePlaces);
 }
 
 /**
@@ -133,7 +135,6 @@ function submitDataListener(event) {
  */
 function populatePlaces(placeArray) {
   for(let i = 0; i < placeArray.length; i++) {
-    console.log(placeArray[i]);
     let name = placeArray[i].name;
     let coordinates = placeArray[i].geometry.location;
 
@@ -158,6 +159,7 @@ function populatePlaces(placeArray) {
     // especially for adding elements.
     let cardElement = $(htmlContent).click(function(event) {
       if(event.target.nodeName != 'SPAN') {
+        toggleFocusOff();
         selectLocationMarker(name);
         $(this).addClass('active');
         focussedCard = this;
@@ -166,6 +168,7 @@ function populatePlaces(placeArray) {
     $('#' + scrollId).append(cardElement);
 
     placeMarker.addListener('click', function () {
+      toggleFocusOff();
       focussedPin = placeMarker;
       selectLocationCard(placeMarker.getTitle());
       placeMarker.setIcon('icons/selectedPin.svg');
