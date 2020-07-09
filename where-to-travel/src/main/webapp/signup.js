@@ -6,7 +6,7 @@ const btnSignUp = document.getElementById('signUp');
 
 // Add signup event
 btnSignUp.addEventListener('click', e => {
-  //TODO: Check for real emails
+ 
   const email = emailSignUp.value;
   const pass = passwordSignUp.value;
   const passConfirmation = passwordConfirmation.value;
@@ -14,8 +14,7 @@ btnSignUp.addEventListener('click', e => {
 
   if (validate()==false) {
       return;
-  }
-
+  } 
   else if(pass != passConfirmation) {
     alert("Your passwords do not match. Please try again.");
   }
@@ -40,7 +39,6 @@ function validateEmail(email) {
 }
 
 function validate() {
-  //const message = document.getElementById("result");
   if (validateEmail(emailSignUp.value)) {
     document.getElementById("result").innerHTML= emailSignUp.value + " is valid a email address";
     return true;
