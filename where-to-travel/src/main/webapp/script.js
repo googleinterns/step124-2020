@@ -70,6 +70,14 @@ async function initialize() {
   };
 
   map = new google.maps.Map(document.getElementById('map'), mapOptions); 
+
+  showInfoModal();
+}
+
+function showInfoModal() {
+  fetch('info.txt')
+    .then(response => response.text())
+    .then(content => openModal(content));
 }
 
 function useLocation() {
@@ -77,9 +85,9 @@ function useLocation() {
     home = homeObject;
     setHomeMarker(); 
   }).catch(message => {
-      // TODO: create a pop-up to notify user what happened.
-      console.log(message);
-  })
+    const messageContent = '<p>' + message + '</p>'; 
+    openModal(messageContent);
+  });
 }
 
 /**
@@ -99,15 +107,15 @@ function getUserLocation() {
     }
 
     function deniedAccessUserLocation() {
-      reject('Browser does not have permission to access location.' +
-             'Please enable location permissions or enter an address to' + 
-             'set a home location');
+      reject('Browser does not have permission to access location. ' +
+             'Please enable location permissions or enter an address to ' + 
+             'set a home location.');
     }
 
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(success, deniedAccessUserLocation);
     } else {
-      reject('Browser does not support geolocation. Please enter an' +
+      reject('Browser does not support geolocation. Please enter an ' +
              'address to set a home location.');
     }
   });
@@ -119,9 +127,9 @@ function useAddress() {
     home = homeObject;
     setHomeMarker(); 
   }).catch(message => {
-    // TODO: create a pop-up to notify user what happened.
-    console.log(message);
-  })
+    const messageContent = '<p>' + message + '</p>'; 
+    openModal(messageContent);
+  });
 }
 
 
@@ -168,6 +176,15 @@ function setHomeMarker() {
     map.setZoom(7);
   }
 } 
+
+function openModal(content) {
+  const modalBody = document.getElementById('modal-body');
+  modalBody.innerHTML = content;
+  
+  $('#content-modal').modal({
+    show: true
+  });
+}
 
 /**
  * Responds to click on submit button by getting input time from user,
@@ -250,10 +267,6 @@ function clearPlaces() {
   markers = [];
 } 
 
-
-
-
-
 /** 
  * Finds and returns places centered around user's position that are within 
  * requested travel time. Returns after placeThreshold places are found or 
@@ -292,8 +305,6 @@ function clearPlaces() {
   ];
 
   while (attempts < attemptsThreshold && places.length < placesThreshold) {
-    console.log(attempts);
-    console.log(directions.length);
     let new_directions = [];
 
     for (direction of directions) {      
