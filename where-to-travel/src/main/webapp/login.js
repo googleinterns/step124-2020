@@ -13,6 +13,16 @@ btnLogin.addEventListener('click', e => {
   const promise = auth.signInWithEmailAndPassword(email, pass);
   promise.then(e => {
       alert("You have sucessfully loged in!");
+
+      var database = firebase.database();
+var ref = database.ref('users');
+
+var data = {
+  name: "Emma",
+  email: "emmapaczkowski@gmail.com"
+  
+}
+ref.push(data);
   });
   promise.catch(e => {
     console.log(e.message);
