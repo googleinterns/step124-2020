@@ -156,10 +156,12 @@ function populatePlaces(placeArray) {
 
     // For the material bootstrap library, the preferred method of dom interaction is jquery,
     // especially for adding elements.
-    let cardElement = $(htmlContent).click(function() {
+    let cardElement = $(htmlContent).click(function(event) {
+      if(event.target.nodeName != 'SPAN') {
         selectLocationMarker(name);
         $(this).addClass('active');
         focussedCard = this;
+      }
     });
     $('#' + scrollId).append(cardElement);
 
