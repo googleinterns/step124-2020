@@ -1,0 +1,9 @@
+<h2 style="text-align: left; color: #049688;">Where To Travel</h2>
+<p style="text-align: left;"><strong>Planning a road trip? Enter the amount of time you want to spend on the road and we&rsquo;ll find interesting attractions for you!</strong></p>
+<h3 style="color: #049688;">How to Use Where To Travel?</h3>
+<p>1. Click on the menu button (☰) to open <em>Search Settings</em></p>
+<p>2. Enter your desired travel time in hours and minutes under&nbsp;<em>Travel Time</em></p>
+<p><em>3. </em>Under <em>Home Location&nbsp;</em>there are two options for setting your starting location:&nbsp;<em>Use Your Location&nbsp;</em>and&nbsp;<em>Enter An Address. </em>To use&nbsp;the first option, location permissions will need to be enabled for your browser.</p>
+<p>4. Click&nbsp;<em>Search&nbsp;</em>to get your results! You can view each attraction by either clicking the pins on the map or viewing the infocards.</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
