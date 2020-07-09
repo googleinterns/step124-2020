@@ -12,7 +12,11 @@ btnSignUp.addEventListener('click', e => {
   const passConfirmation = passwordConfirmation.value;
   const auth = firebase.auth();
 
-  if(pass != passConfirmation) {
+  if (validate()==false) {
+      return;
+  }
+
+  else if(pass != passConfirmation) {
     alert("Your passwords do not match. Please try again.");
   }
   // Passwords must be at least 6 characters in length
@@ -28,3 +32,21 @@ btnSignUp.addEventListener('click', e => {
     promise.catch(e => console.log(e.message));
   }
 });
+
+// Verrify that the email adresss is properly formated using a regular expression
+function validateEmail(email) {
+    const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    return re.test(email);
+}
+
+function validate() {
+  //const message = document.getElementById("result");
+  if (validateEmail(emailSignUp.value)) {
+    document.getElementById("result").innerHTML= emailSignUp.value + " is valid a email address";
+    return true;
+  } else {
+    document.getElementById("result").innerHTML=emailSignUp.value + " is NOT a valid email address";
+    return false
+  }
+  return false;
+}
