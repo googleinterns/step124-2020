@@ -97,6 +97,7 @@ async function initialize() {
   populatePlaces(examplePlaces);
 }
 
+/** Toggle the focussed pin/card off */
 function toggleFocusOff() {
   if (focussedCard != null) {
       focussedCard.classList.remove('active');
@@ -128,8 +129,8 @@ function submitDataListener(event) {
 }
 
 /**
- * Populates map with pins. Given a list of places, puts markers at each
- * lat/long location with name of place and link to directions in Google Maps.
+ * Populates display with places returned by a query. First, adds pins to the map. Then, adds
+ * cards to the location card scroller in the DOM.
  *
  * @param {array} placeArray Array of Google Maps Place Objects
  */
@@ -191,6 +192,13 @@ function populatePlaces(placeArray) {
   });
 }
 
+/**
+ * Helper function that returns the an HTML string representing a place card
+ * that can be added to the DOM.
+ * @param {string} title the place title
+ * @param {string} directionsLink the link to the GMaps directions for this place
+ * @param {string} timeStr the amount of time it takes to travel to this place, as a string
+ */
 function getLocationCardHtml(title, directionsLink, timeStr) {
   const iconId = 'icon' + title;
   return innerHtml = '' +
@@ -208,6 +216,10 @@ function getLocationCardHtml(title, directionsLink, timeStr) {
     </div>`;
 }
 
+/**
+ * Given a title, selects the corresponding marker by focussing it
+ * @param {string} title the name of the place whose marker to focus
+*/
 function selectLocationMarker(title) {
   for (marker of markers) {
     if (marker.getTitle() == title) {
@@ -217,6 +229,10 @@ function selectLocationMarker(title) {
   }
 }
 
+/**
+ * Given a title, selects the corresponding card by focussing it
+ * @param {string} title the name of the place whose card to focus
+ */
 function selectLocationCard(title) {
   scrollWindow = document.getElementById(scrollId);
   for (locationCard of scrollWindow.childNodes) {
