@@ -1,2 +1,6 @@
 *.json
 *.yaml
+where-to-travel/target/
+where-to-travel/bower_components/
+where-to-travel/node_modules/
+where-to-travel/firebase-debug.log
