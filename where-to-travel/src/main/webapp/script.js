@@ -142,6 +142,7 @@ function populatePlaces(placeArray) {
       home.lat + ',' + home.lng + '/' +
       coordinates.lat + ',' + coordinates.lng;
 
+    console.log(directionsLink);
     let timeStr = placeArray[i].timeAsString;
 
     let placeMarker = new google.maps.Marker({
@@ -182,17 +183,18 @@ function populatePlaces(placeArray) {
 
     markers.push(placeMarker);
   }
-  $( ".icon" ).click(function() {
-      $( ".icon" ).toggleClass("press");
+  $('.icon').click(function() {
+    $(this).toggleClass('press');
   });
 }
 
 function getLocationCardHtml(title, directionsLink, timeStr) {
+  const iconId = 'icon' + title;
   return innerHtml = '' +
     `<div class="card location-card" placeName="${title}">
       <div class="card-body">
         <h5 class="card-title">${title}
-        <span class="icon">
+        <span class="icon" id="${iconId}">
           &#9733
         <span>
         </h5>
