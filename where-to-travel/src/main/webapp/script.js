@@ -181,15 +181,23 @@ function populatePlaces(placeArray) {
 
     markers.push(placeMarker);
   }
+  $( ".icon" ).click(function() {
+      $( ".icon" ).toggleClass("press");
+  });
 }
 
 function getLocationCardHtml(title, address, timeStr) {
   return innerHtml = '' +
     `<div class="card location-card" placeName="${title}">
       <div class="card-body">
-        <h5 class="card-title">${title}</h5>
+        <h5 class="card-title">${title}
+        <span class="icon">
+          &#9733
+        <span>
+        </h5>
         <p>${address}</p>
         <p>${timeStr}</p>
+        <i></i>
       </div>
     </div>`;
 }
