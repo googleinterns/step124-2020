@@ -2,7 +2,6 @@
 const emailLogin = document.getElementById('emailLogin');
 const passwordLogin = document.getElementById('passwordLogin');
 const btnLogin = document.getElementById('login');
-//const btnLogout = document.getElementById('logout');
 
 // Add login event
 btnLogin.addEventListener('click', e => {
