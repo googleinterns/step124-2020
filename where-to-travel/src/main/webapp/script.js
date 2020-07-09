@@ -133,9 +133,8 @@ function submitDataListener(event) {
  */
 function populatePlaces(placeArray) {
   for(let i = 0; i < placeArray.length; i++) {
-
+    console.log(placeArray[i]);
     let name = placeArray[i].name;
-    let address = placeArray[i].address;
     let coordinates = placeArray[i].geometry.location;
 
     // TODO: Use this link to provide directions to user
@@ -152,7 +151,7 @@ function populatePlaces(placeArray) {
       icon: 'icons/pin.svg',
     });
 
-    const htmlContent = getLocationCardHtml(name, address, timeStr);
+    const htmlContent = getLocationCardHtml(name, directionsLink, timeStr);
 
     // For the material bootstrap library, the preferred method of dom interaction is jquery,
     // especially for adding elements.
@@ -188,7 +187,7 @@ function populatePlaces(placeArray) {
   });
 }
 
-function getLocationCardHtml(title, address, timeStr) {
+function getLocationCardHtml(title, directionsLink, timeStr) {
   return innerHtml = '' +
     `<div class="card location-card" placeName="${title}">
       <div class="card-body">
@@ -197,7 +196,7 @@ function getLocationCardHtml(title, address, timeStr) {
           &#9733
         <span>
         </h5>
-        <p>${address}</p>
+        <a target="_blank" href="${directionsLink}" class="badge badge-primary">Directions</a>
         <p>${timeStr}</p>
         <i></i>
       </div>
