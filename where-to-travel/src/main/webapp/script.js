@@ -90,12 +90,12 @@ async function initialize() {
 function attachFormValidators() {}
 
 function addLoginButtons() {
-  let dashElement = $(getLoginHtml());
+  const dashElement = $(getLoginHtml());
   $('#' + DASH_ID).append(dashElement);
 }
 
 function addUserDash() {
-  let dashElement = $(getUserDashHtml(user));
+  const dashElement = $(getUserDashHtml(user));
   $('#' + DASH_ID).append(dashElement);
 }
 
