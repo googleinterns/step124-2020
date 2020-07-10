@@ -256,7 +256,7 @@ function selectLocationCard(title) {
   }
 }
 
-/** Clears all place cards that are currently displayed. */
+/** Clears all place cards that are currently displayed. Also clears markers */
 function clearPlaces() {
   const parent = document.getElementById(SCROLL_ID);
   while (parent.firstChild) {
