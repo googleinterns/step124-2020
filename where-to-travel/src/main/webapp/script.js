@@ -30,14 +30,14 @@ const mapStyles = [
 
 
 // Thresholds for termination of search algorithm
-const placesThreshold = 30;
-const attemptsThreshold = 10;
-const directionThreshold = 5;
+const PLACES_THRESHOLD = 30;
+const ATTEMPTS_THRESHOLD = 10;
+const DIRECTION_THRESHOLD = 5;
 
 // Document ids for user input elements
-const submitId = 'submit';
-const hoursId = 'hrs';
-const minutesId = 'mnts';
+const SUBMIT_ID = 'submit';
+const HOURS_ID = 'hrs';
+const MINUTES_ID = 'mnts';
 
 let map;
 let home = null;
@@ -57,7 +57,7 @@ document.head.appendChild(script);
 
 /** Initializes map window, runs on load. */
 async function initialize() {
-  const submit = document.getElementById(submitId);
+  const submit = document.getElementById(SUBMIT_ID);
   submit.addEventListener('click', submitDataListener);
   home = await getUserLocation();
   const mapOptions = {
@@ -87,8 +87,8 @@ async function initialize() {
  */
 function submitDataListener(event) {
   clearPlaces(); 
-  const hours = document.getElementById(hoursId).value;
-  const minutes = document.getElementById(minutesId).value;
+  const hours = document.getElementById(HOURS_ID).value;
+  const minutes = document.getElementById(MINUTES_ID).value;
   // Convert hours and minutes into seconds
   const time = hours * 3600 + minutes * 60;
   getPlacesFromTime(time).then(places => {
@@ -247,7 +247,7 @@ function getLocationFromUserInput() {
   ];
 
 
-  while (attempts < attemptsThreshold && places.length < placesThreshold) {
+  while (attempts < ATTEMPTS_THRESHOLD && places.length < PLACES_THRESHOLD) {
     let new_directions = [];
 
     for (direction of directions) {      
@@ -259,7 +259,7 @@ function getLocationFromUserInput() {
       places = places.concat(filterResults.places);
 
       // If bounding box does not contain enough results, update position of box for next iteration
-      if (filterResults.places.length < directionThreshold) {        
+      if (filterResults.places.length < DIRECTION_THRESHOLD) {        
         /* If average time in bounding box is greater than requested time, move bounding box closer
          to user otherwise move bounding box farther away from user. */
         if (filterResults.avg_time > time) {
