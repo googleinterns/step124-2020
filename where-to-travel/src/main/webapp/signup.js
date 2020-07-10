@@ -13,7 +13,7 @@ btnSignUp.addEventListener('click', e => {
   const auth = firebase.auth();
 
   if (validate()==false) {
-      return;
+    return;
   } 
   else if(pass != passConfirmation) {
     alert("Your passwords do not match. Please try again.");
@@ -32,8 +32,8 @@ btnSignUp.addEventListener('click', e => {
       var database = firebase.database();
       var ref = database.ref('users');
         var data = {
-            email: email,    
-            uID: auth.currentUser.uid
+          email: email,    
+          uID: auth.currentUser.uid
         }
      ref.push(data);
     });
@@ -43,8 +43,8 @@ btnSignUp.addEventListener('click', e => {
 
 // Verify that the email address is properly formatted using a regular expression
 function validateEmail(email) {
-    const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-    return re.test(email);
+  const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+  return re.test(email);
 }
 
 function validate() {
