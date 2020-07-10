@@ -3,7 +3,7 @@ body {
   height: 100%;
   margin: 0px;
   padding: 0px;
-  transition: background-color 0.5s
+  transition: background-color 0.5s;
 }
 
 .btn-icon {
