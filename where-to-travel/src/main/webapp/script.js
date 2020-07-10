@@ -304,7 +304,7 @@ function getLocationFromUserInput() {
  */
 function getPlacesFromDirection(lat, lng) {
   return new Promise(function(resolve) {
-    place_candidates = [];
+    let place_candidates = [];
 
     const halfWidth = 0.5;
     const halfHeight = 0.5;
