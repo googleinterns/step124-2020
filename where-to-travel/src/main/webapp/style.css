@@ -20,14 +20,14 @@ body {
 
 .card-scroller {
   background-color: rgba(0, 0, 0, 0);
+  height: 100%;
+  left: 0;
+  min-width: 5px;
+  overflow: scroll;
   position: absolute;
   top: 0;
-  left: 0;
   width: fit-content;
-  min-width: 5px;
-  height: 100%;
   z-index: 20;
-  overflow: scroll;
 }
 
 #colon {
@@ -44,24 +44,29 @@ html {
   height: 100%;
 }
 
-.text-color {
-  color: #1E3C19;
+
+.icon {
+  background:#fff;
+  border-radius:50%;
+  color:#aaa;
+  cursor:pointer;
+  display:inline-block;
+  margin:0 0 15px;
+  padding:10px 12px 8px;
+  transition:.2s;
+}
+
+.icon:hover {
+  color:#666;
+}
+
+.icon.press {
+  color:#e23b3b;
 }
 
 .location-card {
   margin-bottom: 10px;
   margin-top: 10px;
-}
-
-.over-card {
-  bottom: 0;
-  height: fit-content;
-	left: 0;
-  margin: auto;
-  position: absolute;
-	right: 0;
-  top:0;
-  width: fit-content;
 }
 
 #map {
@@ -75,21 +80,17 @@ html {
   margin-left: 10px;
 }
 
-.icon {
-  cursor:pointer;
-  padding:10px 12px 8px;
-  background:#fff;
-  border-radius:50%;
-  display:inline-block;
-  margin:0 0 15px;
-  color:#aaa;
-  transition:.2s;
+.over-card {
+  bottom: 0;
+  height: fit-content;
+	left: 0;
+  margin: auto;
+  position: absolute;
+	right: 0;
+  top:0;
+  width: fit-content;
 }
 
-.icon:hover {
-  color:#666;
-}
-
-.icon.press {
-  color:#e23b3b;
+.text-color {
+  color: #1E3C19;
 }
