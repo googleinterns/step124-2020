@@ -34,6 +34,9 @@ const PLACES_THRESHOLD = 30;
 const ATTEMPTS_THRESHOLD = 10;
 const DIRECTION_THRESHOLD = 5;
 
+// Thirty Minutes in seconds
+const TIME_THRESHOLD = 1800;
+
 // Document ids for user input elements
 const SUBMIT_ID = 'submit';
 const HOURS_ID = 'hrs';
@@ -396,7 +399,6 @@ function addAcceptablePlaces(time, places, acceptablePlacesInfo) {
       if (status == 'OK') {
         // There is only one origin
         let results = response.rows[0].elements;
-        const thirtyMinsInSecs = 1800;
 
         for (let j = 0; j < results.length; j++) {
           let destination_info = results[j];
@@ -408,7 +410,7 @@ function addAcceptablePlaces(time, places, acceptablePlacesInfo) {
             acceptablePlacesInfo.total_places += 1;
 
             // Check if the destination time is within +- 30 minutes of requested travel time
-            if (destination_time <= time + thirtyMinsInSecs && destination_time >= time - thirtyMinsInSecs) {
+            if (destination_time <= time + TIME_THRESHOLD && destination_time >= time - TIME_THRESHOLD) {
               acceptablePlacesInfo.places.push({
                 name: places[j].name,
                 geometry: places[j].geometry,
