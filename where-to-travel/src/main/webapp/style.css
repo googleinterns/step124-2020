@@ -1,9 +1,9 @@
 body {
+  color: #1E3C19;	
   height: 100%;
   margin: 0px;
   padding: 0px;
-  transition: background-color 0.5s;
-  color: #1E3C19;
+  transition: background-color 0.5s
 }
 
 .btn-icon {
