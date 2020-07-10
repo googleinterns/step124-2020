@@ -35,6 +35,11 @@ body {
   padding-top: 10%;
 }
 
+#drawer-toggle {
+  color: #049688;
+  font-size: 1.5em;
+}
+
 .fg-mixin {
   margin: auto;
   width: 20%
@@ -89,6 +94,12 @@ html {
 	right: 0;
   top:0;
   width: fit-content;
+}
+
+#search-btn {
+  margin-left: auto;
+  margin-top: 10px;
+  margin-right: auto;
 }
 
 .text-color {
