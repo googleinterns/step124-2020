@@ -142,7 +142,6 @@ function populatePlaces(placeArray) {
     let name = placeArray[i].name;
     let coordinates = placeArray[i].geometry.location;
 
-    // TODO: Use this link to provide directions to user
     let directionsLink = 'https://www.google.com/maps/dir/' +
       home.lat + ',' + home.lng + '/' +
       coordinates.lat() + ',' + coordinates.lng();
