@@ -1,5 +1,5 @@
 // This is map stylings for the GMap api
-const mapStyles = [
+const MAP_STYLES = [
   {
     featureType: 'landscape',
     stylers: [
@@ -28,16 +28,16 @@ const mapStyles = [
 ];
 
 // Thresholds for termination of search algorithm
-const placesThreshold = 30;
-const attemptsThreshold = 10;
-const directionThreshold = 5;
+const PLACES_THRESHOLD = 30;
+const ATTEMPTS_THRESHOLD = 10;
+const DIRECTION_THRESHOLD = 5;
 
 // Document ids for user input elements
-const submitId = 'submit';
-const hoursId = 'hrs';
-const minutesId = 'mnts';
-const scrollId = 'scroller';
-const dashId = 'dashboard';
+const SUBMIT_ID = 'submit';
+const HOURS_ID = 'hrs';
+const MINIUTES_ID = 'mnts';
+const SCROLL_ID = 'scroller';
+const DASH_ID = 'dashboard';
 
 let map;
 let user = false;
@@ -66,7 +66,7 @@ async function initialize() {
   } else {
     addUserDash();
   }
-  const submit = document.getElementById(submitId);
+  const submit = document.getElementById(SUBMIT_ID);
   submit.addEventListener('click', submitDataListener);
   home = await getUserLocation();
   const mapOptions = {
@@ -74,7 +74,7 @@ async function initialize() {
     mapTypeId: google.maps.MapTypeId.ROADMAP,
     zoom: 16,
     mapTypeControl: false,
-    styles: mapStyles,
+    styles: MAP_STYLES,
   };
   map = new google.maps.Map(document.getElementById('map'), mapOptions);
 
@@ -91,12 +91,12 @@ function attachFormValidators() {}
 
 function addLoginButtons() {
   let dashElement = $(getLoginHtml());
-  $('#' + dashId).append(dashElement);
+  $('#' + DASH_ID).append(dashElement);
 }
 
 function addUserDash() {
   let dashElement = $(getUserDashHtml(user));
-  $('#' + dashId).append(dashElement);
+  $('#' + DASH_ID).append(dashElement);
 }
 
 /** Toggle the focussed pin/card off */
@@ -121,8 +121,8 @@ function toggleFocusOff() {
  */
 function submitDataListener(event) {
   clearPlaces();
-  const hours = document.getElementById(hoursId).value;
-  const minutes = document.getElementById(minutesId).value;
+  const hours = document.getElementById(HOURS_ID).value;
+  const minutes = document.getElementById(MINIUTES_ID).value;
   // Convert hours and minutes into seconds
   const time = hours * 3600 + minutes * 60;
   getPlacesFromTime(time).then(places => {
@@ -168,7 +168,7 @@ function populatePlaces(placeArray) {
         focussedCard = this;
       }
     });
-    $('#' + scrollId).append(cardElement);
+    $('#' + SCROLL_ID).append(cardElement);
 
     placeMarker.addListener('click', function () {
       toggleFocusOff();
@@ -246,7 +246,7 @@ function selectLocationMarker(title) {
  * @param {string} title the name of the place whose card to focus
  */
 function selectLocationCard(title) {
-  scrollWindow = document.getElementById(scrollId);
+  scrollWindow = document.getElementById(SCROLL_ID);
   for (locationCard of scrollWindow.childNodes) {
     if (locationCard.hasChildNodes() && locationCard.getAttribute("placeName") == title) {
       locationCard.classList.add("active");
@@ -257,7 +257,7 @@ function selectLocationCard(title) {
 
 /** Clears all place cards that are currently displayed. */
 function clearPlaces() {
-  const parent = document.getElementById(scrollId);
+  const parent = document.getElementById(SCROLL_ID);
   while (parent.firstChild) {
       parent.firstChild.remove();
   }
@@ -336,7 +336,7 @@ function getLocationFromUserInput() {
   if (time <= 3600) {
     let place_candidates = await getPlacesFromDirection(home.lat, home.lng);
     let filterResults = await filterByTime(time, place_candidates);
-    if (filterResults.places.length >= placesThreshold) {
+    if (filterResults.places.length >= PLACES_THRESHOLD) {
       return filterResults.places;
     }
   }
@@ -361,7 +361,7 @@ function getLocationFromUserInput() {
   ];
 
 
-  while (attempts < attemptsThreshold && places.length < placesThreshold) {
+  while (attempts < ATTEMPTS_THRESHOLD && places.length < PLACES_THRESHOLD) {
     let new_directions = [];
 
     for (direction of directions) {
@@ -373,7 +373,7 @@ function getLocationFromUserInput() {
       places = places.concat(filterResults.places);
 
       // If bounding box does not contain enough results, update position of box for next iteration
-      if (filterResults.places.length < directionThreshold) {
+      if (filterResults.places.length < DIRECTION_THRESHOLD) {
         /* If average time in bounding box is greater than requested time, move bounding box closer
          to user otherwise move bounding box farther away from user. */
         if (filterResults.avg_time > time) {
