@@ -38,6 +38,9 @@ const HOURS_ID = 'hrs';
 const MINIUTES_ID = 'mnts';
 const SCROLL_ID = 'scroller';
 const DASH_ID = 'dashboard';
+const PIN_PATH = 'icons/pin.svg';
+const SELECTED_PIN_PATH = 'icons/selectedPin.svg';
+const HOME_PIN_PATH = 'icons/home.svg';
 
 let map;
 let user = false;
@@ -80,7 +83,7 @@ async function initialize() {
 
   let homeMarker = new google.maps.Marker({
     position: home,
-    icon: 'icons/home.svg',
+    icon: HOME_PIN_PATH,
     map: map,
     title: 'Home',
   });
@@ -104,7 +107,7 @@ function toggleFocusOff() {
     }
 
     if (focussedPin != null) {
-      focussedPin.setIcon('icons/pin.svg');
+      focussedPin.setIcon(SELECTED_PIN_PATH);
     }
     focussedCard = null;
     focussedPin = null;
@@ -151,7 +154,7 @@ function populatePlaces(placeArray) {
       position: coordinates,
       map: map,
       title: name,
-      icon: 'icons/pin.svg',
+      icon: PIN_PATH,
     });
 
     const htmlContent = getLocationCardHtml(name, directionsLink, timeStr);
@@ -172,16 +175,16 @@ function populatePlaces(placeArray) {
       toggleFocusOff();
       focussedPin = placeMarker;
       selectLocationCard(placeMarker.getTitle());
-      placeMarker.setIcon('icons/selectedPin.svg');
+      placeMarker.setIcon(SELECTED_PIN_PATH);
     });
 
     placeMarker.addListener('mouseover', function () {
-      placeMarker.setIcon('icons/selectedPin.svg');
+      placeMarker.setIcon(SELECTED_PIN_PATH);
     });
 
     placeMarker.addListener('mouseout', function () {
       if (placeMarker != focussedPin) {
-        placeMarker.setIcon('icons/pin.svg');
+        placeMarker.setIcon(PIN_PATH);
       }
     });
 
@@ -234,7 +237,7 @@ function selectLocationMarker(title) {
   for (marker of markers) {
     if (marker.getTitle() == title) {
       focussedPin = marker;
-      marker.setIcon('icons/selectedPin.svg');
+      marker.setIcon(SELECTED_PIN_PATH);
     }
   }
 }
