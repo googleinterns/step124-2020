@@ -387,7 +387,7 @@ function addAcceptablePlaces(time, places, acceptablePlacesInfo) {
       if (status == 'OK') {
         // There is only one origin
         let results = response.rows[0].elements;
-        const ThirtyMinsInSecs = 1800;
+        const thirtyMinsInSecs = 1800;
 
         for (let j = 0; j < results.length; j++) {
           let destination_info = results[j];
@@ -399,7 +399,7 @@ function addAcceptablePlaces(time, places, acceptablePlacesInfo) {
             total_places += 1;
 
             // Check if the destination time is within +- 30 minutes of requested travel time
-            if (destination_time <= time + ThirtyMinsInSecs && destination_time >= time - ThirtyMinsInSecs) {
+            if (destination_time <= time + thirtyMinsInSecs && destination_time >= time - thirtyMinsInSecs) {
               acceptablePlacesInfo.places.push({
                 name: places[j].name,
                 geometry: places[j].geometry,
