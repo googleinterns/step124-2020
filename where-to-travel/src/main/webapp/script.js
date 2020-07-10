@@ -457,7 +457,7 @@ btnLogout.addEventListener('click', e => {
   firebase.auth().signOut();
 });
 
-// Add a realtime listener to monotor the state of log out button 
+// Add a realtime listener to monitor the state of log out button 
 firebase.auth().onAuthStateChanged(firebaseUser => {
   if (firebaseUser) {
     console.log(firebaseUser);
