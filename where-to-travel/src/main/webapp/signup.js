@@ -27,8 +27,17 @@ btnSignUp.addEventListener('click', e => {
     const promise = auth.createUserWithEmailAndPassword(email, pass);
     promise.then(e => {
       alert("You have sucessfully signed up!");
+      
+      // Add user information to the real time database in Firebase
+      var database = firebase.database();
+      var ref = database.ref('users');
+        var data = {
+            email: email,    
+            uID: auth.currentUser.uid
+        }
+     ref.push(data);
     });
-    promise.catch(e => console.log(e.message));
+    promise.catch(e => console.log(e.message), alert(e.message));
   }
 });
 
