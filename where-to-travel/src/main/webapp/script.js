@@ -27,20 +27,6 @@ const mapStyles = [
   }
 ];
 
-const examplePlaces = [
-  {
-    name: 'place',
-    address: '123 xyz street',
-    geometry: {
-      location: {
-        lat: 41.1745937,
-        lng: -96.0450083
-      }
-    },
-    timeAsString: '47'
-  }
-];
-
 // Thresholds for termination of search algorithm
 const placesThreshold = 30;
 const attemptsThreshold = 10;
@@ -51,9 +37,10 @@ const submitId = 'submit';
 const hoursId = 'hrs';
 const minutesId = 'mnts';
 const scrollId = 'scroller';
+const dashId = 'dashboard';
 
 let map;
-let user;
+let user = false;
 let home = null;
 
 let focussedCard;
@@ -74,6 +61,11 @@ document.head.appendChild(script);
 
 /** Initializes map window, runs on load. */
 async function initialize() {
+  if (!user) {
+    addLoginButtons();
+  } else {
+    addUserDash();
+  }
   const submit = document.getElementById(submitId);
   submit.addEventListener('click', submitDataListener);
   home = await getUserLocation();
@@ -84,7 +76,6 @@ async function initialize() {
     mapTypeControl: false,
     styles: mapStyles,
   };
-
   map = new google.maps.Map(document.getElementById('map'), mapOptions);
 
   let homeMarker = new google.maps.Marker({
@@ -93,8 +84,24 @@ async function initialize() {
     map: map,
     title: 'Home',
   });
-  map.addListener('click', function () {
-    if (focussedCard != null) {
+  map.addListener('click', toggleFocusOff);
+}
+
+function attachFormValidators() {}
+
+function addLoginButtons() {
+  let dashElement = $(getLoginHtml());
+  $('#' + dashId).append(dashElement);
+}
+
+function addUserDash() {
+  let dashElement = $(getUserDashHtml(user));
+  $('#' + dashId).append(dashElement);
+}
+
+/** Toggle the focussed pin/card off */
+function toggleFocusOff() {
+  if (focussedCard != null) {
       focussedCard.classList.remove('active');
     }
 
@@ -103,8 +110,6 @@ async function initialize() {
     }
     focussedCard = null;
     focussedPin = null;
-  });
-  populatePlaces(examplePlaces);
 }
 
 /**
@@ -126,23 +131,22 @@ function submitDataListener(event) {
 }
 
 /**
- * Populates map with pins. Given a list of places, puts markers at each
- * lat/long location with name of place and link to directions in Google Maps.
+ * Populates display with places returned by a query. First, adds pins to the map. Then, adds
+ * cards to the location card scroller in the DOM.
  *
  * @param {array} placeArray Array of Google Maps Place Objects
  */
 function populatePlaces(placeArray) {
   for(let i = 0; i < placeArray.length; i++) {
-
     let name = placeArray[i].name;
-    let address = placeArray[i].address;
     let coordinates = placeArray[i].geometry.location;
 
     // TODO: Use this link to provide directions to user
     let directionsLink = 'https://www.google.com/maps/dir/' +
       home.lat + ',' + home.lng + '/' +
-      coordinates.lat + ',' + coordinates.lng;
+      coordinates.lat() + ',' + coordinates.lng();
 
+    console.log(directionsLink);
     let timeStr = placeArray[i].timeAsString;
 
     let placeMarker = new google.maps.Marker({
@@ -152,12 +156,13 @@ function populatePlaces(placeArray) {
       icon: 'icons/pin.svg',
     });
 
-    const htmlContent = getLocationCardHtml(name, address, timeStr);
+    const htmlContent = getLocationCardHtml(name, directionsLink, timeStr);
 
     // For the material bootstrap library, the preferred method of dom interaction is jquery,
     // especially for adding elements.
     let cardElement = $(htmlContent).click(function(event) {
       if(event.target.nodeName != 'SPAN') {
+        toggleFocusOff();
         selectLocationMarker(name);
         $(this).addClass('active');
         focussedCard = this;
@@ -166,6 +171,7 @@ function populatePlaces(placeArray) {
     $('#' + scrollId).append(cardElement);
 
     placeMarker.addListener('click', function () {
+      toggleFocusOff();
       focussedPin = placeMarker;
       selectLocationCard(placeMarker.getTitle());
       placeMarker.setIcon('icons/selectedPin.svg');
@@ -183,27 +189,49 @@ function populatePlaces(placeArray) {
 
     markers.push(placeMarker);
   }
-  $( ".icon" ).click(function() {
-      $( ".icon" ).toggleClass("press");
+  $('.icon').click(function() {
+    $(this).toggleClass('press');
   });
 }
 
-function getLocationCardHtml(title, address, timeStr) {
+/**
+ * Helper function that returns the an HTML string representing a place card
+ * that can be added to the DOM.
+ * @param {string} title the place title
+ * @param {string} directionsLink the link to the GMaps directions for this place
+ * @param {string} timeStr the amount of time it takes to travel to this place, as a string
+ */
+function getLocationCardHtml(title, directionsLink, timeStr) {
+  const iconId = 'icon' + title;
   return innerHtml = '' +
     `<div class="card location-card" placeName="${title}">
       <div class="card-body">
         <h5 class="card-title">${title}
-        <span class="icon">
+        <span class="icon" id="${iconId}">
           &#9733
         <span>
         </h5>
-        <p>${address}</p>
+        <a target="_blank" href="${directionsLink}" class="badge badge-primary">Directions</a>
         <p>${timeStr}</p>
         <i></i>
       </div>
     </div>`;
 }
 
+function getLoginHtml() {
+  return `<a class="btn btn-outline-primary" style="text-align: center" href="login.html">Login</a>
+          <span id="nav-text">or</span>
+          <a class="btn btn-outline-primary" href="signup.html">Sign up</a>`;
+}
+
+function getUserDashHtml(user) {
+  return '<a class="btn btn-outline-primary" style="text-align: center" href="login.html">Logout</a>';
+}
+
+/**
+ * Given a title, selects the corresponding marker by focussing it
+ * @param {string} title the name of the place whose marker to focus
+*/
 function selectLocationMarker(title) {
   for (marker of markers) {
     if (marker.getTitle() == title) {
@@ -213,6 +241,10 @@ function selectLocationMarker(title) {
   }
 }
 
+/**
+ * Given a title, selects the corresponding card by focussing it
+ * @param {string} title the name of the place whose card to focus
+ */
 function selectLocationCard(title) {
   scrollWindow = document.getElementById(scrollId);
   for (locationCard of scrollWindow.childNodes) {

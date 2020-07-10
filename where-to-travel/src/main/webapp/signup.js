@@ -4,6 +4,8 @@ const passwordSignUp = document.getElementById('passwordSignUp');
 const passwordConfirmation = document.getElementById('passwordConfirmation');
 const btnSignUp = document.getElementById('signUp');
 
+
+
 // Add signup event
 btnSignUp.addEventListener('click', e => {
  
