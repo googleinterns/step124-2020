@@ -29,9 +29,9 @@ btnSignUp.addEventListener('click', e => {
       alert("You have sucessfully signed up!");
       
       // Add user information to the real time database in Firebase
-      var database = firebase.database();
-      var ref = database.ref('users');
-        var data = {
+      let database = firebase.database();
+      let ref = database.ref('users');
+        let data = {
           email: email,    
           uID: auth.currentUser.uid
         }
@@ -41,7 +41,9 @@ btnSignUp.addEventListener('click', e => {
   }
 });
 
-// Verify that the email address is properly formatted using a regular expression
+// Verify that the email address is properly formatted using a regular expression.
+// A valid email is a string (a subset of ASCII characters) separated into two parts by an @ symbol. 
+// The two parts being personal_info and a domain, that is personal_info@domain. 
 function validateEmail(email) {
   const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
   return re.test(email);
