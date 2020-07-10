@@ -220,24 +220,20 @@ function getLocationFromUserInput() {
  * @param {Object} time Travel time requested by user in seconds
  * @return {Array} Array of objects containing information about places within the requested time
  */
- async function getPlacesFromTime(time) {
-  // For small travel times (1 hour or less), try one bounding box around user's location first
-  if (time <= 3600) {
-    let place_candidates = await getPlacesFromDirection(home.lat, home.lng);
-    let filterResults = await filterByTime(time, place_candidates);
-    if (filterResults.places.length >= placesThreshold) {
-      return filterResults.places;
-    }
-  }
-    
+ async function getPlacesFromTime(time) { 
+  // First try one bounding box around user's location 
+  let place_candidates = await getPlacesFromDirection(home.lat, home.lng);
+  let filterResults = await filterByTime(time, place_candidates);
+
+  let places = filterResults.places;
+   
   // Initial distance from the user's location for the bounding boxes
   const initSpread = Math.max(1, Math.ceil(time/7200));
   
-  let places = [];
   let attempts = 0;
 
-  // Each direction is represented by a pair with the first element added
-  // to the user's lat and the second element added to the user's lng
+  /* Each direction is represented by a pair with the first element added
+     to the user's lat and the second element added to the user's lng */
   let directions = [
     [initSpread,0], //North
     [0,initSpread], // East
@@ -248,7 +244,6 @@ function getLocationFromUserInput() {
     [-initSpread, initSpread], // Southeast
     [-initSpread, -initSpread] // Southwest
   ];
-
 
   while (attempts < ATTEMPTS_THRESHOLD && places.length < PLACES_THRESHOLD) {
     let new_directions = [];
