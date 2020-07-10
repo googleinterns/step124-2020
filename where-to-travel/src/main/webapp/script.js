@@ -339,15 +339,27 @@ function getPlacesFromDirection(lat, lng) {
   });
 }
 
+/** 
+ * Filters through tourist attractions to find which are in the given time frame of the user. Filters 25 places
+ * at a time due to destination limit on Distance Matrix API.
+ *
+ * @param {number} time How much time the user wants to travel for in seconds
+ * @param {array} listPlaces Array of place objects
+ * @return {Object} Contains average time of all places and an array of places objects that are within time
+ */
 async function filterByTime(time, listPlaces) {
-    let filterInfo = {avg_time: 0, places: []};
-
-    let i;
-    for (i = 0; i < listPlaces.length; i += 25) {
+    let filterInfo = {total_time: 0, total_places: 0, places: []};
+    
+    for (let i = 0; i < listPlaces.length; i += 25) {
       filterInfo = await addAcceptablePlaces(time, listPlaces.slice(i, i + 25), filterInfo);
     }
+  
+    let avg_time = 0;
+    if (filterInfo.total_places != 0) {
+      avg_time = filterInfo.total_time/filterInfo.total_places;
+    }
 
-    return filterInfo;
+    return {avg_time: avg_time, places: filterInfo.places};  
 }
 
 /** 
@@ -381,9 +393,6 @@ function addAcceptablePlaces(time, places, acceptablePlacesInfo) {
     }, callback);
 
     function callback(response, status) {    
-      let total_time = 0;
-      let total_places = 0;
-
       if (status == 'OK') {
         // There is only one origin
         let results = response.rows[0].elements;
@@ -395,8 +404,8 @@ function addAcceptablePlaces(time, places, acceptablePlacesInfo) {
           if (destination_info.status == 'OK') {
             let destination_time = destination_info.duration.value; 
          
-            total_time += destination_time;
-            total_places += 1;
+            acceptablePlacesInfo.total_time += destination_time;
+            acceptablePlacesInfo.total_places += 1;
 
             // Check if the destination time is within +- 30 minutes of requested travel time
             if (destination_time <= time + thirtyMinsInSecs && destination_time >= time - thirtyMinsInSecs) {
@@ -409,12 +418,6 @@ function addAcceptablePlaces(time, places, acceptablePlacesInfo) {
             }
           }
         }
-      }
-      
-      if (total_places == 0) {
-        acceptablePlacesInfo.avg_time = 0;
-      } else {
-        acceptablePlacesInfo.avg_time = total_time/total_places;
       }
       
       resolve(acceptablePlacesInfo);
