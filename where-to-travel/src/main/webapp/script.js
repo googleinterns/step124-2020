@@ -87,6 +87,8 @@ async function initialize() {
   map.addListener('click', toggleFocusOff);
 }
 
+function attachFormValidators() {}
+
 function addLoginButtons() {
   let dashElement = $(getLoginHtml());
   $('#' + dashId).append(dashElement);
