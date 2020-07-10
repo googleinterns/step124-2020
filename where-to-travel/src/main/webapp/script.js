@@ -28,7 +28,6 @@ const mapStyles = [
 ];
 // End map stylings
 
-
 // Thresholds for termination of search algorithm
 const placesThreshold = 30;
 const attemptsThreshold = 5;
@@ -38,7 +37,6 @@ const directionThreshold = 5;
 const submitId = 'submit';
 const hoursId = 'hrs';
 const minutesId = 'mnts';
-
 
 let map;
 let home = null;
@@ -74,12 +72,20 @@ async function initialize() {
   showInfoModal();
 }
 
+/** 
+ * Populates and opens modal with html content from info.txt that provides
+ * description of website to user
+ */
 function showInfoModal() {
   fetch('info.txt')
     .then(response => response.text())
     .then(content => openModal(content));
 }
 
+/**
+ * Obtains user's location from browser and sets home location. If error
+ * occurs, message is displayed to user in modal.
+ */
 function useLocation() {
   getUserLocation().then(homeObject => {
     home = homeObject;
@@ -94,7 +100,8 @@ function useLocation() {
  * If browser supports geolocation and user provides location permissions, obtains user's
  * latitude and longitude.
  *
- * @return {Object} Contains latitude and longitude corresponding to user's location
+ * @return {Promise} Fulfilled promise is object containing lat/lng and rejected promise
+ *                   is string message describing why obtaining the location failed.
  */
 function getUserLocation() {
   return new Promise(function(resolve, reject) {
@@ -120,6 +127,10 @@ function getUserLocation() {
   });
 }
 
+/**
+ * Reads address entered by user and passes to Geocoding API to get lat/lng
+ * and set home location. If error occurs, message is displayed to user in modal.
+ */
 function useAddress() {
   const address = document.getElementById('addressInput').value;  
   getLocationFromAddress(address).then(homeObject => {
@@ -131,11 +142,11 @@ function useAddress() {
   });
 }
 
-
 /**
- * Reads address entered by user and passes to Geocoding API to convert to lat/lng
+ * Passes address to Geocoding API to convert to lat/lng.
  *
- * @return {Object} Contains latitude and longitude corresponding to input address
+ * @return {Promise} Fulfilled promise is object containing lat/lng and rejected promise
+ *                   is string message describing why obtaining the location failed.
  */
 function getLocationFromAddress(address) {
   return new Promise(function(resolve, reject) {
@@ -156,6 +167,7 @@ function getLocationFromAddress(address) {
   });
 }
 
+/** Places marker at home location. */
 function setHomeMarker() {
   if (homeMarker != null) {
     homeMarker.setMap(null);
@@ -174,6 +186,10 @@ function setHomeMarker() {
   }
 } 
 
+/**
+ * Opens modal containing passed in HTML content in body 
+ * @param {string} content HTML string of content for modal body
+*/
 function openModal(content) {
   const modalBody = document.getElementById('modal-body');
   modalBody.innerHTML = content;
@@ -186,7 +202,7 @@ function openModal(content) {
 /**
  * Responds to click on submit button by getting input time from user,
  * finding places within requested time, and placing corresponding pins
- * on the map .
+ * on the map. If no home location is set, message is displayed to user.
  *
  * @param {Event} event Click event from which to respond
  */
@@ -204,8 +220,11 @@ function submitDataListener(event) {
     // Convert hours and minutes into seconds
     const time = hours * 3600 + minutes * 60;
     
+    // Pop up modal that shows loading status
     $('#loading-modal').modal({show: true});
+
     getPlacesFromTime(time).then(places => {
+      // Hide modal that shows loading status
       $('#loading-modal').modal('hide');
       populatePlaces(places); 
     }); 
@@ -223,8 +242,7 @@ function populatePlaces(placeArray) {
 
     let name = placeArray[i].name;
     let coordinates = placeArray[i].geometry.location;
-    
-    // TODO: Use this link to provide directions to user
+
     let directionsLink = 'https://www.google.com/maps/dir/' + 
       home.lat + ',' + home.lng + '/' +
       coordinates.lat() + ',' + coordinates.lng();
@@ -295,8 +313,8 @@ function clearPlaces() {
   let places = [];
   let attempts = 0;
 
-  // Each direction is represented by a pair with the first element added
-  // to the user's lat and the second element added to the user's lng
+  /* Each direction is represented by a pair with the first element added
+   to the user's lat and the second element added to the user's lng */
   let directions = [
     [initSpread,0], //North
     [0,initSpread], // East
@@ -400,6 +418,14 @@ function getPlacesFromDirection(lat, lng) {
   });
 }
 
+/** 
+ * Filters through tourist attractions to find which are in the given time frame of the user. Filters 25 places
+ * at a time due to destination limit on Distance Matrix API.
+ *
+ * @param {number} time How much time the user wants to travel for in seconds
+ * @param {array} listPlaces Array of place objects
+ * @return {Object} Contains total time of all places and an array of places objects that within 20% of given time
+ */
 async function filterByTime(time, listPlaces) {
     let filterInfo = {avg_time: 0, places: []};
 
@@ -411,13 +437,13 @@ async function filterByTime(time, listPlaces) {
 }
 
 /** 
- * Filter through tourist attractions to find which are in the given time frame of the user and populates
+ * Filters through tourist attractions to find which are in the given time frame of the user and populates
  * object with information about acceptable places.
  *
  * @param {number} time How much time the user wants to travel for in seconds
  * @param {array} places Array of place objects
  * @param {Object} acceptablePlacesInfo Object containing average time of all places and list of places within requested time
- * @return {Object} Contains total time of all places and an array of places objects that within 20% of given time
+ * @return {Object} Contains total time of all places and an array of places objects that are within buffer of requested time
  */
 function addAcceptablePlaces(time, places, acceptablePlacesInfo) {
   return new Promise(function(resolve) {
@@ -482,50 +508,3 @@ function addAcceptablePlaces(time, places, acceptablePlacesInfo) {
   });
 }
 
-/*
-// Get elements for authentication
-const textEmail = document.getElementById('textEmail');
-const textPassword = document.getElementById('textPassword');
-const btnLogin = document.getElementById('btnLogin');
-const btnSignUp = document.getElementById('btnSignUp');
-const btnLogout = document.getElementById('btnLogout');
-
-// Add login event
-btnLogin.addEventListener('click', e => {
-  const email = textEmail.value;
-  const pass = textPassword.value;
-  const auth = firebase.auth();
-  
-  // Sign in
-  const promise = auth.signInWithEmailAndPAssword(email, pass);
-  promise.catch(e => console.log(e.message));
-});
-
-// Add signup event
-btnSignUp.addEventListener('click', e => {
-  //TODO: Check for real emails
-  const email = textEmail.value;
-  const pass = textPassword.value;
-  const auth = firebase.auth();
-
-  // Sign up
-  const promise = auth.createUserWithEmailAndPassword(email, pass);
-  promise.catch(e => console.log(e.message));
-});
-
-// Log out
-btnLogout.addEventListener('click', e => {
-  firebase.auth().signOut();
-});
-
-// Add a realtime listener to monotor the state of log out button 
-firebase.auth().onAuthStateChanged(firebaseUser => {
-  if (firebaseUser) {
-    console.log(firebaseUser);
-    btnLogout.classList.remove('hide');
-  } else {
-    console.log('not logged in');
-    btnLogout.classList.add('hide');
-  }
-});
-*/
