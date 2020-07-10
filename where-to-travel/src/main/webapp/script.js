@@ -123,7 +123,7 @@ function toggleFocusOff() {
 function submitDataListener(event) {
   clearPlaces();
   const hours = document.getElementById(HOURS_ID).value;
-  const minutes = document.getElementById(MINIUTES_ID).value;
+  const minutes = document.getElementById(MINUTES_ID).value;
   // Convert hours and minutes into seconds
   const time = hours * 3600 + minutes * 60;
   getPlacesFromTime(time).then(places => {
