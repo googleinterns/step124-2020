@@ -424,7 +424,7 @@ function getPlacesFromDirection(lat, lng) {
  *
  * @param {number} time How much time the user wants to travel for in seconds
  * @param {array} listPlaces Array of place objects
- * @return {Object} Contains total time of all places and an array of places objects that within 20% of given time
+ * @return {Object} Contains total time of all places and an array of places objects that within buffer of given time
  */
 async function filterByTime(time, listPlaces) {
     let filterInfo = {avg_time: 0, places: []};
