@@ -91,9 +91,8 @@ function useLocation() {
 }
 
 /**
- * If browser supports geolocation and user provides permissions, obtains user's
- * latitude and longitude. Otherwise, asks user to input address and converts input
- * to latitude and longitude.
+ * If browser supports geolocation and user provides location permissions, obtains user's
+ * latitude and longitude.
  *
  * @return {Object} Contains latitude and longitude corresponding to user's location
  */
@@ -134,9 +133,7 @@ function useAddress() {
 
 
 /**
- * If browser does not support geolocation or user does not provide permissions,
- * asks user to input address and utilizes Geocoding API to convert address to
- * latitude and longitude. User will be prompted until they provide a valid address.
+ * Reads address entered by user and passes to Geocoding API to convert to lat/lng
  *
  * @return {Object} Contains latitude and longitude corresponding to input address
  */
@@ -203,9 +200,13 @@ function submitDataListener(event) {
     clearPlaces(); 
     const hours = document.getElementById(hoursId).value;
     const minutes = document.getElementById(minutesId).value;
+    
     // Convert hours and minutes into seconds
     const time = hours * 3600 + minutes * 60;
+    
+    $('#loading-modal').modal({show: true});
     getPlacesFromTime(time).then(places => {
+      $('#loading-modal').modal('hide');
       populatePlaces(places); 
     }); 
   }
@@ -221,7 +222,6 @@ function populatePlaces(placeArray) {
   for(let i = 0; i < placeArray.length; i++) {
 
     let name = placeArray[i].name;
-    let address = placeArray[i].address;
     let coordinates = placeArray[i].geometry.location;
     
     // TODO: Use this link to provide directions to user
@@ -242,11 +242,13 @@ function populatePlaces(placeArray) {
       '<div id="content">'+
           '<div id="siteNotice">'+
           '</div>'+
-          '<h1 id="firstHeading" class="firstHeading">${name}</h1>'+
+          '<h1 id="firstHeading" class="firstHeading">' + name + '</h1>'+
           '<div id="bodyContent">'+
-            '<p>${address}</p>'+
-            '<p>${timeStr} away from you</p>'+
+            '<h5>' + timeStr + ' away from you</h5>'+
           '</div>'+
+          '<div class="text-center">' +
+          '<a href="' + directionsLink + '" target="_blank">Directions</a>'
+          '</div>' +
       '</div>';
 
     let infowindow = new google.maps.InfoWindow({
