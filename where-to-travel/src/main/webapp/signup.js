@@ -1,4 +1,5 @@
 // Get elements for authentication
+const nameSignUp = document.getElementById('nameSignUp')
 const emailSignUp = document.getElementById('emailSignUp');
 const passwordSignUp = document.getElementById('passwordSignUp');
 const passwordConfirmation = document.getElementById('passwordConfirmation');
@@ -8,7 +9,8 @@ const btnSignUp = document.getElementById('signUp');
 
 // Add signup event
 btnSignUp.addEventListener('click', e => {
- 
+
+  const name = nameSignUp.value;
   const email = emailSignUp.value;
   const pass = passwordSignUp.value;
   const passConfirmation = passwordConfirmation.value;
@@ -29,15 +31,14 @@ btnSignUp.addEventListener('click', e => {
     const promise = auth.createUserWithEmailAndPassword(email, pass);
     promise.then(e => {
       alert("You have sucessfully signed up!");
-      
-      // Add user information to the real time database in Firebase
       var database = firebase.database();
-      var ref = database.ref('users');
+      var ref = database.ref('users/' + auth.currentUser.uid );
         var data = {
-            email: email,    
-            uID: auth.currentUser.uid
+          name: name,
+          email: email,    
+          uID: auth.currentUser.uid
         }
-     ref.push(data);
+     ref.set(data);
     });
     promise.catch(e => console.log(e.message), alert(e.message));
   }
