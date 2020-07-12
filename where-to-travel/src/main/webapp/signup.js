@@ -36,7 +36,8 @@ btnSignUp.addEventListener('click', e => {
         var data = {
           name: name,
           email: email,    
-          uID: auth.currentUser.uid
+          uID: auth.currentUser.uid,
+          places: null
         }
      ref.set(data);
     });

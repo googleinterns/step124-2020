@@ -146,7 +146,7 @@ function populatePlaces(placeArray) {
       home.lat + ',' + home.lng + '/' +
       coordinates.lat() + ',' + coordinates.lng();
 
-    console.log(directionsLink);
+    //console.log(directionsLink);
     let timeStr = placeArray[i].timeAsString;
 
     let placeMarker = new google.maps.Marker({
@@ -191,6 +191,24 @@ function populatePlaces(placeArray) {
   }
   $('.icon').click(function() {
     $(this).toggleClass('press');
+    if (firebase.auth().currentUser ) {
+        console.log("There is a user pressing a star");
+       // Add user information to the real time database in Firebase
+      const database = firebase.database();
+      var uID = firebase.auth().currentUser.uid;
+      var str = "'users";
+      var str2 = "/";
+      var str1 = "'";
+      var location = str.concat(str2)
+      location = str.concat(uID);
+      location = location.concat(str1);
+      var ref = database.ref('users/' + uID + '/' + 'places' + '/' + 'Banff' );
+        var data = {
+          adress: "111 test street",
+          time: "1hr driving"
+        }
+      ref.set(data);
+    }
   });
 }
 
@@ -442,7 +460,7 @@ function getPlacesFromDirection(lat, lng) {
         }
       }
       else {
-        console.log(status);
+        //console.log(status);
       }
 
       resolve(place_candidates);
