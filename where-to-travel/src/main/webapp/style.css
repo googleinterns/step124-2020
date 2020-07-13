@@ -27,6 +27,7 @@ body {
   min-width: 15%;
   overflow: scroll;
   padding: 5px;
+  margin-top: 5px;
   position: absolute;
   top: 0;
   z-index: 20;
