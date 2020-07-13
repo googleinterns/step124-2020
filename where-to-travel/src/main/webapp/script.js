@@ -83,11 +83,20 @@ function showInfoModal() {
 }
 
 /**
- * Obtains user's location from browser and sets home location. If error
+ * Obtains user's location from either browser or an inputted address and sets home location. If error
  * occurs, message is displayed to user in modal.
+ *
+ * @param {boolean} useAddress Flag indicating whether to get location from browser or address
  */
-function useLocation() {
-  getUserLocation().then(homeObject => {
+function getHomeLocation(useAddress) {
+  let locationFunction = () => getUserLocation();
+
+  if (useAddress) {
+    const addressInput = document.getElementById('addressInput').value; 
+    locationFunction = () => getLocationFromAddress(addressInput);  
+  }
+
+  locationFunction().then(homeObject => {
     home = homeObject;
     setHomeMarker(); 
   }).catch(message => {
@@ -98,7 +107,7 @@ function useLocation() {
 
 /**
  * If browser supports geolocation and user provides location permissions, obtains user's
- * latitude and longitude.
+ * latitude and longitude. 
  *
  * @return {Promise} Fulfilled promise is object containing lat/lng and rejected promise
  *                   is string message describing why obtaining the location failed.
@@ -124,21 +133,6 @@ function getUserLocation() {
       reject('Browser does not support geolocation. Please enter an ' +
              'address to set a home location.');
     }
-  });
-}
-
-/**
- * Reads address entered by user and passes to Geocoding API to get lat/lng
- * and set home location. If error occurs, message is displayed to user in modal.
- */
-function useAddress() {
-  const address = document.getElementById('addressInput').value;  
-  getLocationFromAddress(address).then(homeObject => {
-    home = homeObject;
-    setHomeMarker(); 
-  }).catch(message => {
-    const messageContent = '<p>' + message + '</p>'; 
-    openModal(messageContent);
   });
 }
 

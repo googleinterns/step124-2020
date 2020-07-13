@@ -71,7 +71,7 @@
               </div>
               <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordion">
                 <div class="card-header text-color text-center">
-                  <button onclick="useLocation()" class="btn btn-secondary collapsed" aria-expanded="false" aria-controls="collapseTwo">
+                  <button onclick="getHomeLocation(false)" class="btn btn-secondary collapsed" aria-expanded="false" aria-controls="collapseTwo">
                     Use Your Location
                   </button>
                 </div>
@@ -81,7 +81,7 @@
                     <input type="text" class="form-control" id="addressInput">
                   </div>
                   <div class="text-center">
-                    <button onclick="useAddress()" type="button" class="btn btn-secondary">Enter Address</button>
+                    <button onclick="getHomeLocation(true)" type="button" class="btn btn-secondary">Enter Address</button>
                   </div>
                 </div>
               </div>
