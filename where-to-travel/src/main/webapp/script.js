@@ -145,7 +145,6 @@ function populatePlaces(placeArray) {
       home.lat + ',' + home.lng + '/' +
       coordinates.lat() + ',' + coordinates.lng();
 
-    console.log(directionsLink);
     let timeStr = placeArray[i].timeAsString;
 
     let placeMarker = new google.maps.Marker({
@@ -165,7 +164,7 @@ function populatePlaces(placeArray) {
         selectLocationMarker(name);
         $(this).addClass('active');
        focusedCard = this;
-
+      }
     });
     $('#' + SCROLL_ID).append(cardElement);
 
@@ -251,6 +250,7 @@ function selectLocationCard(title) {
       locationCard.classList.add("active");
      focusedCard = locationCard;
 
+    }
   }
 }
 
