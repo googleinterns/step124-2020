@@ -88,10 +88,10 @@ html {
 .over-card {
   bottom: 0;
   height: fit-content;
-	left: 0;
+  left: 0;
   margin: auto;
   position: absolute;
-	right: 0;
+  right: 0;
   top:0;
   width: fit-content;
 }
