@@ -229,7 +229,7 @@ function toggleFocusOff() {
   }
 
   if (focusedPin != null) {
-    focusedPin.setIcon(SELECTED_PIN_PATH);
+    focusedPin.setIcon(PIN_PATH);
   }
   focusedCard = null;
   focusedPin = null;
