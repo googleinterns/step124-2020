@@ -192,15 +192,20 @@ function populatePlaces(placeArray) {
   $('.icon').click(function() {
     $(this).toggleClass('press');
     if (firebase.auth().currentUser ) {
-        console.log("There is a user pressing a star");
+      const name = $(this).parent().parent().parent().attr('placeName');
+      const link = $(this).parent().next().attr('href');
+      const time = $(this).parent().next().next().text();
+      console.log(name + " " + " " + link + " " + time);
+      console.log("There is a user pressing a star");
        // Add user information to the real time database in Firebase
       const database = firebase.database();
       var uID = firebase.auth().currentUser.uid;
-      var ref = database.ref('users/' + uID + '/' + 'places' + '/' + this.parent.getAttribute('placeName'));
-        var data = {
-          adress: "113 test street",
-          time: "1.1hr driving",
-        }
+      var ref = database.ref('users/' + uID + '/' + 'places' + '/' + name);
+      var data = {
+        name: name,
+        link: link,
+        time: time,
+      }
       ref.set(data);
     }
   });
@@ -219,9 +224,9 @@ function getLocationCardHtml(title, directionsLink, timeStr) {
     `<div class="card location-card" placeName="${title}">
       <div class="card-body">
         <h5 class="card-title">${title}
-        <span class="icon" id="${iconId}">
-          &#9733
-        <span>
+          <span class="icon" id="${iconId}">
+            &#9733
+          </span>
         </h5>
         <a target="_blank" href="${directionsLink}" class="badge badge-primary">Directions</a>
         <p>${timeStr}</p>
