@@ -35,7 +35,7 @@ const DIRECTION_THRESHOLD = 5;
 // Document ids for user input elements
 const SUBMIT_ID = 'submit';
 const HOURS_ID = 'hrs';
-const MINIUTES_ID = 'mnts';
+const MINUTES_ID = 'mnts';
 const SCROLL_ID = 'scroller';
 const DASH_ID = 'dashboard';
 const PIN_PATH = 'icons/pin.svg';
