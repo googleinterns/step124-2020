@@ -398,7 +398,7 @@ function selectLocationCard(title) {
  */
 function getSortedPlaces(places) {
     // Comparison function for sorting places by travel time
-    const compareByTime = (a, b) => (a.timeInSeconds < b.timeInSeconds) ? 1 : -1;
+    const compareByTime = (a, b) => (a.timeInSeconds > b.timeInSeconds) ? 1 : -1;
     places.sort(compareByTime);
     return places;
 }
