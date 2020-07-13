@@ -200,8 +200,6 @@ function populatePlaces(placeArray) {
         var data = {
           adress: "113 test street",
           time: "1.1hr driving",
-          //directiosnlink: this.next.getAttribute.href,
-         // timestring: next.next.get
         }
       ref.set(data);
     }
