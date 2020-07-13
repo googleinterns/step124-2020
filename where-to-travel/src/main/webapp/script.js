@@ -46,8 +46,8 @@ let map;
 let user = false;
 let home = null;
 
-let focussedCard;
-let focussedPin;
+let focusedCard;
+let focusedPin;
 
 let markers = [];
 
@@ -100,17 +100,17 @@ function addUserDash() {
   $('#' + DASH_ID).append(dashElement);
 }
 
-/** Toggle the focussed pin/card off */
+/** Toggle the focused pin/card off */
 function toggleFocusOff() {
-  if (focussedCard != null) {
-      focussedCard.classList.remove('active');
-    }
+  if(focusedCard != null) {
+    focusedCard.classList.remove('active');
 
-    if (focussedPin != null) {
-      focussedPin.setIcon(SELECTED_PIN_PATH);
+
+    if (focusedPin != null) {
+      focusedPin.setIcon(SELECTED_PIN_PATH);
     }
-    focussedCard = null;
-    focussedPin = null;
+   focusedCard = null;
+   focusedPin = null;
 }
 
 /**
@@ -165,14 +165,14 @@ function populatePlaces(placeArray) {
         toggleFocusOff();
         selectLocationMarker(name);
         $(this).addClass('active');
-        focussedCard = this;
-      }
+       focusedCard = this;
+
     });
     $('#' + SCROLL_ID).append(cardElement);
 
     placeMarker.addListener('click', function () {
       toggleFocusOff();
-      focussedPin = placeMarker;
+      focusedPin = placeMarker;
       selectLocationCard(placeMarker.getTitle());
       placeMarker.setIcon(SELECTED_PIN_PATH);
     });
@@ -182,7 +182,7 @@ function populatePlaces(placeArray) {
     });
 
     placeMarker.addListener('mouseout', function () {
-      if (placeMarker != focussedPin) {
+      if (placeMarker != focusedPin) {
         placeMarker.setIcon(PIN_PATH);
       }
     });
@@ -235,7 +235,7 @@ function getUserDashHtml(user) {
 function selectLocationMarker(title) {
   for (marker of markers) {
     if (marker.getTitle() == title) {
-      focussedPin = marker;
+      focusedPin = marker;
       marker.setIcon(SELECTED_PIN_PATH);
     }
   }
@@ -250,8 +250,8 @@ function selectLocationCard(title) {
   for (locationCard of scrollWindow.childNodes) {
     if (locationCard.hasChildNodes() && locationCard.getAttribute("placeName") == title) {
       locationCard.classList.add("active");
-      focussedCard = locationCard;
-    }
+     focusedCard = locationCard;
+
   }
 }
 
