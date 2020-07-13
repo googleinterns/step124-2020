@@ -60,7 +60,7 @@ async function initialize() {
   submit.addEventListener('click', submitDataListener);
  
   const mapOptions = {
-    center: {lat: 36.150813, lng: -40.352239},
+    center: {lat: 36.150813, lng: -40.352239}, // Middle of the North Atlantic Ocean
     mapTypeId: google.maps.MapTypeId.ROADMAP,
     zoom: 4,
     mapTypeControl: false,
