@@ -15,7 +15,7 @@
         <div class="navbar navbar-dark bg-faded">
           <button class="navbar-toggler" type="button" data-toggle="drawer" data-target="#dw-s2">
             <span class="sr-only">Toggle drawer</span>
-            <span class="btn text-color" style="font-size: 1.2em; color: #049688">
+            <span id="drawer-toggle" class="btn">
               &#9776;
             </span>
           </button>
@@ -88,12 +88,13 @@
             </div>
           </div>
         </div>
-
-        <span style="margin-top: 10px; margin-left: auto; margin-right: auto">
-          <button type="button" id="submit" class="btn btn-primary">Search</button>
+        <span id="search-btn-container">
+          <button type="button" id="submit" class="btn btn-primary search-btn">Search</button>
         </span>
       </div>
       <main class="bmd-layout-content">
+        <div class="card-scroller" id="scroller">
+        </div>
         <div id="map"></div>
       </main>
 
@@ -149,7 +150,7 @@
       appId: "1:561353405828:web:e821cd8d130cd7714919d1",
       measurementId: "G-KR73M56G0S"
     };
-    
+
     // Initialize Firebase
     firebase.initializeApp(firebaseConfig);
     firebase.analytics();
