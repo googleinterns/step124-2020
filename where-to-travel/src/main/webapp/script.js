@@ -89,7 +89,7 @@ function showInfoModal() {
  * @param {boolean} useAddress Flag indicating whether to get location from browser or address
  */
 function getHomeLocation(useAddress) {
-  let locationFunction = () => getUserLocation();
+  let locationFunction = () => getLocationFromBrowser();
 
   if (useAddress) {
     const addressInput = document.getElementById('addressInput').value; 
@@ -112,7 +112,7 @@ function getHomeLocation(useAddress) {
  * @return {Promise} Fulfilled promise is object containing lat/lng and rejected promise
  *                   is string message describing why obtaining the location failed.
  */
-function getUserLocation() {
+function getLocationFromBrowser() {
   return new Promise(function(resolve, reject) {
     function success(position) {
       resolve({
