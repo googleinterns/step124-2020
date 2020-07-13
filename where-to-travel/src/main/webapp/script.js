@@ -220,7 +220,8 @@ function submitDataListener(event) {
     getPlacesFromTime(time).then(places => {
       // Hide modal that shows loading status
       $('#loading-modal').modal('hide');
-      populatePlaces(places); 
+      const sortedPlaces = getSortedPlaces(places);
+      populatePlaces(sortedPlaces); 
     }); 
   }
 }
@@ -273,6 +274,19 @@ function populatePlaces(placeArray) {
 
     markers.push(placeMarker);
   }
+}
+
+/**
+ * Sorts an array of place objects in increasing order of travel time
+ *
+ * @param {array} places Array of place objects
+ * @return {array} Array of place objects sorted by travel time
+ */
+function getSortedPlaces(places) {
+    // Comparison function for sorting places by travel time
+    const compareByTime = (a, b) => (a.timeInSeconds < b.timeInSeconds) ? 1 : -1;
+    places.sort(compareByTime);
+    return places;
 }
 
 /** Clears all markers on map except for home marker. */
