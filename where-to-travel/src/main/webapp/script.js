@@ -26,11 +26,16 @@ const MAP_STYLES = [
     ]
   }
 ];
+// End map stylings
 
 // Thresholds for termination of search algorithm
+
 const PLACES_THRESHOLD = 30;
 const ATTEMPTS_THRESHOLD = 10;
 const DIRECTION_THRESHOLD = 5;
+
+// Thirty Minutes in seconds
+const TIME_THRESHOLD = 1800;
 
 // Document ids for user input elements
 const SUBMIT_ID = 'submit';
@@ -49,6 +54,7 @@ let home = null;
 let focusedCard;
 let focusedPin;
 
+let homeMarker = null;
 let markers = [];
 
 // Add gmap js library to head of page
@@ -71,21 +77,137 @@ async function initialize() {
   }
   const submit = document.getElementById(SUBMIT_ID);
   submit.addEventListener('click', submitDataListener);
-  home = await getUserLocation();
+ 
   const mapOptions = {
-    center: home,
+    center: {lat: 36.150813, lng: -40.352239}, // Middle of the North Atlantic Ocean
     mapTypeId: google.maps.MapTypeId.ROADMAP,
-    zoom: 16,
+    zoom: 4,
     mapTypeControl: false,
     styles: MAP_STYLES,
   };
   map = new google.maps.Map(document.getElementById('map'), mapOptions);
+ 
+  showInfoModal();
+}
 
-  let homeMarker = new google.maps.Marker({
-    position: home,
-    icon: HOME_PIN_PATH,
-    map: map,
-    title: 'Home',
+/** 
+ * Populates and opens modal with html content from info.txt that provides
+ * description of website to user
+ */
+function showInfoModal() {
+  fetch('info.txt')
+    .then(response => response.text())
+    .then(content => openModal(content));
+}
+
+/**
+ * Obtains user's location from either browser or an inputted address and sets home location. If error
+ * occurs, message is displayed to user in modal.
+ *
+ * @param {boolean} useAddress Flag indicating whether to get location from browser or address
+ */
+function getHomeLocation(useAddress) {
+  let locationFunction = () => getLocationFromBrowser();
+
+  if (useAddress) {
+    const addressInput = document.getElementById('addressInput').value; 
+    locationFunction = () => getLocationFromAddress(addressInput);  
+  }
+
+  locationFunction().then(homeObject => {
+    home = homeObject;
+    setHomeMarker(); 
+  }).catch(message => {
+    const messageContent = '<p>' + message + '</p>'; 
+    openModal(messageContent);
+  });
+}
+
+/**
+ * If browser supports geolocation and user provides location permissions, obtains user's
+ * latitude and longitude. 
+ *
+ * @return {Promise} Fulfilled promise is object containing lat/lng and rejected promise
+ *                   is string message describing why obtaining the location failed.
+ */
+function getLocationFromBrowser() {
+  return new Promise(function(resolve, reject) {
+    function success(position) {
+      resolve({
+        lat: position.coords.latitude,
+        lng: position.coords.longitude,
+      });
+    }
+
+    function deniedAccessUserLocation() {
+      reject('Browser does not have permission to access location. ' +
+             'Please enable location permissions or enter an address to ' + 
+             'set a home location.');
+    }
+
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(success, deniedAccessUserLocation);
+    } else {
+      reject('Browser does not support geolocation. Please enter an ' +
+             'address to set a home location.');
+    }
+  });
+}
+
+/**
+ * Passes address to Geocoding API to convert to lat/lng.
+ *
+ * @return {Promise} Fulfilled promise is object containing lat/lng and rejected promise
+ *                   is string message describing why obtaining the location failed.
+ */
+function getLocationFromAddress(address) {
+  return new Promise(function(resolve, reject) {
+    if (address == null || address == '') {
+      reject('Entered address is empty. Please enter a non-empty address and try again.');
+    }
+
+    const geocoder = new google.maps.Geocoder();
+    geocoder.geocode({address: address}, function(results, status) {
+      if (status == 'OK') {
+        const lat = results[0].geometry.location.lat;
+        const lng = results[0].geometry.location.lng;
+        resolve({ lat: lat(), lng: lng() });
+      } else {
+        reject('Entered address is not valid. Please enter a valid address and try again.');
+      }
+    });
+  });
+}
+
+/** Places marker at home location. */
+function setHomeMarker() {
+  if (homeMarker != null) {
+    homeMarker.setMap(null);
+  }
+
+  if (home != null) {
+    homeMarker = new google.maps.Marker({
+      position: home,
+      icon: 'icons/home.svg',
+      map: map,
+      title: 'Home',
+    });
+
+    map.setCenter(home);
+    map.setZoom(7);
+  }
+} 
+
+/**
+ * Opens modal containing passed in HTML content in body 
+ * @param {string} content HTML string of content for modal body
+*/
+function openModal(content) {
+  const modalBody = document.getElementById('modal-body');
+  modalBody.innerHTML = content;
+  
+  $('#content-modal').modal({
+    show: true
   });
   map.addListener('click', toggleFocusOff);
 }
@@ -116,19 +238,34 @@ function toggleFocusOff() {
 /**
  * Responds to click on submit button by getting input time from user,
  * finding places within requested time, and placing corresponding pins
- * on the map .
+ * on the map. If no home location is set, message is displayed to user.
  *
  * @param {Event} event Click event from which to respond
  */
 function submitDataListener(event) {
-  clearPlaces();
-  const hours = document.getElementById(HOURS_ID).value;
-  const minutes = document.getElementById(MINUTES_ID).value;
-  // Convert hours and minutes into seconds
-  const time = hours * 3600 + minutes * 60;
-  getPlacesFromTime(time).then(places => {
-    populatePlaces(places);
-  });
+  if (home == null) {
+    const content = '<p> No home location found. Please set a home location and try again.</p>';
+    openModal(content);
+  }
+  else {
+    $('#dw-s2').data('bmd.drawer').hide();
+    clearPlaces(); 
+    const hours = document.getElementById(HOURS_ID).value;
+    const minutes = document.getElementById(MINUTES_ID).value;
+    
+    // Convert hours and minutes into seconds
+    const time = hours * 3600 + minutes * 60;
+    
+    // Pop up modal that shows loading status
+    $('#loading-modal').modal({show: true});
+
+    getPlacesFromTime(time).then(places => {
+      // Hide modal that shows loading status
+      $('#loading-modal').modal('hide');
+      const sortedPlaces = getSortedPlaces(places);
+      populatePlaces(sortedPlaces); 
+    }); 
+  }
 }
 
 /**
@@ -154,7 +291,6 @@ function populatePlaces(placeArray) {
       title: name,
       icon: PIN_PATH,
     });
-
     const htmlContent = getLocationCardHtml(name, directionsLink, timeStr);
 
     // For the material bootstrap library, the preferred method of dom interaction is jquery,
@@ -255,6 +391,19 @@ function selectLocationCard(title) {
 }
 
 /** Clears all place cards that are currently displayed. Also clears markers */
+ * Sorts an array of place objects in increasing order of travel time
+ *
+ * @param {array} places Array of place objects
+ * @return {array} Array of place objects sorted by travel time
+ */
+function getSortedPlaces(places) {
+    // Comparison function for sorting places by travel time
+    const compareByTime = (a, b) => (a.timeInSeconds < b.timeInSeconds) ? 1 : -1;
+    places.sort(compareByTime);
+    return places;
+}
+
+/** Clears all markers on map except for home marker. */
 function clearPlaces() {
   const parent = document.getElementById(SCROLL_ID);
   while (parent.firstChild) {
@@ -267,87 +416,28 @@ function clearPlaces() {
   markers = [];
 }
 
-/**
- * If browser supports geolocation and user provides permissions, obtains user's
- * latitude and longitude. Otherwise, asks user to input address and converts input
- * to latitude and longitude.
- *
- * @return {Object} Contains latitude and longitude corresponding to user's location
- */
-function getUserLocation() {
-  return new Promise(function(resolve) {
-    function success(position) {
-      return resolve({
-        lat: position.coords.latitude,
-        lng: position.coords.longitude,
-      });
-    }
-
-    function deniedAccessUserLocation() {
-      return resolve(getLocationFromUserInput());
-    }
-
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(success, deniedAccessUserLocation);
-    } else {
-      return resolve(getLocationFromUserInput());
-    }
-  });
-}
-
-/**
- * If browser does not support geolocation or user does not provide permissions,
- * asks user to input address and utilizes Geocoding API to convert address to
- * latitude and longitude. User will be prompted until they provide a valid address.
- *
- * @return {Object} Contains latitude and longitude corresponding to input address
- */
-function getLocationFromUserInput() {
-  return new Promise(function(resolve, reject) {
-    const address = prompt('Please enter a valid address as your start location.');
-    if (address == null || address == '') {
-      return resolve(getLocationFromUserInput());
-    }
-
-    const geocoder = new google.maps.Geocoder();
-    geocoder.geocode({address: address}, function(results, status) {
-      if (status == 'OK') {
-        const lat = results[0].geometry.location.lat;
-        const lng = results[0].geometry.location.lng;
-        return resolve({ lat: lat(), lng: lng() });
-      } else {
-        return resolve(getLocationFromUserInput());
-      }
-    });
-  });
-}
-
-/**
- * Finds and returns places centered around user's position that are within
- * requested travel time. Returns after placeThreshold places are found or
+/** 
+ * Finds and returns places centered around user's position that are within 
+ * requested travel time. Returns after placeThreshold places are found or 
  * after attemptsThreshold searches to ensure termination.
  *
  * @param {Object} time Travel time requested by user in seconds
  * @return {Array} Array of objects containing information about places within the requested time
  */
- async function getPlacesFromTime(time) {
-  // For small travel times (1 hour or less), try one bounding box around user's location first
-  if (time <= 3600) {
-    let place_candidates = await getPlacesFromDirection(home.lat, home.lng);
-    let filterResults = await filterByTime(time, place_candidates);
-    if (filterResults.places.length >= PLACES_THRESHOLD) {
-      return filterResults.places;
-    }
-  }
+ async function getPlacesFromTime(time) { 
+  // First try one bounding box around user's location 
+  let place_candidates = await getPlacesFromDirection(home.lat, home.lng);
+  let filterResults = await filterByTime(time, place_candidates);
 
+  let places = filterResults.places;
+   
   // Initial distance from the user's location for the bounding boxes
   const initSpread = Math.max(1, Math.ceil(time/7200));
-
-  let places = [];
   let attempts = 0;
 
-  // Each direction is represented by a pair with the first element added
-  // to the user's lat and the second element added to the user's lng
+  /* Each direction is represented by a pair with the first element added
+   to the user's lat and the second element added to the user's lng */
+
   let directions = [
     [initSpread,0], //North
     [0,initSpread], // East
@@ -417,7 +507,7 @@ function getLocationFromUserInput() {
  */
 function getPlacesFromDirection(lat, lng) {
   return new Promise(function(resolve) {
-    place_candidates = [];
+    let place_candidates = [];
 
     const halfWidth = 0.5;
     const halfHeight = 0.5;
@@ -452,29 +542,40 @@ function getPlacesFromDirection(lat, lng) {
   });
 }
 
+/** 
+ * Filters through tourist attractions to find which are in the given time frame of the user. Filters 25 places
+ * at a time due to destination limit on Distance Matrix API.
+ *
+ * @param {number} time How much time the user wants to travel for in seconds
+ * @param {array} listPlaces Array of place objects
+ * @return {Object} Contains average time of all places and an array of places objects that are within time
+ */
 async function filterByTime(time, listPlaces) {
-    let filterInfo = {avg_time: 0, places: []};
-
-    let i;
-    for (i = 0; i < listPlaces.length; i += 25) {
+    let filterInfo = {total_time: 0, total_places: 0, places: []};
+    
+    for (let i = 0; i < listPlaces.length; i += 25) {
       filterInfo = await addAcceptablePlaces(time, listPlaces.slice(i, i + 25), filterInfo);
     }
+  
+    let avg_time = 0;
+    if (filterInfo.total_places != 0) {
+      avg_time = filterInfo.total_time/filterInfo.total_places;
+    }
 
-    return filterInfo;
+    return {avg_time: avg_time, places: filterInfo.places};  
 }
 
-/**
- * Filter through tourist attractions to find which are in the given time frame of the user and populates
+/** 
+ * Filters through tourist attractions to find which are in the given time frame of the user and populates
  * object with information about acceptable places.
  *
  * @param {number} time How much time the user wants to travel for in seconds
  * @param {array} places Array of place objects
  * @param {Object} acceptablePlacesInfo Object containing average time of all places and list of places within requested time
- * @return {Object} Contains total time of all places and an array of places objects that within 20% of given time
+ * @return {Object} Contains total time of all places and an array of places objects that are within buffer of requested time
  */
 function addAcceptablePlaces(time, places, acceptablePlacesInfo) {
-    return new Promise(function(resolve) {
-
+  return new Promise(function(resolve) {
     let destinations = [];
 
     // Iterate through places to get all latitudes and longitudes of destinations
@@ -492,27 +593,23 @@ function addAcceptablePlaces(time, places, acceptablePlacesInfo) {
       travelMode: 'DRIVING',
       unitSystem: google.maps.UnitSystem.IMPERIAL,
     }, callback);
-
+    
     function callback(response, status) {
-      let total_time = 0;
-      let total_places = 0;
-
       if (status == 'OK') {
         // There is only one origin
         let results = response.rows[0].elements;
-        const ThirtyMinsInSecs = 1800;
 
         for (let j = 0; j < results.length; j++) {
           let destination_info = results[j];
 
           if (destination_info.status == 'OK') {
-            let destination_time = destination_info.duration.value;
-
-            total_time += destination_time;
-            total_places += 1;
+            let destination_time = destination_info.duration.value; 
+         
+            acceptablePlacesInfo.total_time += destination_time;
+            acceptablePlacesInfo.total_places += 1;
 
             // Check if the destination time is within +- 30 minutes of requested travel time
-            if (destination_time <= time + ThirtyMinsInSecs && destination_time >= time - ThirtyMinsInSecs) {
+            if (destination_time <= time + TIME_THRESHOLD && destination_time >= time - TIME_THRESHOLD) {
               acceptablePlacesInfo.places.push({
                 name: places[j].name,
                 geometry: places[j].geometry,
@@ -523,13 +620,6 @@ function addAcceptablePlaces(time, places, acceptablePlacesInfo) {
           }
         }
       }
-
-      if (total_places == 0) {
-        acceptablePlacesInfo.avg_time = 0;
-      } else {
-        acceptablePlacesInfo.avg_time = total_time/total_places;
-      }
-
       resolve(acceptablePlacesInfo);
     }
   });

@@ -7,11 +7,11 @@
 }
 
 body {
+  color: #1E3C19;	
   height: 100%;
   margin: 0px;
   padding: 0px;
   transition: background-color 0.5s;
-  color: #1E3C19;
 }
 
 .btn-icon {
@@ -41,6 +41,11 @@ body {
 #drawer-toggle {
   color: #049688;
   font-size: 1.5em;
+}
+
+.info-header {
+  color: #049688;
+  text-align: left;
 }
 
 .fg-mixin {
