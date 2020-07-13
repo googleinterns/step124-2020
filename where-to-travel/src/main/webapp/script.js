@@ -390,14 +390,29 @@ function selectLocationCard(title) {
   }
 }
 
-/**
+/** 
+ * Removes duplicate places in an array of place objects 
+ *
+ * @param {array} places Array of place objects
+ * @return {array} Array of place objects with no duplicates
+ */
+function getUniquePlaces(places) {
+  const uniquePlaces = Array.from(new Set(places.map(p => p.name)))
+    .map(name => {
+      return places.find(p => p.name === name);
+    });
+
+  return uniquePlaces;
+}
+
+/** 
  * Sorts an array of place objects in increasing order of travel time
  *
  * @param {array} places Array of place objects
  * @return {array} Array of place objects sorted by travel time
  */
 function getSortedPlaces(places) {
-    // Comparison function for sorting places by travel time
+    // Comparison function for sorting places by travel time 
     const compareByTime = (a, b) => (a.timeInSeconds > b.timeInSeconds) ? 1 : -1;
     places.sort(compareByTime);
     return places;
@@ -407,7 +422,7 @@ function getSortedPlaces(places) {
 function clearPlaces() {
   const parent = document.getElementById(SCROLL_ID);
   while (parent.firstChild) {
-      parent.firstChild.remove();
+    parent.firstChild.remove();
   }
 
   for (marker of markers) {
@@ -493,7 +508,7 @@ function clearPlaces() {
     attempts += 1;
   }
 
-  return places;
+  return getUniquePlaces(places);
 }
 
 /**
