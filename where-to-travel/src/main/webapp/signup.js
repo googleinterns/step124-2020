@@ -6,6 +6,7 @@ const btnSignUp = document.getElementById('signUp');
 
 // Add signup event
 btnSignUp.addEventListener('click', e => {
+  // The user will be notified if it is invalid in the validate() function
   if (validate()==false) {
     return;
   } else if(passwordSignUp.value != passwordConfirmation.value) {
