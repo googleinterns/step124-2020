@@ -310,7 +310,7 @@ function populatePlaces(placeArray) {
       focusedPin = placeMarker;
       selectLocationCard(placeMarker.getTitle());
       placeMarker.setIcon(SELECTED_PIN_PATH);
-      focusedCard.scrollIntoView();
+      focusedCard.scrollIntoView({behavior: 'smooth', block: 'center'});
     });
 
     placeMarker.addListener('mouseover', function () {
