@@ -105,6 +105,7 @@ function toggleFocusOff() {
   if(focusedCard != null) {
     focusedCard.classList.remove('active');
   }
+
   if (focusedPin != null) {
     focusedPin.setIcon(SELECTED_PIN_PATH);
   }

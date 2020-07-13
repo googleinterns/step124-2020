@@ -26,7 +26,7 @@ body {
   max-width: 30%;
   min-width: 15%;
   overflow: scroll;
-  padding: 0;
+  padding: 5px;
   position: absolute;
   top: 0;
   z-index: 20;
@@ -96,10 +96,11 @@ html {
   top: 0;
 }
 
-#submit {
-  margin-left: auto;
-  margin-top: 10px;
+#search-btn-container {
+  display: inline-block;
+  margin-top: 0;
   margin-right: auto;
+  margin-left: auto;
 }
 
 .text-color {
