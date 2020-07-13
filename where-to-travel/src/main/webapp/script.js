@@ -202,7 +202,7 @@ function populatePlaces(placeArray) {
 function getLocationCardHtml(title, directionsLink, timeStr) {
   const iconId = 'icon' + title;
   return innerHtml = '' +
-    `<div class="card location-card" placeName="${title}">
+    `<div class="card location-card" placeName="${title}" style="margin-right: 0;">
       <div class="card-body">
         <h5 class="card-title">${title}
         <span class="icon" id="${iconId}">
@@ -211,7 +211,6 @@ function getLocationCardHtml(title, directionsLink, timeStr) {
         </h5>
         <a target="_blank" href="${directionsLink}" class="badge badge-primary">Directions</a>
         <p>${timeStr}</p>
-        <i></i>
       </div>
     </div>`;
 }

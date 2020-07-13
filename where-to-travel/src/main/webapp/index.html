@@ -80,7 +80,18 @@
         </span>
       </div>
       <main class="bmd-layout-content">
-        <div class="container card-scroller" id="scroller">
+        <div class="card-scroller" id="scroller">
+          <div class="card location-card" placeName="${title}" style="margin-right: 0;">
+            <div class="card-body">
+              <h5 class="card-title">${title} ggggggggggggggggggggggggg
+              <span class="icon" id="${iconId}">
+                &#9733
+              <span>
+              </h5>
+              <a target="_blank" href="${directionsLink}" class="badge badge-primary">Directions</a>
+              <p>${timeStr}</p>
+            </div>
+          </div>
         </div>
         <div id="map"></div>
       </main>
