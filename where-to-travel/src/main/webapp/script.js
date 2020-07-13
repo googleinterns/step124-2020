@@ -77,7 +77,7 @@ async function initialize() {
   }
   const submit = document.getElementById(SUBMIT_ID);
   submit.addEventListener('click', submitDataListener);
- 
+
   const mapOptions = {
     center: {lat: 36.150813, lng: -40.352239}, // Middle of the North Atlantic Ocean
     mapTypeId: google.maps.MapTypeId.ROADMAP,
@@ -86,11 +86,11 @@ async function initialize() {
     styles: MAP_STYLES,
   };
   map = new google.maps.Map(document.getElementById('map'), mapOptions);
- 
+
   showInfoModal();
 }
 
-/** 
+/**
  * Populates and opens modal with html content from info.txt that provides
  * description of website to user
  */
@@ -110,22 +110,22 @@ function getHomeLocation(useAddress) {
   let locationFunction = () => getLocationFromBrowser();
 
   if (useAddress) {
-    const addressInput = document.getElementById('addressInput').value; 
-    locationFunction = () => getLocationFromAddress(addressInput);  
+    const addressInput = document.getElementById('addressInput').value;
+    locationFunction = () => getLocationFromAddress(addressInput);
   }
 
   locationFunction().then(homeObject => {
     home = homeObject;
-    setHomeMarker(); 
+    setHomeMarker();
   }).catch(message => {
-    const messageContent = '<p>' + message + '</p>'; 
+    const messageContent = '<p>' + message + '</p>';
     openModal(messageContent);
   });
 }
 
 /**
  * If browser supports geolocation and user provides location permissions, obtains user's
- * latitude and longitude. 
+ * latitude and longitude.
  *
  * @return {Promise} Fulfilled promise is object containing lat/lng and rejected promise
  *                   is string message describing why obtaining the location failed.
@@ -141,7 +141,7 @@ function getLocationFromBrowser() {
 
     function deniedAccessUserLocation() {
       reject('Browser does not have permission to access location. ' +
-             'Please enable location permissions or enter an address to ' + 
+             'Please enable location permissions or enter an address to ' +
              'set a home location.');
     }
 
@@ -196,16 +196,16 @@ function setHomeMarker() {
     map.setCenter(home);
     map.setZoom(7);
   }
-} 
+}
 
 /**
- * Opens modal containing passed in HTML content in body 
+ * Opens modal containing passed in HTML content in body
  * @param {string} content HTML string of content for modal body
 */
 function openModal(content) {
   const modalBody = document.getElementById('modal-body');
   modalBody.innerHTML = content;
-  
+
   $('#content-modal').modal({
     show: true
   });
@@ -249,13 +249,13 @@ function submitDataListener(event) {
   }
   else {
     $('#dw-s2').data('bmd.drawer').hide();
-    clearPlaces(); 
+    clearPlaces();
     const hours = document.getElementById(HOURS_ID).value;
     const minutes = document.getElementById(MINUTES_ID).value;
-    
+
     // Convert hours and minutes into seconds
     const time = hours * 3600 + minutes * 60;
-    
+
     // Pop up modal that shows loading status
     $('#loading-modal').modal({show: true});
 
@@ -263,8 +263,8 @@ function submitDataListener(event) {
       // Hide modal that shows loading status
       $('#loading-modal').modal('hide');
       const sortedPlaces = getSortedPlaces(places);
-      populatePlaces(sortedPlaces); 
-    }); 
+      populatePlaces(sortedPlaces);
+    });
   }
 }
 
@@ -310,6 +310,7 @@ function populatePlaces(placeArray) {
       focusedPin = placeMarker;
       selectLocationCard(placeMarker.getTitle());
       placeMarker.setIcon(SELECTED_PIN_PATH);
+      focusedCard.scrollIntoView({behavior: 'smooth', block: 'center'});
     });
 
     placeMarker.addListener('mouseover', function () {
@@ -384,8 +385,7 @@ function selectLocationCard(title) {
   for (locationCard of scrollWindow.childNodes) {
     if (locationCard.hasChildNodes() && locationCard.getAttribute("placeName") == title) {
       locationCard.classList.add("active");
-     focusedCard = locationCard;
-
+      focusedCard = locationCard;
     }
   }
 }
@@ -431,21 +431,21 @@ function clearPlaces() {
   markers = [];
 }
 
-/** 
- * Finds and returns places centered around user's position that are within 
- * requested travel time. Returns after placeThreshold places are found or 
+/**
+ * Finds and returns places centered around user's position that are within
+ * requested travel time. Returns after placeThreshold places are found or
  * after attemptsThreshold searches to ensure termination.
  *
  * @param {Object} time Travel time requested by user in seconds
  * @return {Array} Array of objects containing information about places within the requested time
  */
- async function getPlacesFromTime(time) { 
-  // First try one bounding box around user's location 
+ async function getPlacesFromTime(time) {
+  // First try one bounding box around user's location
   let place_candidates = await getPlacesFromDirection(home.lat, home.lng);
   let filterResults = await filterByTime(time, place_candidates);
 
   let places = filterResults.places;
-   
+
   // Initial distance from the user's location for the bounding boxes
   const initSpread = Math.max(1, Math.ceil(time/7200));
   let attempts = 0;
@@ -557,7 +557,7 @@ function getPlacesFromDirection(lat, lng) {
   });
 }
 
-/** 
+/**
  * Filters through tourist attractions to find which are in the given time frame of the user. Filters 25 places
  * at a time due to destination limit on Distance Matrix API.
  *
@@ -567,20 +567,20 @@ function getPlacesFromDirection(lat, lng) {
  */
 async function filterByTime(time, listPlaces) {
     let filterInfo = {total_time: 0, total_places: 0, places: []};
-    
+
     for (let i = 0; i < listPlaces.length; i += 25) {
       filterInfo = await addAcceptablePlaces(time, listPlaces.slice(i, i + 25), filterInfo);
     }
-  
+
     let avg_time = 0;
     if (filterInfo.total_places != 0) {
       avg_time = filterInfo.total_time/filterInfo.total_places;
     }
 
-    return {avg_time: avg_time, places: filterInfo.places};  
+    return {avg_time: avg_time, places: filterInfo.places};
 }
 
-/** 
+/**
  * Filters through tourist attractions to find which are in the given time frame of the user and populates
  * object with information about acceptable places.
  *
@@ -608,7 +608,7 @@ function addAcceptablePlaces(time, places, acceptablePlacesInfo) {
       travelMode: 'DRIVING',
       unitSystem: google.maps.UnitSystem.IMPERIAL,
     }, callback);
-    
+
     function callback(response, status) {
       if (status == 'OK') {
         // There is only one origin
@@ -618,8 +618,8 @@ function addAcceptablePlaces(time, places, acceptablePlacesInfo) {
           let destination_info = results[j];
 
           if (destination_info.status == 'OK') {
-            let destination_time = destination_info.duration.value; 
-         
+            let destination_time = destination_info.duration.value;
+
             acceptablePlacesInfo.total_time += destination_time;
             acceptablePlacesInfo.total_places += 1;
 
