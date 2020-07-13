@@ -196,11 +196,12 @@ function populatePlaces(placeArray) {
        // Add user information to the real time database in Firebase
       const database = firebase.database();
       var uID = firebase.auth().currentUser.uid;
-      var ref = database.ref('users/' + uID + '/' + 'places' + '/' + name );
+      var ref = database.ref('users/' + uID + '/' + 'places' + '/' + this.parent.getAttribute('placeName'));
         var data = {
           adress: "113 test street",
           time: "1.1hr driving",
-         // coordinates: this.geometry.location
+          //directiosnlink: this.next.getAttribute.href,
+         // timestring: next.next.get
         }
       ref.set(data);
     }
