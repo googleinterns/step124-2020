@@ -6,36 +6,25 @@ const btnSignUp = document.getElementById('signUp');
 
 // Add signup event
 btnSignUp.addEventListener('click', e => {
- 
-  const email = emailSignUp.value;
-  const pass = passwordSignUp.value;
-  const passConfirmation = passwordConfirmation.value;
-  const auth = firebase.auth();
-
   if (validate()==false) {
     return;
-  } 
-  else if(pass != passConfirmation) {
+  } else if(passwordSignUp.value != passwordConfirmation.value) {
     alert("Your passwords do not match. Please try again.");
-  }
-  // Password must be at least 6 characters in length
-  else if(pass.length < 6) {
+  } else if(passwordSignUp.value.length < 6) {
     alert("Your password must be at least 6 characters long. Please try again");
-  }
-  else {
+  } else {
     // Sign up
-    const promise = auth.createUserWithEmailAndPassword(email, pass);
+    const promise = firebase.auth().createUserWithEmailAndPassword(emailSignUp.value, passwordSignUp.value);
     promise.then(e => {
       alert("You have sucessfully signed up!");
       
       // Add user information to the real time database in Firebase
-      let database = firebase.database();
-      let ref = database.ref('users');
-        let data = {
-          email: email,    
-          uID: auth.currentUser.uid
-        }
-     ref.push(data);
+      let ref = firebase.database().ref('users');
+      let data = {
+        email: emailSignUp.value,    
+        uID: firebase.auth().currentUser.uid
+      }
+      ref.push(data);
     });
     promise.catch(e => console.log(e.message), alert(e.message));
   }
