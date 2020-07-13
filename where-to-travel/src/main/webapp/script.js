@@ -390,7 +390,7 @@ function selectLocationCard(title) {
   }
 }
 
-/** Clears all place cards that are currently displayed. Also clears markers */
+/** 
  * Sorts an array of place objects in increasing order of travel time
  *
  * @param {array} places Array of place objects
