@@ -390,7 +390,7 @@ function selectLocationCard(title) {
   }
 }
 
-/** Clears all place cards that are currently displayed. Also clears markers */
+/** 
  * Sorts an array of place objects in increasing order of travel time
  *
  * @param {array} places Array of place objects
@@ -398,7 +398,7 @@ function selectLocationCard(title) {
  */
 function getSortedPlaces(places) {
     // Comparison function for sorting places by travel time
-    const compareByTime = (a, b) => (a.timeInSeconds < b.timeInSeconds) ? 1 : -1;
+    const compareByTime = (a, b) => (a.timeInSeconds > b.timeInSeconds) ? 1 : -1;
     places.sort(compareByTime);
     return places;
 }
