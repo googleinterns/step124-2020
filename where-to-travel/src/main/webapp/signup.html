@@ -15,20 +15,32 @@
         <form class="needs-validation" style="margin: auto" id="signUpForm" novalidate>
           <div class="form-group">
             <label for="emailInput" class="bmd-label-floating">Email address</label>
-            <input type="email" class="form-control" id="emailSignUp">
+            <input type="email" class="form-control" id="emailSignUp" required>
+            <div class="invalid-feedback">
+              Please enter a valid email.
+            </div>
+            <div class="valid-feedback">
+              Looks good!
+            </div>
           </div>
           <div class="form-group">
             <label for="passwordSignUp" class="bmd-label-floating">Password</label>
-            <input type="password" class="form-control" id="passwordSignUp">
+            <input type="password" class="form-control" minlength="6" id="passwordSignUp" oninvalid="this.setCustomValidity('Password must be at least 6 characters.')">
             <div class="invalid-feedback">
-              You must agree before submitting.
+              Please enter a valid password that is longer than 6 characters.
+            </div>
+            <div class="valid-feedback">
+              Looks good!
             </div>
           </div>
           <div class="form-group">
             <label for="passwordConfirmation" class="bmd-label-floating">Confirm password</label>
             <input type="password" class="form-control" id="passwordConfirmation">
             <div class="invalid-feedback">
-              Passwords do not match!
+              Passwords do not match.
+            </div>
+            <div class="valid-feedback">
+              Looks good!
             </div>
           </div>
         <button type="submit" id="submit" class="btn btn-primary" >sign up</button>

@@ -5,34 +5,53 @@ const passwordSignUp = document.getElementById('passwordSignUp');
 const passwordConfirmation = document.getElementById('passwordConfirmation');
 const btnSignUp = document.getElementById('signUp');
 
-// Preferred method of material form behavior interaction is jQuery
-// When the document is loaded, add validity check to form on submit.
-$(document).ready(function() {
-    $('#signUpForm').submit(function() {
-      // if form is invalid, stop event
-      if (!passwordConfirmation.validity.valid) {
+'use strict';
+window.addEventListener('load', function() {
+  function validatePassword(){
+    if(passwordSignUp.value != passwordConfirmation.value) {
+      passwordConfirmation.setCustomValidity('x');
+    } else {
+      passwordConfirmation.setCustomValidity('');
+    }
+  }
+
+  passwordSignUp.onchange = validatePassword;
+  passwordConfirmation.onkeyup = validatePassword;
+  
+  const email = document.getElementById('emailSignUp');
+  email.addEventListener('focusout', function(event) {
+    if (event.target.validity.valid === false) {
+      event.target.parentNode.classList.add('was-validated');
+    }
+  });
+
+  const password = document.getElementById('passwordSignUp');
+  password.addEventListener('focusout', function(event) {
+    if (event.target.validity.valid === false) {
+      event.target.parentNode.classList.add('was-validated');
+    }
+  });
+
+  const confirmPass = document.getElementById('passwordConfirmation');
+  confirmPass.addEventListener('focusout', function(event) {
+    if (event.target.validity.valid === false) {
+      event.target.parentNode.classList.add('was-validated');
+    }
+  });
+
+  // Fetch all the forms we want to apply custom Bootstrap validation styles to
+  var forms = document.getElementsByClassName('needs-validation');
+  // Loop over them and prevent submission
+  var validation = Array.prototype.filter.call(forms, function(form) {
+    form.addEventListener('submit', function(event) {
+      if (form.checkValidity() === false) {
         event.preventDefault();
         event.stopPropagation();
-      } else {
-        signUp();
-        // send to home page
-        window.location.href = 'index.html';
       }
-      $('#signUpForm').addClass('was-validated');
-    });
-});
-
-function validatePassword(){
-  if(passwordSignUp.value != passwordConfirmation.value) {
-    passwordConfirmation.setCustomValidity('x');
-  } else {
-    passwordConfirmation.setCustomValidity('');
-  }
-}
-
-passwordSignUp.onchange = validatePassword;
-passwordConfirmation.onkeyup = validatePassword;
-
+      form.classList.add('was-validated');
+    }, false);
+  });
+}, false);
 
 
 // Add signup event
