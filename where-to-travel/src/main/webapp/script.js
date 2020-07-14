@@ -57,6 +57,8 @@ let focusedPin;
 let homeMarker = null;
 let markers = [];
 
+let globalNonce;
+
 // Add gmap js library to head of page
 const script = document.createElement('script');
 script.src =
@@ -264,7 +266,7 @@ function submitDataListener(event) {
       $('#loading-modal').modal('hide');
       const sortedPlaces = getSortedPlaces(places);
       populatePlaces(sortedPlaces);
-    });
+    }).catch(message => console.log(message));
   }
 }
 
@@ -449,76 +451,90 @@ function clearPlaces() {
  * @param {Object} time Travel time requested by user in seconds
  * @return {Array} Array of objects containing information about places within the requested time
  */
- async function getPlacesFromTime(time) {
-  // First try one bounding box around user's location
-  let place_candidates = await getPlacesFromDirection(home.lat, home.lng);
-  let filterResults = await filterByTime(time, place_candidates);
+ function getPlacesFromTime(time) {
+  return new Promise(async function(resolve, reject){    
+    const localNonce = globalNonce = new Object(); 
+    // First try one bounding box around user's location
+    let place_candidates = await getPlacesFromDirection(home.lat, home.lng);
+    let filterResults = await filterByTime(time, place_candidates);
 
-  let places = filterResults.places;
-
-  // Initial distance from the user's location for the bounding boxes
-  const initSpread = Math.max(1, Math.ceil(time/7200));
-  let attempts = 0;
-
-  /* Each direction is represented by a pair with the first element added
-   to the user's lat and the second element added to the user's lng */
-
-  let directions = [
-    [initSpread,0], //North
-    [0,initSpread], // East
-    [0,-initSpread], // West
-    [-initSpread,0], // South
-    [initSpread, -initSpread], // Northwest
-    [initSpread, initSpread], // Northeast
-    [-initSpread, initSpread], // Southeast
-    [-initSpread, -initSpread] // Southwest
-  ];
-
-
-  while (attempts < ATTEMPTS_THRESHOLD && places.length < PLACES_THRESHOLD) {
-    let new_directions = [];
-
-    for (direction of directions) {
-      let latSpread = direction[0];
-      let lngSpread = direction[1];
-      let place_candidates = await getPlacesFromDirection(home.lat + latSpread, home.lng + lngSpread);
-
-      let filterResults = await filterByTime(time, place_candidates);
-      places = places.concat(filterResults.places);
-
-      // If bounding box does not contain enough results, update position of box for next iteration
-      if (filterResults.places.length < DIRECTION_THRESHOLD) {
-        /* If average time in bounding box is greater than requested time, move bounding box closer
-         to user otherwise move bounding box farther away from user. */
-        if (filterResults.avg_time > time) {
-          if (latSpread != 0) {
-            latSpread = latSpread < 0 ? latSpread + 1 : latSpread - 1;
-          }
-
-          if (lngSpread != 0) {
-            lngSpread = lngSpread < 0 ? lngSpread + 1 : lngSpread - 1;
-          }
-        } else {
-          if (latSpread != 0) {
-            latSpread = latSpread < 0 ? latSpread - 1 : latSpread + 1;
-          }
-
-          if (lngSpread != 0) {
-            lngSpread = lngSpread < 0 ? lngSpread - 1 : lngSpread + 1;
-          }
-        }
-
-        if (latSpread != 0 || lngSpread != 0) {
-          new_directions.push([latSpread, lngSpread]);
-        }
-      }
+    // If most recent request has changed, don't continue with search
+    if (localNonce != globalNonce) {
+      reject('Cancelled');
     }
 
-    directions = new_directions;
-    attempts += 1;
-  }
+    let places = filterResults.places;
 
-  return getUniquePlaces(places);
+    // Initial distance from the user's location for the bounding boxes
+    const initSpread = Math.max(1, Math.ceil(time/7200));
+    let attempts = 0;
+
+    /* Each direction is represented by a pair with the first element added
+       to the user's lat and the second element added to the user's lng */
+    let directions = [
+      [initSpread,0], //North
+      [0,initSpread], // East
+      [0,-initSpread], // West
+      [-initSpread,0], // South
+      [initSpread, -initSpread], // Northwest
+      [initSpread, initSpread], // Northeast
+      [-initSpread, initSpread], // Southeast
+      [-initSpread, -initSpread] // Southwest
+    ];
+
+
+    while (attempts < ATTEMPTS_THRESHOLD && places.length < PLACES_THRESHOLD) {
+      let new_directions = [];
+
+      for (direction of directions) {
+        let latSpread = direction[0];
+        let lngSpread = direction[1];
+
+        let place_candidates = await getPlacesFromDirection(home.lat + latSpread, home.lng + lngSpread);
+        let filterResults = await filterByTime(time, place_candidates);
+        
+        // If most recent request has changed, don't continue with search
+        if (localNonce != globalNonce) {
+          reject('Cancelled');
+        }
+
+        places = places.concat(filterResults.places);
+
+        // If bounding box does not contain enough results, update position of box for next iteration
+        if (filterResults.places.length < DIRECTION_THRESHOLD) {
+          /* If average time in bounding box is greater than requested time, move bounding box closer
+             to user otherwise move bounding box farther away from user. */
+          if (filterResults.avg_time > time) {
+            if (latSpread != 0) {
+              latSpread = latSpread < 0 ? latSpread + 1 : latSpread - 1;
+            }
+
+            if (lngSpread != 0) {
+              lngSpread = lngSpread < 0 ? lngSpread + 1 : lngSpread - 1;
+            }
+          } else {
+            if (latSpread != 0) {
+              latSpread = latSpread < 0 ? latSpread - 1 : latSpread + 1;
+            }
+
+            if (lngSpread != 0) {
+              lngSpread = lngSpread < 0 ? lngSpread - 1 : lngSpread + 1;
+            }
+          }
+
+          if (latSpread != 0 || lngSpread != 0) {
+            new_directions.push([latSpread, lngSpread]);
+          }
+        }
+      }
+
+      directions = new_directions;
+      attempts += 1;
+    }
+
+    const uniquePlaces = getUniquePlaces(places);
+    resolve(uniquePlaces);
+  });
 }
 
 /**
