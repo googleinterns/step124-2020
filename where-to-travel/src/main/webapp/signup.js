@@ -41,10 +41,9 @@ function validateEmail(email) {
 
 function validate() {
   if (validateEmail(emailSignUp.value)) {
-    document.getElementById("result").innerHTML= emailSignUp.value + " is a valid email address";
     return true;
   } else {
-    document.getElementById("result").innerHTML=emailSignUp.value + " is NOT a valid email address";
+    alert("is NOT a valid email address");
     return false;
   }
   return false;
