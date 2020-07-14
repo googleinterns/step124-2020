@@ -34,17 +34,16 @@ passwordConfirmation.onkeyup = validatePassword;
 // Add signup event
 signUp = () => {
   const promise = firebase.auth().createUserWithEmailAndPassword(emailSignUp.value, passwordSignUp.value);
-    promise.then(e => {
-      alert("You have sucessfully signed up!");
+  promise.then(e => {
+    alert("You have sucessfully signed up!");
       
-      // Add user information to the real time database in Firebase
-      let ref = firebase.database().ref('users');
-      let data = {
-        email: emailSignUp.value,    
-        uID: firebase.auth().currentUser.uid
-      }
-      ref.push(data);
+    // Add user information to the real time database in Firebase
+    let ref = firebase.database().ref('users');
+    let data = {
+      email: emailSignUp.value,    
+      uID: firebase.auth().currentUser.uid
+    }
+    ref.push(data);
     }).catch(e => {console.log(e.message); alert(e.message);}); 
   }
-
 
