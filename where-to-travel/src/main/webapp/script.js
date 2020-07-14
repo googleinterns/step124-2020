@@ -225,7 +225,7 @@ function addUserDash() {
 /** Toggle the focused pin/card off */
 function toggleFocusOff() {
   if(focusedCard != null) {
-    focusedCard.classList.remove('active');
+    focusedCard.classList.remove('active-card');
   }
 
   if (focusedPin != null) {
@@ -275,15 +275,17 @@ function submitDataListener(event) {
  * @param {array} placeArray Array of Google Maps Place Objects
  */
 function populatePlaces(placeArray) {
-  for(let i = 0; i < placeArray.length; i++) {
-    let name = placeArray[i].name;
-    let coordinates = placeArray[i].geometry.location;
+  for(place of placeArray) {
+    const name = place.name;
+    const coordinates = place.geometry.location;
 
-    let directionsLink = 'https://www.google.com/maps/dir/' +
+    const directionsLink = 'https://www.google.com/maps/dir/' +
       home.lat + ',' + home.lng + '/' +
       coordinates.lat() + ',' + coordinates.lng();
 
-    let timeStr = placeArray[i].timeAsString;
+    const address = place.formatted_address;
+
+    const timeStr = place.timeAsString;
 
     let placeMarker = new google.maps.Marker({
       position: coordinates,
@@ -291,7 +293,8 @@ function populatePlaces(placeArray) {
       title: name,
       icon: PIN_PATH,
     });
-    const htmlContent = getLocationCardHtml(name, directionsLink, timeStr);
+
+    const htmlContent = getLocationCardHtml(name, address, directionsLink, timeStr);
 
     // For the material bootstrap library, the preferred method of dom interaction is jquery,
     // especially for adding elements.
@@ -299,7 +302,7 @@ function populatePlaces(placeArray) {
       if(event.target.nodeName != 'SPAN') {
         toggleFocusOff();
         selectLocationMarker(name);
-        $(this).addClass('active');
+        $(this).addClass('active-card');
        focusedCard = this;
       }
     });
@@ -337,18 +340,22 @@ function populatePlaces(placeArray) {
  * @param {string} directionsLink the link to the GMaps directions for this place
  * @param {string} timeStr the amount of time it takes to travel to this place, as a string
  */
-function getLocationCardHtml(title, directionsLink, timeStr) {
+function getLocationCardHtml(title, address, directionsLink, timeStr) {
   const iconId = 'icon' + title;
+  // Link to google search query with name and address of place for user to get more information
+  const titleLink = 'https://www.google.com/search?q=' + encodeURIComponent(title + ' ' + address);
   return innerHtml = '' +
     `<div class="card location-card" placeName="${title}" style="margin-right: 0;">
       <div class="card-body">
-        <h5 class="card-title">${title}
+        <h5 class="card-title">
+        <a target="_blank" href="${titleLink}">${title}</a>
         <span class="icon" id="${iconId}">
           &#9733
         <span>
         </h5>
-        <a target="_blank" href="${directionsLink}" class="badge badge-primary">Directions</a>
-        <p>${timeStr}</p>
+        <a target="_blank" href="${directionsLink}" class="btn btn-primary active">Directions</a>
+        </h5>
+        <h6>${timeStr}</h6>
       </div>
     </div>`;
 }
@@ -384,7 +391,7 @@ function selectLocationCard(title) {
   scrollWindow = document.getElementById(SCROLL_ID);
   for (locationCard of scrollWindow.childNodes) {
     if (locationCard.hasChildNodes() && locationCard.getAttribute("placeName") == title) {
-      locationCard.classList.add("active");
+      locationCard.classList.add("active-card");
       focusedCard = locationCard;
     }
   }
@@ -628,6 +635,7 @@ function addAcceptablePlaces(time, places, acceptablePlacesInfo) {
               acceptablePlacesInfo.places.push({
                 name: places[j].name,
                 geometry: places[j].geometry,
+                formatted_address: places[j].formatted_address,
                 timeInSeconds: destination_time,
                 timeAsString: destination_info.duration.text
               });
