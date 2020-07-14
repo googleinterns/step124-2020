@@ -30,14 +30,14 @@ const mapStyles = [
 
 
 // Thresholds for termination of search algorithm
-const placesThreshold = 30;
-const attemptsThreshold = 10;
-const directionThreshold = 5;
+const PLACES_THRESHOLD = 30;
+const ATTEMPTS_THRESHOLD = 10;
+const DIRECTION_THRESHOLD = 5;
 
 // Document ids for user input elements
-const submitId = 'submit';
-const hoursId = 'hrs';
-const minutesId = 'mnts';
+const SUBMIT_ID = 'submit';
+const HOURS_ID = 'hrs';
+const MINUTES_ID = 'mnts';
 
 let map;
 let home = null;
@@ -57,7 +57,7 @@ document.head.appendChild(script);
 
 /** Initializes map window, runs on load. */
 async function initialize() {
-  const submit = document.getElementById(submitId);
+  const submit = document.getElementById(SUBMIT_ID);
   submit.addEventListener('click', submitDataListener);
   home = await getUserLocation();
   const mapOptions = {
@@ -87,8 +87,8 @@ async function initialize() {
  */
 function submitDataListener(event) {
   clearPlaces(); 
-  const hours = document.getElementById(hoursId).value;
-  const minutes = document.getElementById(minutesId).value;
+  const hours = document.getElementById(HOURS_ID).value;
+  const minutes = document.getElementById(MINUTES_ID).value;
   // Convert hours and minutes into seconds
   const time = hours * 3600 + minutes * 60;
   getPlacesFromTime(time).then(places => {
@@ -247,7 +247,7 @@ function getLocationFromUserInput() {
   ];
 
 
-  while (attempts < attemptsThreshold && places.length < placesThreshold) {
+  while (attempts < ATTEMPTS_THRESHOLD && places.length < PLACES_THRESHOLD) {
     let new_directions = [];
 
     for (direction of directions) {      
@@ -259,7 +259,7 @@ function getLocationFromUserInput() {
       places = places.concat(filterResults.places);
 
       // If bounding box does not contain enough results, update position of box for next iteration
-      if (filterResults.places.length < directionThreshold) {        
+      if (filterResults.places.length < DIRECTION_THRESHOLD) {        
         /* If average time in bounding box is greater than requested time, move bounding box closer
          to user otherwise move bounding box farther away from user. */
         if (filterResults.avg_time > time) {
@@ -304,7 +304,7 @@ function getLocationFromUserInput() {
  */
 function getPlacesFromDirection(lat, lng) {
   return new Promise(function(resolve) {
-    place_candidates = [];
+    let place_candidates = [];
 
     const halfWidth = 0.5;
     const halfHeight = 0.5;
@@ -339,15 +339,27 @@ function getPlacesFromDirection(lat, lng) {
   });
 }
 
+/** 
+ * Filters through tourist attractions to find which are in the given time frame of the user. Filters 25 places
+ * at a time due to destination limit on Distance Matrix API.
+ *
+ * @param {number} time How much time the user wants to travel for in seconds
+ * @param {array} listPlaces Array of place objects
+ * @return {Object} Contains average time of all places and an array of places objects that are within time
+ */
 async function filterByTime(time, listPlaces) {
-    let filterInfo = {avg_time: 0, places: []};
-
-    let i;
-    for (i = 0; i < listPlaces.length; i += 25) {
+    let filterInfo = {total_time: 0, total_places: 0, places: []};
+    
+    for (let i = 0; i < listPlaces.length; i += 25) {
       filterInfo = await addAcceptablePlaces(time, listPlaces.slice(i, i + 25), filterInfo);
     }
+  
+    let avg_time = 0;
+    if (filterInfo.total_places != 0) {
+      avg_time = filterInfo.total_time/filterInfo.total_places;
+    }
 
-    return filterInfo;
+    return {avg_time: avg_time, places: filterInfo.places};  
 }
 
 /** 
@@ -381,13 +393,10 @@ function addAcceptablePlaces(time, places, acceptablePlacesInfo) {
     }, callback);
 
     function callback(response, status) {    
-      let total_time = 0;
-      let total_places = 0;
-
       if (status == 'OK') {
         // There is only one origin
         let results = response.rows[0].elements;
-        const ThirtyMinsInSecs = 1800;
+        const thirtyMinsInSecs = 1800;
 
         for (let j = 0; j < results.length; j++) {
           let destination_info = results[j];
@@ -395,11 +404,11 @@ function addAcceptablePlaces(time, places, acceptablePlacesInfo) {
           if (destination_info.status == 'OK') {
             let destination_time = destination_info.duration.value; 
          
-            total_time += destination_time;
-            total_places += 1;
+            acceptablePlacesInfo.total_time += destination_time;
+            acceptablePlacesInfo.total_places += 1;
 
             // Check if the destination time is within +- 30 minutes of requested travel time
-            if (destination_time <= time + ThirtyMinsInSecs && destination_time >= time - ThirtyMinsInSecs) {
+            if (destination_time <= time + thirtyMinsInSecs && destination_time >= time - thirtyMinsInSecs) {
               acceptablePlacesInfo.places.push({
                 name: places[j].name,
                 geometry: places[j].geometry,
@@ -411,13 +420,53 @@ function addAcceptablePlaces(time, places, acceptablePlacesInfo) {
         }
       }
       
-      if (total_places == 0) {
-        acceptablePlacesInfo.avg_time = 0;
-      } else {
-        acceptablePlacesInfo.avg_time = total_time/total_places;
-      }
-      
       resolve(acceptablePlacesInfo);
     }    
   });
 }
+
+// Get elements for authentication
+const textEmail = document.getElementById('textEmail');
+const textPassword = document.getElementById('textPassword');
+const btnLogin = document.getElementById('btnLogin');
+const btnSignUp = document.getElementById('btnSignUp');
+const btnLogout = document.getElementById('btnLogout');
+
+// Add login event
+btnLogin.addEventListener('click', e => {
+  const email = textEmail.value;
+  const pass = textPassword.value;
+  const auth = firebase.auth();
+  
+  // Sign in
+  const promise = auth.signInWithEmailAndPAssword(email, pass);
+  promise.catch(e => console.log(e.message));
+});
+
+// Add signup event
+btnSignUp.addEventListener('click', e => {
+  //TODO: Check for real emails
+  const email = textEmail.value;
+  const pass = textPassword.value;
+  const auth = firebase.auth();
+
+  // Sign up
+  const promise = auth.createUserWithEmailAndPassword(email, pass);
+  promise.catch(e => console.log(e.message));
+});
+
+// Log out
+btnLogout.addEventListener('click', e => {
+  firebase.auth().signOut();
+});
+
+// Add a realtime listener to monitor the state of log out button 
+firebase.auth().onAuthStateChanged(firebaseUser => {
+  if (firebaseUser) {
+    console.log(firebaseUser);
+    btnLogout.classList.remove('hide');
+  } else {
+    console.log('not logged in');
+    btnLogout.classList.add('hide');
+  }
+});
