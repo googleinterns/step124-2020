@@ -13,10 +13,8 @@ $(document).ready(function() {
         event.stopPropagation();
       } else {
         signUp();
-        // send to home page
-        window.location.href = 'index.html';
       }
-      $('#signUpForm').addClass('was-validated');
+      //$('#signUpForm').addClass('was-validated');
     });
 });
 
@@ -43,7 +41,8 @@ signUp = () => {
       email: emailSignUp.value,    
       uID: firebase.auth().currentUser.uid
     }
-    ref.push(data);
+    ref.push(data).then(_ => window.location.href = 'index.html');
+
     }).catch(e => {console.log(e.message); alert(e.message);}); 
   }
 
