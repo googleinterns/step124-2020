@@ -57,6 +57,7 @@ let focusedPin;
 let homeMarker = null;
 let markers = [];
 
+// Keeps track of most recent search request
 let globalNonce;
 
 // Add gmap js library to head of page
