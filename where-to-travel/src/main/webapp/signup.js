@@ -6,7 +6,7 @@ const passwordConfirmation = document.getElementById('passwordConfirmation');
 // Preferred method of material form behavior interaction is jQuery
 // When the document is loaded, add validity check to form on submit.
 $(document).ready(function() {
-    $('#signUpForm').submit(function() {
+    $('#submit').click(function() {
       // if form is invalid, stop event
       if (!passwordConfirmation.validity.valid) {
         event.preventDefault();
