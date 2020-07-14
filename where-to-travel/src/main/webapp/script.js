@@ -282,9 +282,8 @@ function populatePlaces(placeArray) {
     const directionsLink = 'https://www.google.com/maps/dir/' +
       home.lat + ',' + home.lng + '/' +
       coordinates.lat() + ',' + coordinates.lng();
-    
-    const address = place.formatted_address;
 
+    const address = place.formatted_address;
     const timeStr = place.timeAsString;
 
     let placeMarker = new google.maps.Marker({
@@ -334,8 +333,6 @@ function populatePlaces(placeArray) {
       const name = $(this).parent().parent().parent().attr('placeName');
       const link = $(this).parent().next().attr('href');
       const time = $(this).parent().next().next().text();
-      console.log(name + " " + " " + link + " " + time);
-      console.log("There is a user pressing a star");
        // Add user information to the real time database in Firebase
       const database = firebase.database();
       var uID = firebase.auth().currentUser.uid;
@@ -570,7 +567,7 @@ function getPlacesFromDirection(lat, lng) {
         }
       }
       else {
-        //console.log(status);
+        console.log(status);
       }
 
       resolve(place_candidates);
