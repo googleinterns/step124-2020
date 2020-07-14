@@ -4,6 +4,36 @@ const passwordSignUp = document.getElementById('passwordSignUp');
 const passwordConfirmation = document.getElementById('passwordConfirmation');
 const btnSignUp = document.getElementById('signUp');
 
+// Preferred method of material form behavior interaction is jQuery
+// When the document is loaded, add validity check to form on submit.
+$(document).ready(function() {
+    $('#signUpForm').submit(function() {
+      // if form is invalid, stop event
+      if (!passwordConfirmation.validity.valid) {
+        event.preventDefault();
+        event.stopPropagation();
+      } else {
+        signUp();
+        // send to home page
+        window.location.href = 'index.html';
+      }
+      $('#signUpForm').addClass('was-validated');
+    });
+});
+
+function validatePassword(){
+  if(passwordSignUp.value != passwordConfirmation.value) {
+    passwordConfirmation.setCustomValidity('x');
+  } else {
+    passwordConfirmation.setCustomValidity('');
+  }
+}
+
+passwordSignUp.onchange = validatePassword;
+passwordConfirmation.onkeyup = validatePassword;
+
+
+
 // Add signup event
 btnSignUp.addEventListener('click', e => {
   // The user will be notified if it is invalid in the validate() function
@@ -44,5 +74,4 @@ function validate() {
     alert("is NOT a valid email address");
     return false;
   }
-  return false;
 }

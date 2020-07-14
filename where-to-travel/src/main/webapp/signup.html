@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <meta charset="UTF-8" />
+    <meta charset="UTF-8">
     <title>Where to?</title>
     <link rel="icon" href="icons/pin.svg">
     <link rel="stylesheet" href="https://unpkg.com/bootstrap-material-design@4.1.1/dist/css/bootstrap-material-design.min.css" integrity="sha384-wXznGJNEXNG1NFsbm0ugrLFMQPWswR3lds2VeinahP8N0zJw9VWSopbjv2x7WCvX" crossorigin="anonymous">
@@ -11,30 +11,35 @@
   <body>
     <div class="card over-card">
       <div class="card-body">
-        <h5 class="card-title">Sign Up</h5>
-        <form style="margin: auto">
+        <h5 class="card-title">Sign up</h5>
+        <form class="needs-validation" style="margin: auto" id="signUpForm" novalidate>
           <div class="form-group">
             <label for="emailInput" class="bmd-label-floating">Email address</label>
             <input type="email" class="form-control" id="emailSignUp">
           </div>
           <div class="form-group">
-            <label for="passwordInput" class="bmd-label-floating">Password</label>
+            <label for="passwordSignUp" class="bmd-label-floating">Password</label>
             <input type="password" class="form-control" id="passwordSignUp">
+            <div class="invalid-feedback">
+              You must agree before submitting.
+            </div>
           </div>
           <div class="form-group">
-            <label for="passwordInput" class="bmd-label-floating">Confirm password</label>
+            <label for="passwordConfirmation" class="bmd-label-floating">Confirm password</label>
             <input type="password" class="form-control" id="passwordConfirmation">
+            <div class="invalid-feedback">
+              Passwords do not match!
+            </div>
           </div>
-        </form>
-        <button type="button" id="signUp" class="btn btn-primary">sign up</button>
+        <button type="submit" id="submit" class="btn btn-primary" >sign up</button>
         <button type="button" id="back" onclick="location.href='index.html'" class="btn btn-primary" href="index.html">back to map</button>
+        </form>
       </div>
     </div>
     <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
     <script src="https://unpkg.com/popper.js@1.12.6/dist/umd/popper.js" integrity="sha384-fA23ZRQ3G/J53mElWqVJEGJzU0sTs+SvzG8fXVWP+kJQ1lwFAOkcUOysnlKJC33U" crossorigin="anonymous"></script>
     <script src="https://unpkg.com/bootstrap-material-design@4.1.1/dist/js/bootstrap-material-design.js" integrity="sha384-CauSuKpEqAFajSpkdjv3z9t8E7RlpJ1UP0lKM/+NdtSarroVKu069AlsRPKkFBz9" crossorigin="anonymous"></script>
     <script>$(document).ready(function() { $('body').bootstrapMaterialDesign(); });</script>
-    
     <!-- The core Firebase JS SDK is always required and must be listed first -->
     <script src="https://www.gstatic.com/firebasejs/7.15.5/firebase-app.js"></script>
     <!-- TODO: Add SDKs for Firebase products that you want to use
