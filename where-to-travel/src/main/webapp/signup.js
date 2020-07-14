@@ -44,8 +44,7 @@ signUp = () => {
         uID: firebase.auth().currentUser.uid
       }
       ref.push(data);
-    });
-    promise.catch(e => console.log(e.message), alert(e.message)); 
+    }).catch(e => {console.log(e.message); alert(e.message);}); 
   }
 
 
