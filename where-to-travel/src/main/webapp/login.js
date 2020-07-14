@@ -2,7 +2,6 @@
 const emailLogin = document.getElementById('emailLogin');
 const passwordLogin = document.getElementById('passwordLogin');
 const btnLogin = document.getElementById('login');
-//const btnLogout = document.getElementById('logout');
 
 // Add login event
 btnLogin.addEventListener('click', e => {
@@ -11,6 +10,12 @@ btnLogin.addEventListener('click', e => {
   const auth = firebase.auth();
   
   // Login 
-  const promise = auth.signInWithEmailAndPAssword(email, pass);
-  promise.catch(e => console.log(e.message));
+  const promise = auth.signInWithEmailAndPassword(email, pass);
+  promise.then(e => {
+    alert("You have sucessfully logged in!");
+  });
+  promise.catch(e => {
+    console.log(e.message);
+    alert(e.message);
+  });
 });
