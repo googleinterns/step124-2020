@@ -3,12 +3,12 @@ const nameSignUp = document.getElementById('nameSignUp')
 const emailSignUp = document.getElementById('emailSignUp');
 const passwordSignUp = document.getElementById('passwordSignUp');
 const passwordConfirmation = document.getElementById('passwordConfirmation');
-const btnSignUp = document.getElementById('signUp');
+const btnSignUp = document.getElementById('submit');
 
 // Preferred method of material form behavior interaction is jQuery
 // When the document is loaded, add validity check to form on submit.
 $(document).ready(function() {
-    $('#signUpForm').submit(function() {
+    $('#submit').click(function() {
       // if form is invalid, stop event
       if (!passwordConfirmation.validity.valid) {
         event.preventDefault();
@@ -33,53 +33,42 @@ function validatePassword(){
 passwordSignUp.onchange = validatePassword;
 passwordConfirmation.onkeyup = validatePassword;
 
-
-
-// Add signup event
-function signUp() {
-  
-  if (validate()==false) {
-      return;
-  } 
-  else if(pass != passConfirmation) {
-    alert("Your passwords do not match. Please try again.");
-  }
-  // Password must be at least 6 characters in length
-  else if(pass.length < 6) {
+signUp = () => {
+  // The user will be notified if it is invalid in the validate() function
+  validate();
+  if(passwordSignUp.value.length < 6) {
     alert("Your password must be at least 6 characters long. Please try again");
-  }
-  else {
+  } else {
     // Sign up
-    const promise = auth.createUserWithEmailAndPassword(email, pass);
+    const promise = firebase.auth().createUserWithEmailAndPassword(emailSignUp.value, passwordSignUp.value);
     promise.then(e => {
       alert("You have sucessfully signed up!");
-      var database = firebase.database();
-      var ref = database.ref('users/' + auth.currentUser.uid );
-        var data = {
-          name: name,
-          email: email,    
-          uID: auth.currentUser.uid,
-          places: null
-        }
-     ref.set(data);
+      var ref = firebase.database().ref('users/' + auth.currentUser.uid );
+      var data = {
+        name: name,
+        email: email,    
+        uID: auth.currentUser.uid,
+        places: null
+       }
+      ref.set(data);
     });
     promise.catch(e => console.log(e.message), alert(e.message));
   }
-});
+}
 
-// Verify that the email address is properly formatted using a regular expression
+// Verify that the email address is properly formatted using a regular expression.
+// A valid email is a string (a subset of ASCII characters) separated into two parts by an @ symbol. 
+// The two parts being personal_info and a domain, that is personal_info@domain. 
 function validateEmail(email) {
-    const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-    return re.test(email);
+  const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+  return re.test(email);
 }
 
 function validate() {
   if (validateEmail(emailSignUp.value)) {
-    document.getElementById("result").innerHTML= emailSignUp.value + " is a valid email address";
-    return true;
+    return;
   } else {
-    document.getElementById("result").innerHTML=emailSignUp.value + " is NOT a valid email address";
-    return false;
+    alert("is NOT a valid email address");
+    return;
   }
-  return false;
 }

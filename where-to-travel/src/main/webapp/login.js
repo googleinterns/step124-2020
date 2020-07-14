@@ -12,7 +12,7 @@ btnLogin.addEventListener('click', e => {
   // Login 
   const promise = auth.signInWithEmailAndPassword(email, pass);
   promise.then(e => {
-      alert("You have sucessfully loged in!");
+    alert("You have sucessfully logged in!");
   });
   promise.catch(e => {
     console.log(e.message);
