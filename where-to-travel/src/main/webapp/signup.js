@@ -9,8 +9,6 @@ btnSignUp.addEventListener('click', e => {
   // The user will be notified if it is invalid in the validate() function
   if (validate() == false) {
     return;
-  } else if(passwordSignUp.value != passwordConfirmation.value) {
-    alert("Your passwords do not match. Please try again.");
   } else if(passwordSignUp.value.length < 6) {
     alert("Your password must be at least 6 characters long. Please try again");
   } else {
