@@ -40,9 +40,8 @@ signUp = () => {
       name: name.value,
       email: emailSignUp.value,    
       uID: firebase.auth().currentUser.uid,
-      places: null
     }
-    ref.set(data); //.then(_ => window.location.href = 'index.html');
+    ref.set(data).then(_ => window.location.href = 'index.html');
   });
-  promise.catch(e => alert.(e.message));
+  promise.catch(e => alert(e.message));
 }
