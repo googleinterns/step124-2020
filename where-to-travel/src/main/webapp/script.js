@@ -284,7 +284,6 @@ function populatePlaces(placeArray) {
       coordinates.lat() + ',' + coordinates.lng();
 
     const address = place.formatted_address;
-
     const timeStr = place.timeAsString;
 
     let placeMarker = new google.maps.Marker({
@@ -328,8 +327,26 @@ function populatePlaces(placeArray) {
 
     markers.push(placeMarker);
   }
+
+  document.getElementById(SCROLL_ID).hidden = false;
+
   $('.icon').click(function() {
     $(this).toggleClass('press');
+    if (firebase.auth().currentUser ) {
+      const name = $(this).parent().parent().parent().attr('placeName');
+      const link = $(this).parent().next().attr('href');
+      const time = $(this).parent().next().next().text();
+       // Add user information to the real time database in Firebase
+      const database = firebase.database();
+      var uID = firebase.auth().currentUser.uid;
+      var ref = database.ref('users/' + uID + '/' + 'places' + '/' + name);
+      var data = {
+        name: name,
+        link: link,
+        time: time,
+      }
+      ref.set(data);
+    }
   });
 }
 
@@ -431,7 +448,7 @@ function clearPlaces() {
   while (parent.firstChild) {
     parent.firstChild.remove();
   }
-
+  parent.hidden = true;
   for (marker of markers) {
     marker.setMap(null);
   }
