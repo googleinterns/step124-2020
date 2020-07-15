@@ -24,7 +24,7 @@
                 <img onclick="showInfoModal()" class="btn btn-icon" src="icons/help.svg">
               <a class="btn btn-outline-primary" style="text-align: center" href="login.html">Login</a>
               <span id="nav-text">or</span>
-              <a class="btn btn-outline-primary" href="signup.html">Sign up</a>
+              <a class="btn btn-outline-primary" onclick="showSignUp()">Sign up</a>
             </li>
           </ul>
         </div>
@@ -92,6 +92,7 @@
           <button type="button" id="submit" class="btn btn-primary search-btn">Search</button>
         </span>
       </div>
+
       <main class="bmd-layout-content">
         <div hidden class="card-scroller" id="scroller">
         </div>
@@ -122,6 +123,41 @@
           </div>
         </div>
       </div>
+        
+      <div class="modal fade" id="signUp-modal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-sm" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title">Sign Up</h5>      
+            </div>
+            <div class="modal-body">
+                <form style="margin: auto" id="signUpForm" action="">
+                <div class="form-group">
+                    <label for="emailInput" class="bmd-label-floating">Email address</label>
+                    <input type="email" class="form-control" id="emailSignUp">
+                </div>
+                <div class="form-group">
+                    <label for="passwordSignUp" class="bmd-label-floating">Password</label>
+                    <input type="password" class="form-control" minlength="6" id="passwordSignUp" oninvalid="this.setCustomValidity('Password must be at least 6 characters.')">
+                </div>
+                <div class="form-group">
+                    <label for="passwordConfirmation" class="bmd-label-floating">Confirm password</label>
+                    <input type="password" class="form-control" id="passwordConfirmation">
+                    <div class="invalid-feedback">
+                    Passwords do not match!
+                    </div>
+                </div>
+                <div class="text-center">
+                <button type="submit" id="submit" class="btn btn-primary">Sign Up</button>
+                <button type="button" id="back"  class="btn btn-primary" data-dismiss="modal">Cancel</button>
+                </div>
+                </form>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    
 
     </div>
     <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
@@ -143,4 +179,5 @@
   firebase.analytics();
   </script>
   <script src="script.js"></script>
+  <script src="signup.js"></script>
 </body>
