@@ -33,7 +33,7 @@ passwordConfirmation.onkeyup = validatePassword;
 signUp = () => {
   // The user will be notified if it is invalid in the validate() function
   const promise = firebase.auth().createUserWithEmailAndPassword(emailSignUp.value, passwordSignUp.value);
-  promise.then(e => {
+  promise.then(_ => {
     alert("You have sucessfully signed up!");
     var ref = firebase.database().ref('users/' + firebase.auth().currentUser.uid );
     var data = {

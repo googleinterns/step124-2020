@@ -327,6 +327,9 @@ function populatePlaces(placeArray) {
 
     markers.push(placeMarker);
   }
+
+  document.getElementById(SCROLL_ID).hidden = false;
+
   $('.icon').click(function() {
     $(this).toggleClass('press');
     if (firebase.auth().currentUser ) {
@@ -445,7 +448,7 @@ function clearPlaces() {
   while (parent.firstChild) {
     parent.firstChild.remove();
   }
-
+  parent.hidden = true;
   for (marker of markers) {
     marker.setMap(null);
   }
