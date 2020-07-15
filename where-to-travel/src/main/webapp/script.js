@@ -42,7 +42,7 @@ const SUBMIT_ID = 'submit';
 const HOURS_ID = 'hrs';
 const MINUTES_ID = 'mnts';
 const SCROLL_ID = 'scroller';
-const DASH_ID = 'dashboard';
+const DASH_ID = 'dash';
 const PIN_PATH = 'icons/pin.svg';
 const SELECTED_PIN_PATH = 'icons/selectedPin.svg';
 const HOME_PIN_PATH = 'icons/home.svg';
@@ -70,11 +70,6 @@ document.head.appendChild(script);
 
 /** Initializes map window, runs on load. */
 async function initialize() {
-  if (!user) {
-    addLoginButtons();
-  } else {
-    addUserDash();
-  }
   const submit = document.getElementById(SUBMIT_ID);
   submit.addEventListener('click', submitDataListener);
 
@@ -99,6 +94,15 @@ function showInfoModal() {
     .then(response => response.text())
     .then(content => openModal(content));
 }
+
+firebase.auth().onAuthStateChanged(function(user) {
+  $('#' + DASH_ID).empty();
+  if (user) {
+    addUserDash();
+  } else {
+    addLoginButtons();
+  }
+});
 
 /**
  * Obtains user's location from either browser or an inputted address and sets home location. If error
@@ -219,7 +223,9 @@ function addLoginButtons() {
 
 function addUserDash() {
   const dashElement = $(getUserDashHtml(user));
-  $('#' + DASH_ID).append(dashElement);
+  let userDash = $('#' + DASH_ID);
+  
+  userDash.append(dashElement);
 }
 
 /** Toggle the focused pin/card off */
