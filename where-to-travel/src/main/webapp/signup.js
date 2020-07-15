@@ -30,11 +30,12 @@ function validatePassword(){
 passwordSignUp.onchange = validatePassword;
 passwordConfirmation.onkeyup = validatePassword;
 
+/** Unhides modal containing signup form */
 function showSignUp() {
   $('#signUp-modal').modal({show: true});
 }
 
-// Clear all input to form once it is closed
+// Clear all input to form once it modal is closed
 $('#signUp-modal').on('hidden.bs.modal', function(){
     $(this).find('form')[0].reset();
 });
