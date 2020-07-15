@@ -6,7 +6,7 @@ const passwordConfirmation = document.getElementById('passwordConfirmation');
 // Preferred method of material form behavior interaction is jQuery
 // When the document is loaded, add validity check to form on submit.
 $(document).ready(function() {
-    $('#submit').click(function() {
+    $(document).on('submit', '#signUpForm', function() {
       // if form is invalid, stop event
       if (!passwordConfirmation.validity.valid) {
         event.preventDefault();
@@ -14,6 +14,7 @@ $(document).ready(function() {
       } else {
         signUp();
       }
+      return false;
       //$('#signUpForm').addClass('was-validated');
     });
 });
@@ -29,19 +30,28 @@ function validatePassword(){
 passwordSignUp.onchange = validatePassword;
 passwordConfirmation.onkeyup = validatePassword;
 
+function showSignUp() {
+  $('#signUp-modal').modal({show: true});
+}
+
+// Clear all input to form once it is closed
+$('#signUp-modal').on('hidden.bs.modal', function(){
+    $(this).find('form')[0].reset();
+});
+
 // Add signup event
 signUp = () => {
   const promise = firebase.auth().createUserWithEmailAndPassword(emailSignUp.value, passwordSignUp.value);
-  promise.then(_ => {
-    alert("You have sucessfully signed up!");
-      
+  promise.then(_ => {      
     // Add user information to the real time database in Firebase
     let ref = firebase.database().ref('users');
     let data = {
       email: emailSignUp.value,    
       uID: firebase.auth().currentUser.uid
     }
-    ref.push(data).then(_ => window.location.href = 'index.html');
-  }).catch(e => {console.log(e.message); alert(e.message);}); 
+    ref.push(data)
+      .then(_ => $('#signUp-modal').modal('hide'))
+      .catch(e => {console.log(e.message); alert(e.message);}); 
+  });
 }
 
