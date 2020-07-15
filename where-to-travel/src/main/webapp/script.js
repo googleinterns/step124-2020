@@ -43,6 +43,7 @@ const HOURS_ID = 'hrs';
 const MINUTES_ID = 'mnts';
 const SCROLL_ID = 'scroller';
 const DASH_ID = 'dash';
+const LOGOUT_ID = 'logout';
 const PIN_PATH = 'icons/pin.svg';
 const SELECTED_PIN_PATH = 'icons/selectedPin.svg';
 const HOME_PIN_PATH = 'icons/home.svg';
@@ -223,9 +224,13 @@ function addLoginButtons() {
 
 function addUserDash() {
   const dashElement = $(getUserDashHtml(user));
-  let userDash = $('#' + DASH_ID);
-  
-  userDash.append(dashElement);
+  console.log('hello');
+  dashElement.click(function () {
+    firebase.auth().signOut().catch(function(error) {
+      console.log('Error occurred while sigining user out ' + error);
+    });
+  });
+  $('#' + DASH_ID).append(dashElement);
 }
 
 /** Toggle the focused pin/card off */
@@ -366,7 +371,7 @@ function getLoginHtml() {
 }
 
 function getUserDashHtml(user) {
-  return '<a class="btn btn-outline-primary" style="text-align: center" href="login.html">Logout</a>';
+  return '<a class="btn btn-outline-primary" id="logout" style="text-align: center">Logout</a>';
 }
 
 /**
