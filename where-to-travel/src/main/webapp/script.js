@@ -285,7 +285,7 @@ function populatePlaces(placeArray) {
     let placeMarker = new google.maps.Marker({
       position: place.geometry.location,
       map: map,
-      title: name,
+      title: place.name,
       icon: PIN_PATH,
     });
 
@@ -296,7 +296,7 @@ function populatePlaces(placeArray) {
     let cardElement = $(htmlContent).click(function(event) {
       if(event.target.nodeName != 'SPAN') {
         toggleFocusOff();
-        selectLocationMarker(name);
+        selectLocationMarker(place.name);
         $(this).addClass('active-card');
        focusedCard = this;
       }
@@ -361,6 +361,8 @@ function getLocationCardHtml(place) {
     coordinates.lat() + ',' + coordinates.lng();
 
   const timeStr = place.timeAsString;
+
+  const place_id = place.place_id;
     
   const iconId = 'icon' + name;
   return innerHtml = '' +
@@ -372,7 +374,7 @@ function getLocationCardHtml(place) {
         <span>
         </h5>
         <a target="_blank" href="${directionsLink}" class="btn btn-primary active">Directions</a>
-        <a target="_blank" onclick="populateMorePlaceInfo(${place_id})" class="btn btn-primary active">More Information</a>
+        <a target="_blank" onclick="populateMorePlaceInfo('${place_id}')" class="btn btn-primary active">More Information</a>
         <h6>${timeStr}</h6>
       </div>
     </div>`;
@@ -673,7 +675,6 @@ function populateMorePlaceInfo(place_id) {
       'formatted_phone_number',
       'opening_hours',
       'rating',
-      'weekday_text',
       'url',
       'website' 
     ]
