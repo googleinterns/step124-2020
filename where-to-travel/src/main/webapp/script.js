@@ -683,7 +683,7 @@ function populateMorePlaceInfo(place_id) {
 
   function callback(place, status) {
     if (status == google.maps.places.PlacesServiceStatus.OK) {
-      (place);
+      console.log(place);
     }
   }
 }
