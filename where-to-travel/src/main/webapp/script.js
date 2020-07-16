@@ -57,6 +57,9 @@ let focusedPin;
 let homeMarker = null;
 let markers = [];
 
+let placesService;
+let distanceMatrixService;
+
 // Add gmap js library to head of page
 const script = document.createElement('script');
 script.src =
@@ -87,6 +90,9 @@ async function initialize() {
   };
   map = new google.maps.Map(document.getElementById('map'), mapOptions);
 
+  placesService = new google.maps.places.PlacesService(map);
+  distanceMatrixService = new google.maps.DistanceMatrixService();
+   
   showInfoModal();
 }
 
@@ -276,24 +282,14 @@ function submitDataListener(event) {
  */
 function populatePlaces(placeArray) {
   for(place of placeArray) {
-    const name = place.name;
-    const coordinates = place.geometry.location;
-
-    const directionsLink = 'https://www.google.com/maps/dir/' +
-      home.lat + ',' + home.lng + '/' +
-      coordinates.lat() + ',' + coordinates.lng();
-
-    const address = place.formatted_address;
-    const timeStr = place.timeAsString;
-
     let placeMarker = new google.maps.Marker({
-      position: coordinates,
+      position: place.geometry.location,
       map: map,
       title: name,
       icon: PIN_PATH,
     });
 
-    const htmlContent = getLocationCardHtml(name, address, directionsLink, timeStr);
+    const htmlContent = getLocationCardHtml(place);
 
     // For the material bootstrap library, the preferred method of dom interaction is jquery,
     // especially for adding elements.
@@ -353,25 +349,30 @@ function populatePlaces(placeArray) {
 /**
  * Helper function that returns the an HTML string representing a place card
  * that can be added to the DOM.
- * @param {string} title the place title
- * @param {string} directionsLink the link to the GMaps directions for this place
- * @param {string} timeStr the amount of time it takes to travel to this place, as a string
+ * @param {Object} place Contains name, lat/lng coordinates, place_id, and travel time to place
+ * @return {String} HTML content to place inside infocard corresponding to place
  */
-function getLocationCardHtml(title, address, directionsLink, timeStr) {
-  const iconId = 'icon' + title;
-  // Link to google search query with name and address of place for user to get more information
-  const titleLink = 'https://www.google.com/search?q=' + encodeURIComponent(title + ' ' + address);
+function getLocationCardHtml(place) {
+  const name = place.name;
+
+  const coordinates = place.geometry.location;
+  const directionsLink = 'https://www.google.com/maps/dir/' +
+    home.lat + ',' + home.lng + '/' +
+    coordinates.lat() + ',' + coordinates.lng();
+
+  const timeStr = place.timeAsString;
+    
+  const iconId = 'icon' + name;
   return innerHtml = '' +
-    `<div class="card location-card" placeName="${title}" style="margin-right: 0;">
+    `<div class="card location-card" placeName="${name}" style="margin-right: 0;">
       <div class="card-body">
-        <h5 class="card-title">
-        <a target="_blank" href="${titleLink}">${title}</a>
+        <h5 class="card-title">${name}
         <span class="icon" id="${iconId}">
           &#9733
         <span>
         </h5>
         <a target="_blank" href="${directionsLink}" class="btn btn-primary active">Directions</a>
-        </h5>
+        <a target="_blank" onclick="populateMorePlaceInfo(${place_id})" class="btn btn-primary active">More Information</a>
         <h6>${timeStr}</h6>
       </div>
     </div>`;
@@ -576,8 +577,7 @@ function getPlacesFromDirection(lat, lng) {
       resolve(place_candidates);
     }
 
-    service = new google.maps.places.PlacesService(map);
-    service.textSearch(request, callback);
+    placesService.textSearch(request, callback);
   });
 }
 
@@ -625,8 +625,7 @@ function addAcceptablePlaces(time, places, acceptablePlacesInfo) {
       destinations.push(destination);
     }
 
-    let service = new google.maps.DistanceMatrixService();
-    service.getDistanceMatrix({
+    distanceMatrixService.getDistanceMatrix({
       origins: [home],
       destinations: destinations,
       travelMode: 'DRIVING',
@@ -652,7 +651,7 @@ function addAcceptablePlaces(time, places, acceptablePlacesInfo) {
               acceptablePlacesInfo.places.push({
                 name: places[j].name,
                 geometry: places[j].geometry,
-                formatted_address: places[j].formatted_address,
+                place_id: places[j].place_id,
                 timeInSeconds: destination_time,
                 timeAsString: destination_info.duration.text
               });
@@ -663,4 +662,28 @@ function addAcceptablePlaces(time, places, acceptablePlacesInfo) {
       resolve(acceptablePlacesInfo);
     }
   });
+}
+
+
+function populateMorePlaceInfo(place_id) {
+  let request = {
+    placeId: place_id,
+    fields: [
+      'formatted_address',
+      'formatted_phone_number',
+      'opening_hours',
+      'rating',
+      'weekday_text',
+      'url',
+      'website' 
+    ]
+  };
+
+  placesService.getDetails(request, callback);
+
+  function callback(place, status) {
+    if (status == google.maps.places.PlacesServiceStatus.OK) {
+      (place);
+    }
+  }
 }
