@@ -1,11 +1,17 @@
+/**
+ * All javascript that handles the behavior of the sign-up form.
+ * Importantly, this file includes all js validation for sign-up fields.
+ */
 
+'use strict';
 // Get elements for authentication
+const nameSignUp = document.getElementById('nameSignUp')
 const emailSignUp = document.getElementById('emailSignUp');
 const passwordSignUp = document.getElementById('passwordSignUp');
 const passwordConfirmation = document.getElementById('passwordConfirmation');
-const btnSignUp = document.getElementById('signUp');
+const name = document.getElementById('nameSignUp');
 
-'use strict';
+// On window load, attach all validation functions to input elements.
 window.addEventListener('load', function() {
   function validatePassword(){
     if(passwordSignUp.value != passwordConfirmation.value) {
@@ -17,32 +23,15 @@ window.addEventListener('load', function() {
 
   passwordSignUp.onchange = validatePassword;
   passwordConfirmation.onkeyup = validatePassword;
-  
-  const email = document.getElementById('emailSignUp');
-  email.addEventListener('focusout', function(event) {
-    if (event.target.validity.valid === false) {
-      event.target.parentNode.classList.add('was-validated');
-    }
-  });
 
-  const password = document.getElementById('passwordSignUp');
-  password.addEventListener('focusout', function(event) {
-    if (event.target.validity.valid === false) {
-      event.target.parentNode.classList.add('was-validated');
-    }
-  });
-
-  const confirmPass = document.getElementById('passwordConfirmation');
-  confirmPass.addEventListener('focusout', function(event) {
-    if (event.target.validity.valid === false) {
-      event.target.parentNode.classList.add('was-validated');
-    }
-  });
+  addFocusOutEvent(emailSignUp);
+  addFocusOutEvent(passwordSignUp);
+  addFocusOutEvent(passwordConfirmation);
 
   // Fetch all the forms we want to apply custom Bootstrap validation styles to
-  var forms = document.getElementsByClassName('needs-validation');
+  const forms = document.getElementsByClassName('needs-validation');
   // Loop over them and prevent submission
-  var validation = Array.prototype.filter.call(forms, function(form) {
+  const validation = Array.prototype.filter.call(forms, function(form) {
     form.addEventListener('submit', function(event) {
       if (form.checkValidity() === false) {
         event.preventDefault();
@@ -53,8 +42,22 @@ window.addEventListener('load', function() {
   });
 }, false);
 
-
-// Add signup event
+/**
+ * Attaches a listener to the focusout event for an input element.
+ *
+ * @param inputElement a DOM input elemtn
+ */
+function addFocusOutEvent(inputElement) {
+  inputElement.addEventListener('focusout', function(event) {
+    if (event.target.validity.valid === false) {
+      event.target.parentNode.classList.add('was-validated');
+    }
+  });
+}
+ 
+/**
+ * Signs user up using the firebase auth API.
+ */
 function signUp() {
   //TODO: Check for real emails
   const email = emailSignUp.value;
