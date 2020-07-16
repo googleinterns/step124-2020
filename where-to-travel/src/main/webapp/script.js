@@ -224,8 +224,7 @@ function addLoginButtons() {
 
 function addUserDash() {
   const dashElement = $(getUserDashHtml(user));
-  console.log('hello');
-  dashElement.click(function () {
+  $(dashElement[2]).click(function () {
     firebase.auth().signOut().catch(function(error) {
       console.log('Error occurred while sigining user out ' + error);
     });
