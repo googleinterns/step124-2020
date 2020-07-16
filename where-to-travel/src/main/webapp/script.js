@@ -372,7 +372,7 @@ function getLoginHtml() {
 
 function getUserDashHtml(user) {
   return `<img onclick="showInfoModal()" class="btn btn-icon" src="icons/help.svg">
-          <a class="btn btn-outline-primary" id="logout" style="text-align: center">Logout</a>`;
+          <a class="btn btn-outline-primary" style="color: #049688;" id="logout">Logout</a>`;
 }
 
 /**
