@@ -1,3 +1,8 @@
+/**
+ * All javascript that handles the behavior of the sign-up form.
+ * Importantly, this file includes all js validation for sign-up fields.
+ */
+
 'use strict';
 // Get elements for authentication
 const emailSignUp = document.getElementById('emailSignUp');
@@ -5,6 +10,7 @@ const passwordSignUp = document.getElementById('passwordSignUp');
 const passwordConfirmation = document.getElementById('passwordConfirmation');
 const btnSignUp = document.getElementById('signUp');
 
+// On window load, attach all validation functions to input elements.
 window.addEventListener('load', function() {
   function validatePassword(){
     if(passwordSignUp.value != passwordConfirmation.value) {
@@ -36,7 +42,9 @@ window.addEventListener('load', function() {
 }, false);
 
 /**
-
+ * Attaches a listener to the focusout event for an input element.
+ *
+ * @param inputElement a DOM input elemtn
  */
 function addFocusOutEvent(inputElement) {
   inputElement.addEventListener('focusout', function(event) {
@@ -46,7 +54,9 @@ function addFocusOutEvent(inputElement) {
   });
 }
  
-// Add signup event
+/**
+ * Signs user up using the firebase auth API.
+ */
 function signUp() {
   //TODO: Check for real emails
   const email = emailSignUp.value;
