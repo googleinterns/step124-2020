@@ -35,7 +35,7 @@ function showSignUp() {
   $('#signUp-modal').modal({show: true});
 }
 
-// Clear all input to form once it modal is closed
+// Clear all input to form once modal is closed
 $('#signUp-modal').on('hidden.bs.modal', function(){
     $(this).find('form')[0].reset();
 });
