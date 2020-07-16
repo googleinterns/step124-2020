@@ -5,10 +5,11 @@
 
 'use strict';
 // Get elements for authentication
+const nameSignUp = document.getElementById('nameSignUp')
 const emailSignUp = document.getElementById('emailSignUp');
 const passwordSignUp = document.getElementById('passwordSignUp');
 const passwordConfirmation = document.getElementById('passwordConfirmation');
-const btnSignUp = document.getElementById('signUp');
+const name = document.getElementById('nameSignUp');
 
 // On window load, attach all validation functions to input elements.
 window.addEventListener('load', function() {

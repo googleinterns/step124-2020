@@ -12,7 +12,11 @@
     <div class="card over-card">
       <div class="card-body">
         <h5 class="card-title">Sign up</h5>
-        <form class="needs-validation" style="margin: auto" id="signUpForm" novalidate>
+        <form style="margin: auto" id="signUpForm">
+          <div class="form-group">
+            <label for="nameInput" class="bmd-label-floating">Name</label>
+            <input type="email" class="form-control" id="nameSignUp">
+          </div>
           <div class="form-group">
             <label for="emailInput" class="bmd-label-floating">Email address</label>
             <input type="email" class="form-control" id="emailSignUp" required>
@@ -49,7 +53,7 @@
               Looks good!
             </div>
           </div>
-        <button type="submit" id="submit" class="btn btn-primary" >sign up</button>
+        <button type="button" id="submit" class="btn btn-primary" >Sign up</button>
         <button type="button" id="back" onclick="location.href='index.html'" class="btn btn-primary" href="index.html">back to map</button>
         </form>
       </div>
@@ -58,6 +62,7 @@
     <script src="https://unpkg.com/popper.js@1.12.6/dist/umd/popper.js" integrity="sha384-fA23ZRQ3G/J53mElWqVJEGJzU0sTs+SvzG8fXVWP+kJQ1lwFAOkcUOysnlKJC33U" crossorigin="anonymous"></script>
     <script src="https://unpkg.com/bootstrap-material-design@4.1.1/dist/js/bootstrap-material-design.js" integrity="sha384-CauSuKpEqAFajSpkdjv3z9t8E7RlpJ1UP0lKM/+NdtSarroVKu069AlsRPKkFBz9" crossorigin="anonymous"></script>
     <script>$(document).ready(function() { $('body').bootstrapMaterialDesign(); });</script>
+    
     <!-- The core Firebase JS SDK is always required and must be listed first -->
     <script src="https://www.gstatic.com/firebasejs/7.15.5/firebase-app.js"></script>
     <!-- TODO: Add SDKs for Firebase products that you want to use
@@ -66,21 +71,9 @@
     <script src="https://www.gstatic.com/firebasejs/7.15.5/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/7.15.5/firebase-database.js"></script>
     <script>
-      // Your web app's Firebase configuration
-      var firebaseConfig = {
-        apiKey: "AIzaSyBWdvjzcH9EEGrqCG0ca8G8VDZwCSyAL-k",
-        authDomain: "where-to-8d512.firebaseapp.com",
-        databaseURL: "https://where-to-8d512.firebaseio.com",
-        projectId: "where-to-8d512",
-        storageBucket: "where-to-8d512.appspot.com",
-        messagingSenderId: "561353405828",
-        appId: "1:561353405828:web:e821cd8d130cd7714919d1",
-        measurementId: "G-KR73M56G0S"
-      };
-
-      // Initialize Firebase
-      firebase.initializeApp(firebaseConfig);
-      firebase.analytics();
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    firebase.analytics();
     </script>
     <script src="signup.js"></script>
   </body>
