@@ -1,11 +1,10 @@
-
+'use strict';
 // Get elements for authentication
 const emailSignUp = document.getElementById('emailSignUp');
 const passwordSignUp = document.getElementById('passwordSignUp');
 const passwordConfirmation = document.getElementById('passwordConfirmation');
 const btnSignUp = document.getElementById('signUp');
 
-'use strict';
 window.addEventListener('load', function() {
   function validatePassword(){
     if(passwordSignUp.value != passwordConfirmation.value) {
@@ -17,27 +16,10 @@ window.addEventListener('load', function() {
 
   passwordSignUp.onchange = validatePassword;
   passwordConfirmation.onkeyup = validatePassword;
-  
-  const email = document.getElementById('emailSignUp');
-  email.addEventListener('focusout', function(event) {
-    if (event.target.validity.valid === false) {
-      event.target.parentNode.classList.add('was-validated');
-    }
-  });
 
-  const password = document.getElementById('passwordSignUp');
-  password.addEventListener('focusout', function(event) {
-    if (event.target.validity.valid === false) {
-      event.target.parentNode.classList.add('was-validated');
-    }
-  });
-
-  const confirmPass = document.getElementById('passwordConfirmation');
-  confirmPass.addEventListener('focusout', function(event) {
-    if (event.target.validity.valid === false) {
-      event.target.parentNode.classList.add('was-validated');
-    }
-  });
+  addFocusOutEvent(emailSignUp);
+  addFocusOutEvent(passwordSignUp);
+  addFocusOutEvent(passwordConfirmation);
 
   // Fetch all the forms we want to apply custom Bootstrap validation styles to
   const forms = document.getElementsByClassName('needs-validation');
@@ -53,7 +35,17 @@ window.addEventListener('load', function() {
   });
 }, false);
 
+/**
 
+ */
+function addFocusOutEvent(inputElement) {
+  inputElement.addEventListener('focusout', function(event) {
+    if (event.target.validity.valid === false) {
+      event.target.parentNode.classList.add('was-validated');
+    }
+  });
+}
+ 
 // Add signup event
 function signUp() {
   //TODO: Check for real emails
