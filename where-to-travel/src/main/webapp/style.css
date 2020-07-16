@@ -1,6 +1,6 @@
 .active {
   box-shadow: 6px 12px 9px #888888;
-  outline: 5px solid #6CC551;
+  outline: 5px solid #FF5C0A;
   margin-bottom: 10px;
   margin-top: 10px;
   z-index: 500;
@@ -70,11 +70,11 @@ html {
 }
 
 .icon:hover {
-  color:#666;
+  color: #666;
 }
 
 .icon.press {
-  color:#e23b3b;
+  color: #D70D00;
 }
 
 .location-card {
@@ -101,7 +101,6 @@ html {
   width: fit-content;
   right: 0;
   top: 0;
-  width: fit-content;
 }
 
 #search-btn-container {
