@@ -332,7 +332,7 @@ function populatePlaces(placeArray) {
 
   $('.icon').click(function() {
     $(this).toggleClass('press');
-    if (firebase.auth().currentUser ) {
+    if (firebase.auth().currentUser && $(this).hasClass('press')   == true) {
       const name = $(this).parent().parent().parent().attr('placeName');
       const link = $(this).parent().next().attr('href');
       const time = $(this).parent().next().next().text();
