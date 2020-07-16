@@ -365,13 +365,15 @@ function getLocationCardHtml(title, directionsLink, timeStr) {
 }
 
 function getLoginHtml() {
-  return `<a class="btn btn-outline-primary" style="text-align: center" href="login.html">Login</a>
+  return `<img onclick="showInfoModal()" class="btn btn-icon" src="icons/help.svg">
+          <a class="btn btn-outline-primary" style="text-align: center" href="login.html">Login</a>
           <span id="nav-text">or</span>
           <a class="btn btn-outline-primary" href="signup.html">Sign up</a>`;
 }
 
 function getUserDashHtml(user) {
-  return '<a class="btn btn-outline-primary" id="logout" style="text-align: center">Logout</a>';
+  return `<img onclick="showInfoModal()" class="btn btn-icon" src="icons/help.svg">
+          <a class="btn btn-outline-primary" id="logout" style="text-align: center">Logout</a>`;
 }
 
 /**
