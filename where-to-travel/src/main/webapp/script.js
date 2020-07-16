@@ -42,7 +42,8 @@ const SUBMIT_ID = 'submit';
 const HOURS_ID = 'hrs';
 const MINUTES_ID = 'mnts';
 const SCROLL_ID = 'scroller';
-const DASH_ID = 'dashboard';
+const DASH_ID = 'dash';
+const LOGOUT_ID = 'logout';
 const PIN_PATH = 'icons/pin.svg';
 const SELECTED_PIN_PATH = 'icons/selectedPin.svg';
 const HOME_PIN_PATH = 'icons/home.svg';
@@ -70,11 +71,6 @@ document.head.appendChild(script);
 
 /** Initializes map window, runs on load. */
 async function initialize() {
-  if (!user) {
-    addLoginButtons();
-  } else {
-    addUserDash();
-  }
   const submit = document.getElementById(SUBMIT_ID);
   submit.addEventListener('click', submitDataListener);
 
@@ -99,6 +95,15 @@ function showInfoModal() {
     .then(response => response.text())
     .then(content => openModal(content));
 }
+
+firebase.auth().onAuthStateChanged(function(user) {
+  $('#' + DASH_ID).empty();
+  if (user) {
+    addUserDash();
+  } else {
+    addLoginButtons();
+  }
+});
 
 /**
  * Obtains user's location from either browser or an inputted address and sets home location. If error
@@ -219,6 +224,11 @@ function addLoginButtons() {
 
 function addUserDash() {
   const dashElement = $(getUserDashHtml(user));
+  $(dashElement[2]).click(function () {
+    firebase.auth().signOut().catch(function(error) {
+      console.log('Error occurred while sigining user out ' + error);
+    });
+  });
   $('#' + DASH_ID).append(dashElement);
 }
 
@@ -378,13 +388,15 @@ function getLocationCardHtml(title, address, directionsLink, timeStr) {
 }
 
 function getLoginHtml() {
-  return `<a class="btn btn-outline-primary" style="text-align: center" href="login.html">Login</a>
+  return `<img onclick="showInfoModal()" class="btn btn-icon" src="icons/help.svg">
+          <a class="btn btn-outline-primary" style="text-align: center" href="login.html">Login</a>
           <span id="nav-text">or</span>
           <a class="btn btn-outline-primary" href="signup.html">Sign up</a>`;
 }
 
 function getUserDashHtml(user) {
-  return '<a class="btn btn-outline-primary" style="text-align: center" href="login.html">Logout</a>';
+  return `<img onclick="showInfoModal()" class="btn btn-icon" src="icons/help.svg">
+          <a class="btn btn-outline-primary" style="color: #049688;" id="logout">Logout</a>`;
 }
 
 /**
