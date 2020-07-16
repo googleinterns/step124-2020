@@ -332,11 +332,11 @@ function populatePlaces(placeArray) {
 
   $('.icon').click(function() {
     $(this).toggleClass('press');
-    if (firebase.auth().currentUser ) {
+    if (firebase.auth().currentUser && $(this).hasClass('press') == true) {
       const name = $(this).parent().parent().parent().attr('placeName');
       const link = $(this).parent().next().attr('href');
       const time = $(this).parent().next().next().text();
-       // Add user information to the real time database in Firebase
+       // Add users saved places to the real time database in Firebase when star is pressed
       const database = firebase.database();
       var uID = firebase.auth().currentUser.uid;
       var ref = database.ref('users/' + uID + '/' + 'places' + '/' + name);
@@ -346,6 +346,12 @@ function populatePlaces(placeArray) {
         time: time,
       }
       ref.set(data);
+    } else if (firebase.auth().currentUser && $(this).hasClass('press') == false) {
+      const name = $(this).parent().parent().parent().attr('placeName');
+       // Delete user saved places when the star is not pressed
+      var uID = firebase.auth().currentUser.uid;
+      var ref = firebase.database().ref('users/' + uID + '/' + 'places' + '/' + name);
+      ref.remove();
     }
   });
 }
