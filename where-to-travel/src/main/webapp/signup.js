@@ -45,7 +45,7 @@ window.addEventListener('load', function() {
 /**
  * Attaches a listener to the focusout event for an input element.
  *
- * @param inputElement a DOM input elemtn
+ * @param inputElement a DOM input element
  */
 function addFocusOutEvent(inputElement) {
   inputElement.addEventListener('focusout', function(event) {
