@@ -217,11 +217,17 @@ function openModal(content) {
   map.addListener('click', toggleFocusOff);
 }
 
+/**
+ * Adds login elements to the DOM
+ */
 function addLoginButtons() {
   const dashElement = $(getLoginHtml());
   $('#' + DASH_ID).append(dashElement);
 }
 
+/**
+ * Adds user dash elements to the DOM
+ */
 function addUserDash() {
   const dashElement = $(getUserDashHtml(user));
   $(dashElement[2]).click(function () {
@@ -296,6 +302,7 @@ function populatePlaces(placeArray) {
     const address = place.formatted_address;
     const timeStr = place.timeAsString;
 
+    // marker creation
     let placeMarker = new google.maps.Marker({
       position: coordinates,
       map: map,
@@ -317,6 +324,7 @@ function populatePlaces(placeArray) {
     });
     $('#' + SCROLL_ID).append(cardElement);
 
+    // Add events to focus card and pin
     placeMarker.addListener('click', function () {
       toggleFocusOff();
       focusedPin = placeMarker;
@@ -340,6 +348,7 @@ function populatePlaces(placeArray) {
 
   document.getElementById(SCROLL_ID).hidden = false;
 
+  // Handle favoriting a place
   $('.icon').click(function() {
     $(this).toggleClass('press');
     if (firebase.auth().currentUser ) {
@@ -387,6 +396,11 @@ function getLocationCardHtml(title, address, directionsLink, timeStr) {
     </div>`;
 }
 
+/**
+ * A helper function that returns the HTML for login.
+ * 
+ * @returns the HTML for login as a string
+ */
 function getLoginHtml() {
   return `<img onclick="showInfoModal()" class="btn btn-icon" src="icons/help.svg">
           <a class="btn btn-outline-primary" style="text-align: center" href="login.html">Login</a>
@@ -394,6 +408,12 @@ function getLoginHtml() {
           <a class="btn btn-outline-primary" href="signup.html">Sign up</a>`;
 }
 
+/**
+ * A helper function that returns the HTML for the user dashboard given a user.
+ * 
+ * @param {User} user
+ * @returns the HTML for user dashboard as a string 
+ */
 function getUserDashHtml(user) {
   return `<img onclick="showInfoModal()" class="btn btn-icon" src="icons/help.svg">
           <a class="btn btn-outline-primary" style="color: #049688;" id="logout">Logout</a>`;
