@@ -57,6 +57,8 @@ let focusedPin;
 let homeMarker = null;
 let markers = [];
 
+let geoLoading = false;
+
 // Add gmap js library to head of page
 const script = document.createElement('script');
 script.src =
@@ -115,13 +117,30 @@ function getHomeLocation(useAddress) {
   }
 
   locationFunction().then(homeObject => {
-    $('location-modal').modal('hide');
+    closeLocationModal();
     home = homeObject;
     setHomeMarker();
   }).catch(message => {
+    closeLocationModal();
     const messageContent = '<p>' + message + '</p>';
     openModal(messageContent);
   });
+}
+
+/** Opens modal telling user that location is being found if geolocation is running */
+function openLocationModal() {
+  if (geoLoading) {
+    $('#location-modal').modal('show');
+  }
+}
+
+/** 
+ *  Closes modal telling user that location is being found and sets flag
+ *  indicating geolocation is done running.
+ */
+function closeLocationModal() {
+  $('#location-modal').modal('hide');
+  geoLoading = false;
 }
 
 /**
@@ -147,10 +166,14 @@ function getLocationFromBrowser() {
     }
 
     if (navigator.geolocation) {
-      $('location-modal').modal({show: true});
-      // Prevents caching of results in case user moves
+      geoLoading = true;
+
+      // Prevents caching of results in case user moves location
       const options = {maximumAge: 0};
-      navigator.geolocation.getCurrentPosition(success, deniedAccessUserLocation, options);     
+      navigator.geolocation.getCurrentPosition(success, deniedAccessUserLocation, options); 
+
+      // Wait and only open modal if geolocation is still running after a while
+      setTimeout(openLocationModal, 500);    
     } else {
       reject('Browser does not support geolocation. Please enter an ' +
              'address to set a home location.');
@@ -210,9 +233,7 @@ function openModal(content) {
   const modalBody = document.getElementById('modal-body');
   modalBody.innerHTML = content;
 
-  $('#content-modal').modal({
-    show: true
-  });
+  $('#content-modal').modal('show');
   map.addListener('click', toggleFocusOff);
 }
 
@@ -261,7 +282,7 @@ function submitDataListener(event) {
     const time = hours * 3600 + minutes * 60;
 
     // Pop up modal that shows loading status
-    $('#loading-modal').modal({show: true});
+    $('#loading-modal').modal('show');
 
     getPlacesFromTime(time).then(places => {
       // Hide modal that shows loading status
