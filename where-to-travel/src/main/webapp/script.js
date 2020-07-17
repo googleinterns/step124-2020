@@ -92,7 +92,7 @@ async function initialize() {
 }
 
 /**
- * 
+ * Attaches listeners to the focusout event for search inputs.
  */
 function attachSearchValidation() {
   document.getElementById(HOURS_ID).addEventListener('focusout', function (event) {
