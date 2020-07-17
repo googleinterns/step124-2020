@@ -98,9 +98,7 @@ async function initialize() {
  */
 function attachSearchValidation() {
   document.getElementById(HOURS_ID).addEventListener('focusout', function (event) {
-    console.log("focus out");
     const value = parseInt(event.target.value);
-    console.log(value < 0 || value > 20);
     if (value < 0 || value > 20) {
       $('#' + FEEDBACK_ID).append('<p id="hour-feedback" class="feedback">Please input a valid hour value between 0 and 20</p>');
     } else {
