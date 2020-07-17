@@ -7,10 +7,10 @@ const passwordLogin = document.getElementById('passwordLogin');
 $(document).ready(function() {
   $(document).on('submit', '#loginForm', function() {
     const email = emailLogin.value;
-    const pass = passwordLogin.value;
+    const password = passwordLogin.value;
     const auth = firebase.auth();
 
-    const promise = auth.signInWithEmailAndPassword(email, pass); 
+    const promise = auth.signInWithEmailAndPassword(email, password); 
     promise
       .then(_ => $('#login-modal').modal('hide'))
       .catch(e => {console.log(e.message); alert(e.message);});
