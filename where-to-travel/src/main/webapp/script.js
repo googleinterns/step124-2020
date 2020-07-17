@@ -57,7 +57,10 @@ let focusedPin;
 let homeMarker = null;
 let markers = [];
 
+// Flage indicating if geolocation is running
 let geoLoading = false;
+
+let geocoder;
 
 // Add gmap js library to head of page
 const script = document.createElement('script');
@@ -88,6 +91,8 @@ async function initialize() {
     styles: MAP_STYLES,
   };
   map = new google.maps.Map(document.getElementById('map'), mapOptions);
+
+  geocoder = new google.maps.Geocoder();
   
   // Add autocomplete capabality for address input
   const addressInput = document.getElementById('addressInput');
@@ -112,17 +117,29 @@ function showInfoModal() {
  *
  * @param {boolean} useAddress Flag indicating whether to get location from browser or address
  */
-function getHomeLocation(useAddress) {
-  let locationFunction = () => getLocationFromBrowser();
+function getHomeLocation(useAddress) { 
+  const addressInput = document.getElementById('addressInput');
 
+  let locationFunction = () => getLocationFromBrowser();
   if (useAddress) {
-    const addressInput = document.getElementById('addressInput').value;
-    locationFunction = () => getLocationFromAddress(addressInput);
+    locationFunction = () => getLocationFromAddress(addressInput.value);
   }
 
   locationFunction().then(homeObject => {
     closeLocationModal();
     home = homeObject;
+
+    // If location is from browser, reverse geocode and populate address input
+    if(!useAddress) {
+      geocoder.geocode({location: home}, function(results, status) {
+        if (status === "OK") {
+          if (results[0]) {
+            addressInput.value = results[0].formatted_address;
+          }
+        }
+      });
+    }
+    
     setHomeMarker();
   }).catch(message => {
     closeLocationModal();
@@ -197,7 +214,6 @@ function getLocationFromAddress(address) {
       reject('Entered address is empty. Please enter a non-empty address and try again.');
     }
 
-    const geocoder = new google.maps.Geocoder();
     geocoder.geocode({address: address}, function(results, status) {
       if (status == 'OK') {
         const lat = results[0].geometry.location.lat;
