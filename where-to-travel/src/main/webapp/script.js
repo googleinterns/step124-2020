@@ -88,6 +88,10 @@ async function initialize() {
     styles: MAP_STYLES,
   };
   map = new google.maps.Map(document.getElementById('map'), mapOptions);
+  
+  // Add autocomplete capabality for address input
+  const addressInput = document.getElementById('addressInput');
+  let autocomplete = new google.maps.places.Autocomplete(addressInput);
 
   showInfoModal();
 }
