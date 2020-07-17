@@ -47,6 +47,10 @@ body {
   color: #D70D00;
 }
 
+#feedback-target {
+  text-align: center;
+}
+
 .fg-mixin {
   margin: auto;
   width: 20%
