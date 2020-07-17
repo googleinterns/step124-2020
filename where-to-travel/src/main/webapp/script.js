@@ -115,6 +115,7 @@ function getHomeLocation(useAddress) {
   }
 
   locationFunction().then(homeObject => {
+    $('location-modal').modal('hide');
     home = homeObject;
     setHomeMarker();
   }).catch(message => {
@@ -146,7 +147,10 @@ function getLocationFromBrowser() {
     }
 
     if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(success, deniedAccessUserLocation);
+      $('location-modal').modal({show: true});
+      // Prevents caching of results in case user moves
+      const options = {maximumAge: 0};
+      navigator.geolocation.getCurrentPosition(success, deniedAccessUserLocation, options);     
     } else {
       reject('Browser does not support geolocation. Please enter an ' +
              'address to set a home location.');
