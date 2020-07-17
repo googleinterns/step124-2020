@@ -660,7 +660,6 @@ function addAcceptablePlaces(time, places, acceptablePlacesInfo) {
   });
 }
 
-
 /** 
  * Queries Places API with place details request using place_id to get additional
  * information about place and populates this information inside place's infocard. 
