@@ -6,6 +6,14 @@
   z-index: 500;
 }
 
+.bmd-drawer-f-l>.bmd-layout-drawer {
+  top: 0;
+  left: 0;
+  width: 360px;
+  height: 100%;
+  transform: translateX(-360px);
+}
+
 body {
   color: #1E3C19;	
   height: 100%;
@@ -56,7 +64,6 @@ body {
 html {
   height: 100%;
 }
-
 
 .icon {
   background:#fff;
@@ -110,6 +117,11 @@ html {
   margin-left: auto;
 }
 
+.text-center {
+  text-align: center;
+}
+
 .text-color {
   color: #1E3C19;
 }
+
