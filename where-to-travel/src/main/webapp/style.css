@@ -43,9 +43,8 @@ body {
   font-size: 1.5em;
 }
 
-.info-header {
-  color: #049688;
-  text-align: left;
+.feedback {
+  color: #D70D00;
 }
 
 .fg-mixin {
@@ -55,6 +54,11 @@ body {
 
 html {
   height: 100%;
+}
+
+.info-header {
+  color: #049688;
+  text-align: left;
 }
 
 

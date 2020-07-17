@@ -43,6 +43,7 @@ const HOURS_ID = 'hrs';
 const MINUTES_ID = 'mnts';
 const SCROLL_ID = 'scroller';
 const DASH_ID = 'dashboard';
+const FEEDBACK_ID = 'feedback-target';
 const PIN_PATH = 'icons/pin.svg';
 const SELECTED_PIN_PATH = 'icons/selectedPin.svg';
 const HOME_PIN_PATH = 'icons/home.svg';
@@ -77,6 +78,7 @@ async function initialize() {
   }
   const submit = document.getElementById(SUBMIT_ID);
   submit.addEventListener('click', submitDataListener);
+  attachSearchValidation();
 
   const mapOptions = {
     center: {lat: 36.150813, lng: -40.352239}, // Middle of the North Atlantic Ocean
@@ -86,8 +88,26 @@ async function initialize() {
     styles: MAP_STYLES,
   };
   map = new google.maps.Map(document.getElementById('map'), mapOptions);
-
   showInfoModal();
+}
+
+/**
+ * 
+ */
+function attachSearchValidation() {
+  document.getElementById(HOURS_ID).addEventListener('focusout', function (event) {
+    const value = event.target.value;
+    if (value < 0 || value > 20) {
+      $('.' + FEEDBACK_ID).append('<p class="feedback">Please input a valid hour value between 0 and 20</p>');
+    }
+  });
+
+  document.getElementById(MINUTES_ID).addEventListener('focusout', function (event) {
+    const value = event.target.value;
+    if (value < 0 || value > 60) {
+      $('.' + FEEDBACK_ID).append('<p class="feedback">Please input a valid minute value between 0 and 60</p>');
+    }
+  });
 }
 
 /**
