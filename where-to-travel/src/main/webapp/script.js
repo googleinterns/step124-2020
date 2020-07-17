@@ -44,6 +44,8 @@ const MINUTES_ID = 'mnts';
 const SCROLL_ID = 'scroller';
 const DASH_ID = 'dashboard';
 const FEEDBACK_ID = 'feedback-target';
+const MINUTES_FEEDBACK_ID = 'minute-feedback';
+const HOURS_FEEDBACK_ID = 'hour-feedback';
 const PIN_PATH = 'icons/pin.svg';
 const SELECTED_PIN_PATH = 'icons/selectedPin.svg';
 const HOME_PIN_PATH = 'icons/home.svg';
@@ -96,16 +98,22 @@ async function initialize() {
  */
 function attachSearchValidation() {
   document.getElementById(HOURS_ID).addEventListener('focusout', function (event) {
-    const value = event.target.value;
+    console.log("focus out");
+    const value = parseInt(event.target.value);
+    console.log(value < 0 || value > 20);
     if (value < 0 || value > 20) {
-      $('.' + FEEDBACK_ID).append('<p class="feedback">Please input a valid hour value between 0 and 20</p>');
+      $('#' + FEEDBACK_ID).append('<p id="hour-feedback" class="feedback">Please input a valid hour value between 0 and 20</p>');
+    } else {
+      $('#' + HOURS_FEEDBACK_ID).remove();
     }
   });
 
   document.getElementById(MINUTES_ID).addEventListener('focusout', function (event) {
     const value = event.target.value;
     if (value < 0 || value > 60) {
-      $('.' + FEEDBACK_ID).append('<p class="feedback">Please input a valid minute value between 0 and 60</p>');
+      $('.' + FEEDBACK_ID).append('<p id="minute-feedback" class="feedback">Please input a valid minute value between 0 and 60</p>');
+    } else {
+      $('#' + MINUTES_FEEDBACK_ID).remove();
     }
   });
 }
