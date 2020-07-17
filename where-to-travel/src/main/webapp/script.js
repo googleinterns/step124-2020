@@ -743,12 +743,7 @@ function getLeftCardHTML(place) {
  * @return {String} HTML content that formats passed in information for right side of infocard
  */
 function getRightCardHTML(place) {
-  let rightHTML = ``;
-
-  if (place.opening_hours) {  
-    rightHTML = getOpeningHours(place.opening_hours);
-  }
-
+  const rightHTML = place.opening_hours ? getOpeningHours(place.opening_hours) : '';
   return rightHTML;
 }
 
