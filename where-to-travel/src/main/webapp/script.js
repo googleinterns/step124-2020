@@ -44,8 +44,8 @@ const MINUTES_ID = 'mnts';
 const SCROLL_ID = 'scroller';
 const DASH_ID = 'dashboard';
 const FEEDBACK_ID = 'feedback-target';
-const MINUTES_FEEDBACK_ID = 'minute-feedback';
-const HOURS_FEEDBACK_ID = 'hour-feedback';
+const HOURS_MAX_SEARCH = 20;
+const MINUTE_MAX_SEARCH = 60;
 const PIN_PATH = 'icons/pin.svg';
 const SELECTED_PIN_PATH = 'icons/selectedPin.svg';
 const HOME_PIN_PATH = 'icons/home.svg';
@@ -97,21 +97,25 @@ async function initialize() {
  * Attaches listeners to the focusout event for search inputs.
  */
 function attachSearchValidation() {
-  document.getElementById(HOURS_ID).addEventListener('focusout', function (event) {
-    const value = parseInt(event.target.value);
-    if (value < 0 || value > 20) {
-      $('#' + FEEDBACK_ID).append('<p id="hour-feedback" class="feedback">Please input a valid hour value between 0 and 20</p>');
-    } else {
-      $('#' + HOURS_FEEDBACK_ID).remove();
-    }
-  });
+  addListenerToSearchInput(document.getElementById(HOURS_ID), 'hour', HOURS_MAX_SEARCH);
+  addListenerToSearchInput(document.getElementById(MINUTES_ID, 'minute', MINUTE_MAX_SEARCH));
+}
 
-  document.getElementById(MINUTES_ID).addEventListener('focusout', function (event) {
-    const value = event.target.value;
-    if (value < 0 || value > 60) {
-      $('.' + FEEDBACK_ID).append('<p id="minute-feedback" class="feedback">Please input a valid minute value between 0 and 60</p>');
+/**
+ * Adds an on focusout event to a dom element, which adds a formatted HTML tip to the DOM.
+ *
+ * @param element the dom element to add listener to
+ * @param type a string of the type of time input this element takes ('minute' or 'hour')
+ * @param max the maximum value of this input element
+ */
+function addListenerToSearchInput(element, type, max) {
+  element.addEventListener('focusout', function (event) {
+    // if value is empty, set to 0, otherwise, parse the value
+    const value = (event.target.value === '') ? 0 : parseInt(event.target.value);
+    if (value < 0 || value > max) {
+      $('#' + FEEDBACK_ID).append(`<p id="hour-feedback" class="feedback">Please input a valid ${type} value between 0 and ${max}</p>`);
     } else {
-      $('#' + MINUTES_FEEDBACK_ID).remove();
+      $('#' + type + 'feedback').remove();
     }
   });
 }
