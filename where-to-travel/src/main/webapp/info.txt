@@ -3,5 +3,5 @@
 <h3 class="info-header">Using Where To</h3>
 <p>1. Click on the menu button (☰) to open <em>Search Settings</em></p>
 <p>2. Enter your desired travel time in hours and minutes under&nbsp;<em>Travel Time</em></p>
-<p>3. Under <em>Home Location&nbsp;</em>there are two options for setting your starting location:&nbsp;<em>Use My Location&nbsp;</em>and&nbsp;<em>Enter Address. </em>To use&nbsp;the first option, location permissions will need to be enabled for your browser.</p>
+<p>3. Under <em>Home Location&nbsp;</em>there are two options for setting your starting location: &nbsp<em>Use My Location &nbsp</em>and&nbsp;<em>Use Address</em>. To use the first option, location permissions will need to be enabled for your browser.</p>
 <p>4. Click&nbsp;<em>Search&nbsp;</em>to get your results! You can view each attraction by either clicking the pins on the map or viewing the infocards.</p>
