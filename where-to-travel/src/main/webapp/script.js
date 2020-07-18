@@ -97,7 +97,7 @@ async function initialize() {
   // Add autocomplete capabality for address input
   const addressInput = document.getElementById('addressInput');
   let autocomplete = new google.maps.places.Autocomplete(addressInput);
-
+    
   showInfoModal();
 }
 
@@ -125,6 +125,7 @@ function getHomeLocation(useAddress) {
     locationFunction = () => getLocationFromAddress(addressInput.value);
   }
 
+ 
   locationFunction().then(homeObject => {
     closeLocationModal();
     home = homeObject;
@@ -147,6 +148,7 @@ function getHomeLocation(useAddress) {
     openModal(messageContent);
   });
 }
+
 
 /** Opens modal telling user that location is being found if geolocation is running */
 function openLocationModal() {
