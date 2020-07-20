@@ -870,7 +870,7 @@ function getOpeningHours(opening_hours) {
   // Add the rest of the opening hours for each day of the week starting from next day
   for (let i = dayIndex + 1; i % 7 != dayIndex; i++) {
     let index = i >= 7 ? i % 7 : i; 
-    if (index + 1 != dayIndex) {
+    if ((index + 1) % 7 != dayIndex) {
       html += `<p class="no-break">${shortenedWeekdayText(weekday_text, index)}</p>`;
     } else {
       html += `<p>${shortenedWeekdayText(weekday_text, index)}</p>`
