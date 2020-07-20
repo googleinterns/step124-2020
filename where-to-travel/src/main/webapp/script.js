@@ -57,7 +57,7 @@ let focusedPin;
 let homeMarker = null;
 let markers = [];
 
-// Flage indicating if geolocation is running
+// Flag indicating if geolocation is running
 let geoLoading = false;
 
 let geocoder;
