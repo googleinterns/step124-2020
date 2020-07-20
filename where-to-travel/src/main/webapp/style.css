@@ -18,6 +18,10 @@ body {
   margin-right: 15px
 }
 
+.btn-color {
+  color: #049688;
+}
+
 .card-scroller {
   background-color: rgba(0, 0, 0, 0);
   height: 100%;

@@ -42,7 +42,8 @@ const SUBMIT_ID = 'submit';
 const HOURS_ID = 'hrs';
 const MINUTES_ID = 'mnts';
 const SCROLL_ID = 'scroller';
-const DASH_ID = 'dashboard';
+const DASH_ID = 'dash';
+const LOGOUT_ID = 'logout';
 const PIN_PATH = 'icons/pin.svg';
 const SELECTED_PIN_PATH = 'icons/selectedPin.svg';
 const HOME_PIN_PATH = 'icons/home.svg';
@@ -70,11 +71,6 @@ document.head.appendChild(script);
 
 /** Initializes map window, runs on load. */
 async function initialize() {
-  if (!user) {
-    addLoginButtons();
-  } else {
-    addUserDash();
-  }
   const submit = document.getElementById(SUBMIT_ID);
   submit.addEventListener('click', submitDataListener);
 
@@ -99,6 +95,15 @@ function showInfoModal() {
     .then(response => response.text())
     .then(content => openModal(content));
 }
+
+firebase.auth().onAuthStateChanged(function(user) {
+  $('#' + DASH_ID).empty();
+  if (user) {
+    addUserDash();
+  } else {
+    addLoginButtons();
+  }
+});
 
 /**
  * Obtains user's location from either browser or an inputted address and sets home location. If error
@@ -212,13 +217,24 @@ function openModal(content) {
   map.addListener('click', toggleFocusOff);
 }
 
+/**
+ * Adds login elements to the DOM
+ */
 function addLoginButtons() {
   const dashElement = $(getLoginHtml());
   $('#' + DASH_ID).append(dashElement);
 }
 
+/**
+ * Adds user dash elements to the DOM
+ */
 function addUserDash() {
   const dashElement = $(getUserDashHtml(user));
+  $(dashElement[2]).click(function () {
+    firebase.auth().signOut().catch(function(error) {
+      console.log('Error occurred while sigining user out ' + error);
+    });
+  });
   $('#' + DASH_ID).append(dashElement);
 }
 
@@ -286,6 +302,7 @@ function populatePlaces(placeArray) {
     const address = place.formatted_address;
     const timeStr = place.timeAsString;
 
+    // marker creation
     let placeMarker = new google.maps.Marker({
       position: coordinates,
       map: map,
@@ -307,6 +324,7 @@ function populatePlaces(placeArray) {
     });
     $('#' + SCROLL_ID).append(cardElement);
 
+    // Add events to focus card and pin
     placeMarker.addListener('click', function () {
       toggleFocusOff();
       focusedPin = placeMarker;
@@ -330,6 +348,7 @@ function populatePlaces(placeArray) {
 
   document.getElementById(SCROLL_ID).hidden = false;
 
+  // Handle favoriting a place
   $('.icon').click(function() {
     $(this).toggleClass('press');
     if (firebase.auth().currentUser ) {
@@ -377,14 +396,27 @@ function getLocationCardHtml(title, address, directionsLink, timeStr) {
     </div>`;
 }
 
+/**
+ * A helper function that returns the HTML for login.
+ * 
+ * @returns the HTML for login as a string
+ */
 function getLoginHtml() {
-  return `<a class="btn btn-outline-primary" style="text-align: center" href="login.html">Login</a>
+  return `<img onclick="showInfoModal()" class="btn btn-icon" src="icons/help.svg">
+          <a class="btn btn-outline-primary" style="text-align: center" href="login.html">Login</a>
           <span id="nav-text">or</span>
           <a class="btn btn-outline-primary" href="signup.html">Sign up</a>`;
 }
 
+/**
+ * A helper function that returns the HTML for the user dashboard given a user.
+ * 
+ * @param {User} user
+ * @returns the HTML for user dashboard as a string 
+ */
 function getUserDashHtml(user) {
-  return '<a class="btn btn-outline-primary" style="text-align: center" href="login.html">Logout</a>';
+  return `<img onclick="showInfoModal()" class="btn btn-icon" src="icons/help.svg">
+          <a class="btn btn-outline-primary" style="color: #049688;" id="logout">Logout</a>`;
 }
 
 /**
