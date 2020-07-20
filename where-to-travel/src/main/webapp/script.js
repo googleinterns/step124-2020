@@ -93,16 +93,6 @@ async function initialize() {
 }
 
 /**
- * Populates and opens modal with html content from info.txt that provides
- * description of website to user
- */
-function showInfoModal() {
-  fetch('info.txt')
-    .then(response => response.text())
-    .then(content => openModal(content));
-}
-
-/**
  * Opens the modal, then populates it with the html at the specified filepath.
  * @param htmlFilePath the path to the html to populate the modal with as text
  */
@@ -112,15 +102,6 @@ function showModal(htmlFilePath) {
     .then(content => openModal(content));
 }
 
-/**
- * Populates and opens modal with html content from noPlaces.txt. Tells
- * user that no places were found, and gives some hints for better queries.
- */
-function showNoPlacesModal() {
-  fetch('noPlaces.txt')
-    .then(response => response.text())
-    .then(content => openModal(content));
-}
 
 firebase.auth().onAuthStateChanged(function(user) {
   $('#' + DASH_ID).empty();
