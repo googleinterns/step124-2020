@@ -99,6 +99,16 @@ function showInfoModal() {
     .then(content => openModal(content));
 }
 
+/**
+ * Populates and opens modal with html content from noPlaces.txt. Tells
+ * user that no places were found, and gives some hints for better queries.
+ */
+function showNoPlacesModal() {
+  fetch('noPlaces.txt')
+    .then(response => response.text())
+    .then(content => openModal(content));
+}
+
 firebase.auth().onAuthStateChanged(function(user) {
   $('#' + DASH_ID).empty();
   if (user) {
@@ -294,6 +304,10 @@ function submitDataListener(event) {
  * @param {array} placeArray Array of Google Maps Place Objects
  */
 function populatePlaces(placeArray) {
+  // if place array is empty, show the no places info
+  if(!placeArray) {
+    showNoPlacesModal();
+  }
   for(place of placeArray) {
     const name = place.name;
     const coordinates = place.geometry.location;
