@@ -346,7 +346,7 @@ function populatePlaces(placeArray) {
         time: time,
       }
       ref.set(data);
-    } else if (firebase.auth().currentUser && !$(this).hasClass('press')) {
+    } else if (firebase.auth().currentUser && (!$(this).hasClass('press'))) {
       const name = $(this).parent().parent().parent().attr('placeName');
        // Delete user saved places when the star is not pressed
       var ref = firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/' + 'places' + '/' + name);
