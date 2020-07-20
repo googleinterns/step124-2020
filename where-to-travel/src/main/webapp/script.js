@@ -1,3 +1,9 @@
+/**
+ * A collection of functions for Where To app. This file includes most JS,
+ * including DOM interaction and API calls.
+ */
+'use strict';
+
 // This is map stylings for the GMap api
 const MAP_STYLES = [
   {
