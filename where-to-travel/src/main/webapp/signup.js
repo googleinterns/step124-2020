@@ -1,47 +1,79 @@
+/**
+ * All javascript that handles the behavior of the sign-up form.
+ * Importantly, this file includes all js validation for sign-up fields.
+ */
+
+'use strict';
 // Get elements for authentication
+const nameSignUp = document.getElementById('nameSignUp')
 const emailSignUp = document.getElementById('emailSignUp');
 const passwordSignUp = document.getElementById('passwordSignUp');
 const passwordConfirmation = document.getElementById('passwordConfirmation');
+const signUpForm = document.getElementById('signUpForm');
+const name = document.getElementById('nameSignUp');
 
-// Preferred method of material form behavior interaction is jQuery
-// When the document is loaded, add validity check to form on submit.
-$(document).ready(function() {
-    $(document).on('submit', '#signUpForm', function() {
-      // if form is invalid, stop event
-      if (!passwordConfirmation.validity.valid) {
+// On window load, attach all validation functions to input elements.
+window.addEventListener('load', function() {
+  function validatePassword(){
+    if(passwordSignUp.value != passwordConfirmation.value) {
+      passwordConfirmation.setCustomValidity('x');
+    } else {
+      passwordConfirmation.setCustomValidity('');
+    }
+  }
+
+  passwordSignUp.onchange = validatePassword;
+  passwordConfirmation.onkeyup = validatePassword;
+
+  addFocusOutEvent(emailSignUp);
+  addFocusOutEvent(passwordSignUp);
+  addFocusOutEvent(passwordConfirmation);
+
+  // Fetch all the forms we want to apply custom Bootstrap validation styles to
+  const forms = document.getElementsByClassName('needs-validation');
+  // Loop over them and prevent submission
+  const validation = Array.prototype.filter.call(forms, function(form) {
+    form.addEventListener('submit', function(event) {
+      if (form.checkValidity() === false) {
         event.preventDefault();
         event.stopPropagation();
-      } else {
-        signUp();
       }
-      return false;
-      //$('#signUpForm').addClass('was-validated');
-    });
-});
+      form.classList.add('was-validated');
+    }, false);
+  });
+  
+  signUpForm.addEventListener('submit', function() {
+    signUp();
+    return false;
+  });
+}, false);
 
-function validatePassword(){
-  if(passwordSignUp.value != passwordConfirmation.value) {
-    passwordConfirmation.setCustomValidity('x');
-  } else {
-    passwordConfirmation.setCustomValidity('');
-  }
+/**
+ * Attaches a listener to the focusout event for an input element.
+ *
+ * @param inputElement a DOM input element
+ */
+function addFocusOutEvent(inputElement) {
+  inputElement.addEventListener('focusout', function(event) {
+    if (event.target.validity.valid === false) {
+      event.target.parentNode.classList.add('was-validated');
+    }
+  });
 }
 
-passwordSignUp.onchange = validatePassword;
-passwordConfirmation.onkeyup = validatePassword;
 
 /** Unhides modal containing signup form */
 function showSignUp() {
   $('#signUp-modal').modal({show: true});
 }
 
-// Clear all input to form once modal is closed
+/** Clear all input to form once modal is closed */
 $('#signUp-modal').on('hidden.bs.modal', function(){
     $(this).find('form')[0].reset();
 });
-
-// Add signup event
-signUp = () => {
+ 
+/** Signs up user using Firebase API **/
+function signUp() {
   const promise = firebase.auth().createUserWithEmailAndPassword(emailSignUp.value, passwordSignUp.value);
   promise.then(_ => {      
     // Add user information to the real time database in Firebase
@@ -49,10 +81,9 @@ signUp = () => {
     let data = {
       email: emailSignUp.value,    
       uID: firebase.auth().currentUser.uid
-    }
+    };
     ref.push(data)
       .then(_ => $('#signUp-modal').modal('hide'))
-      .catch(e => {console.log(e.message); alert(e.message);}); 
+      .catch(e => {console.log(e.message); alert(e.message);});
   });
 }
-
