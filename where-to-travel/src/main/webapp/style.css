@@ -1,8 +1,8 @@
-.active-card {
-  outline: 5px solid #6CC551;
+.active {
+  box-shadow: 6px 12px 9px #888888;
+  outline: 5px solid #FF5C0A;
   margin-bottom: 10px;
   margin-top: 10px;
-  box-shadow: 6px 12px 9px #888888;
   z-index: 500;
 }
 
@@ -18,16 +18,20 @@ body {
   margin-right: 15px
 }
 
+.btn-color {
+  color: #049688;
+}
+
 .card-scroller {
   background-color: rgba(0, 0, 0, 0);
   height: 100%;
   left: 0;
   margin: 0;
+  margin-top: 5px;
   max-width: 30%;
   min-width: 17%;
   overflow: scroll;
   padding: 5px;
-  margin-top: 5px;
   position: absolute;
   top: 0;
   z-index: 20;
@@ -70,11 +74,11 @@ html {
 }
 
 .icon:hover {
-  color:#666;
+  color: #666;
 }
 
 .icon.press {
-  color:#e23b3b;
+  color: #D70D00;
 }
 
 .location-card {
@@ -103,9 +107,9 @@ html {
   left: 0;
   margin: auto;
   position: absolute;
+  width: fit-content;
   right: 0;
   top: 0;
-  width: fit-content;
 }
 
 #search-btn-container {

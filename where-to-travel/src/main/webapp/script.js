@@ -42,7 +42,8 @@ const SUBMIT_ID = 'submit';
 const HOURS_ID = 'hrs';
 const MINUTES_ID = 'mnts';
 const SCROLL_ID = 'scroller';
-const DASH_ID = 'dashboard';
+const DASH_ID = 'dash';
+const LOGOUT_ID = 'logout';
 const PIN_PATH = 'icons/pin.svg';
 const SELECTED_PIN_PATH = 'icons/selectedPin.svg';
 const HOME_PIN_PATH = 'icons/home.svg';
@@ -57,8 +58,12 @@ let focusedPin;
 let homeMarker = null;
 let markers = [];
 
+// API service objects
 let placesService;
 let distanceMatrixService;
+
+// Keeps track of most recent search request
+let globalNonce;
 
 // Add gmap js library to head of page
 const script = document.createElement('script');
@@ -72,12 +77,7 @@ script.async = true;
 document.head.appendChild(script);
 
 /** Initializes map window, runs on load. */
-async function initialize() {
-  if (!user) {
-    addLoginButtons();
-  } else {
-    addUserDash();
-  }
+function initialize() {
   const submit = document.getElementById(SUBMIT_ID);
   submit.addEventListener('click', submitDataListener);
 
@@ -105,6 +105,15 @@ function showInfoModal() {
     .then(response => response.text())
     .then(content => openModal(content));
 }
+
+firebase.auth().onAuthStateChanged(function(user) {
+  $('#' + DASH_ID).empty();
+  if (user) {
+    addUserDash();
+  } else {
+    addLoginButtons();
+  }
+});
 
 /**
  * Obtains user's location from either browser or an inputted address and sets home location. If error
@@ -218,13 +227,24 @@ function openModal(content) {
   map.addListener('click', toggleFocusOff);
 }
 
+/**
+ * Adds login elements to the DOM
+ */
 function addLoginButtons() {
   const dashElement = $(getLoginHtml());
   $('#' + DASH_ID).append(dashElement);
 }
 
+/**
+ * Adds user dash elements to the DOM
+ */
 function addUserDash() {
   const dashElement = $(getUserDashHtml(user));
+  $(dashElement[2]).click(function () {
+    firebase.auth().signOut().catch(function(error) {
+      console.log('Error occurred while sigining user out ' + error);
+    });
+  });
   $('#' + DASH_ID).append(dashElement);
 }
 
@@ -270,7 +290,7 @@ function submitDataListener(event) {
       $('#loading-modal').modal('hide');
       const sortedPlaces = getSortedPlaces(places);
       populatePlaces(sortedPlaces);
-    });
+    }).catch(message => console.log(message));
   }
 }
 
@@ -282,6 +302,7 @@ function submitDataListener(event) {
  */
 function populatePlaces(placeArray) {
   for(place of placeArray) {
+    // marker creation
     let placeMarker = new google.maps.Marker({
       position: place.geometry.location,
       map: map,
@@ -303,6 +324,7 @@ function populatePlaces(placeArray) {
     });
     $('#' + SCROLL_ID).append(cardElement);
 
+    // Add events to focus card and pin
     placeMarker.addListener('click', function () {
       toggleFocusOff();
       focusedPin = placeMarker;
@@ -326,13 +348,14 @@ function populatePlaces(placeArray) {
 
   document.getElementById(SCROLL_ID).hidden = false;
 
+  // Handle favoriting a place
   $('.icon').click(function() {
     $(this).toggleClass('press');
-    if (firebase.auth().currentUser ) {
+    if (firebase.auth().currentUser && $(this).hasClass('press')) {
       const name = $(this).parent().parent().parent().attr('placeName');
       const link = $(this).parent().next().attr('href');
       const time = $(this).parent().next().next().text();
-       // Add user information to the real time database in Firebase
+       // Add users saved places to the real time database in Firebase when star is pressed
       const database = firebase.database();
       var uID = firebase.auth().currentUser.uid;
       var ref = database.ref('users/' + uID + '/' + 'places' + '/' + name);
@@ -342,6 +365,11 @@ function populatePlaces(placeArray) {
         time: time,
       }
       ref.set(data);
+    } else if (firebase.auth().currentUser && (!$(this).hasClass('press'))) {
+      const name = $(this).parent().parent().parent().attr('placeName');
+       // Delete user saved places when the star is not pressed
+      var ref = firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/' + 'places' + '/' + name);
+      ref.remove();
     }
   });
 }
@@ -374,14 +402,27 @@ function getLocationCardHtml(place) {
     </div>`;
 }
 
+/**
+ * A helper function that returns the HTML for login.
+ * 
+ * @returns the HTML for login as a string
+ */
 function getLoginHtml() {
-  return `<a class="btn btn-outline-primary" style="text-align: center" href="login.html">Login</a>
+  return `<img onclick="showInfoModal()" class="btn btn-icon" src="icons/help.svg">
+          <a class="btn btn-outline-primary" onclick="showLogin()">Login</a>
           <span id="nav-text">or</span>
-          <a class="btn btn-outline-primary" href="signup.html">Sign up</a>`;
+          <a class="btn btn-outline-primary" onclick="showSignUp()">Sign up</a>`;
 }
 
+/**
+ * A helper function that returns the HTML for the user dashboard given a user.
+ * 
+ * @param {User} user
+ * @returns the HTML for user dashboard as a string 
+ */
 function getUserDashHtml(user) {
-  return '<a class="btn btn-outline-primary" style="text-align: center" href="login.html">Logout</a>';
+  return `<img onclick="showInfoModal()" class="btn btn-icon" src="icons/help.svg">
+          <a class="btn btn-outline-primary" style="color: #049688;" id="logout">Logout</a>`;
 }
 
 /**
@@ -460,76 +501,90 @@ function clearPlaces() {
  * @param {Object} time Travel time requested by user in seconds
  * @return {Array} Array of objects containing information about places within the requested time
  */
- async function getPlacesFromTime(time) {
-  // First try one bounding box around user's location
-  let place_candidates = await getPlacesFromDirection(home.lat, home.lng);
-  let filterResults = await filterByTime(time, place_candidates);
+ function getPlacesFromTime(time) {
+  return new Promise(async function(resolve, reject){    
+    const localNonce = globalNonce = new Object(); 
+    // First try one bounding box around user's location
+    let place_candidates = await getPlacesFromDirection(home.lat, home.lng);
+    let filterResults = await filterByTime(time, place_candidates);
 
-  let places = filterResults.places;
-
-  // Initial distance from the user's location for the bounding boxes
-  const initSpread = Math.max(1, Math.ceil(time/7200));
-  let attempts = 0;
-
-  /* Each direction is represented by a pair with the first element added
-   to the user's lat and the second element added to the user's lng */
-
-  let directions = [
-    [initSpread,0], //North
-    [0,initSpread], // East
-    [0,-initSpread], // West
-    [-initSpread,0], // South
-    [initSpread, -initSpread], // Northwest
-    [initSpread, initSpread], // Northeast
-    [-initSpread, initSpread], // Southeast
-    [-initSpread, -initSpread] // Southwest
-  ];
-
-
-  while (attempts < ATTEMPTS_THRESHOLD && places.length < PLACES_THRESHOLD) {
-    let new_directions = [];
-
-    for (direction of directions) {
-      let latSpread = direction[0];
-      let lngSpread = direction[1];
-      let place_candidates = await getPlacesFromDirection(home.lat + latSpread, home.lng + lngSpread);
-
-      let filterResults = await filterByTime(time, place_candidates);
-      places = places.concat(filterResults.places);
-
-      // If bounding box does not contain enough results, update position of box for next iteration
-      if (filterResults.places.length < DIRECTION_THRESHOLD) {
-        /* If average time in bounding box is greater than requested time, move bounding box closer
-         to user otherwise move bounding box farther away from user. */
-        if (filterResults.avg_time > time) {
-          if (latSpread != 0) {
-            latSpread = latSpread < 0 ? latSpread + 1 : latSpread - 1;
-          }
-
-          if (lngSpread != 0) {
-            lngSpread = lngSpread < 0 ? lngSpread + 1 : lngSpread - 1;
-          }
-        } else {
-          if (latSpread != 0) {
-            latSpread = latSpread < 0 ? latSpread - 1 : latSpread + 1;
-          }
-
-          if (lngSpread != 0) {
-            lngSpread = lngSpread < 0 ? lngSpread - 1 : lngSpread + 1;
-          }
-        }
-
-        if (latSpread != 0 || lngSpread != 0) {
-          new_directions.push([latSpread, lngSpread]);
-        }
-      }
+    // If most recent request has changed, don't continue with search
+    if (localNonce != globalNonce) {
+      reject('Cancelled');
     }
 
-    directions = new_directions;
-    attempts += 1;
-  }
+    let places = filterResults.places;
 
-  return getUniquePlaces(places);
+    // Initial distance from the user's location for the bounding boxes
+    const initSpread = Math.max(1, Math.ceil(time/7200));
+    let attempts = 0;
+
+    /* Each direction is represented by a pair with the first element added
+       to the user's lat and the second element added to the user's lng */
+    let directions = [
+      [initSpread,0], //North
+      [0,initSpread], // East
+      [0,-initSpread], // West
+      [-initSpread,0], // South
+      [initSpread, -initSpread], // Northwest
+      [initSpread, initSpread], // Northeast
+      [-initSpread, initSpread], // Southeast
+      [-initSpread, -initSpread] // Southwest
+    ];
+
+
+    while (attempts < ATTEMPTS_THRESHOLD && places.length < PLACES_THRESHOLD) {
+      let new_directions = [];
+
+      for (direction of directions) {
+        let latSpread = direction[0];
+        let lngSpread = direction[1];
+
+        let place_candidates = await getPlacesFromDirection(home.lat + latSpread, home.lng + lngSpread);
+        let filterResults = await filterByTime(time, place_candidates);
+        
+        // If most recent request has changed, don't continue with search
+        if (localNonce != globalNonce) {
+          reject('Cancelled');
+        }
+
+        places = places.concat(filterResults.places);
+
+        // If bounding box does not contain enough results, update position of box for next iteration
+        if (filterResults.places.length < DIRECTION_THRESHOLD) {
+          /* If average time in bounding box is greater than requested time, move bounding box closer
+             to user otherwise move bounding box farther away from user. */
+          if (filterResults.avg_time > time) {
+            if (latSpread != 0) {
+              latSpread = latSpread < 0 ? latSpread + 1 : latSpread - 1;
+            }
+
+            if (lngSpread != 0) {
+              lngSpread = lngSpread < 0 ? lngSpread + 1 : lngSpread - 1;
+            }
+          } else {
+            if (latSpread != 0) {
+              latSpread = latSpread < 0 ? latSpread - 1 : latSpread + 1;
+            }
+
+            if (lngSpread != 0) {
+              lngSpread = lngSpread < 0 ? lngSpread - 1 : lngSpread + 1;
+            }
+          }
+
+          if (latSpread != 0 || lngSpread != 0) {
+            new_directions.push([latSpread, lngSpread]);
+          }
+        }
+      }
+
+      directions = new_directions;
+      attempts += 1;
+    }
+
+    const uniquePlaces = getUniquePlaces(places);
+    resolve(uniquePlaces);
+  });
 }
 
 /**

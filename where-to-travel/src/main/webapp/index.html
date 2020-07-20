@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+
   <head>
     <meta charset="UTF-8">
     <title>Where to?</title>
@@ -9,62 +10,68 @@
     <link rel="stylesheet" href="style.css">
     <script src="secrets.json"></script>
   </head>
+
   <body onload="initialize();">
-    <div class="bmd-layout-container bmd-drawer-f-l bmd-drawer-overlay">
-      <header class="bmd-layout-header">
-        <div class="navbar navbar-dark bg-faded">
-          <button class="navbar-toggler" type="button" data-toggle="drawer" data-target="#dw-s2">
-            <span class="sr-only">Toggle drawer</span>
-            <span id="drawer-toggle" class="btn">
-              &#9776;
-            </span>
-          </button>
-          <ul class="nav navbar-nav">
-            <li class="nav-item">
-                <img onclick="showInfoModal()" class="btn btn-icon" src="icons/help.svg">
-              <a class="btn btn-outline-primary" style="text-align: center" href="login.html">Login</a>
-              <span id="nav-text">or</span>
-              <a class="btn btn-outline-primary" href="signup.html">Sign up</a>
-            </li>
-          </ul>
-        </div>
-      </header>
-      <div id="dw-s2" class="bmd-layout-drawer bg-faded">
-        <header>
-          <a class="navbar-brand">Search Settings</a>
-        </header>
-        <div id="accordion">
-          <div class="card">
-            <div class="card-header" id="headingOne">
+    
+    <header class="bmd-layout-header">
+      <div class="navbar navbar-dark bg-faded">
+        <button class="navbar-toggler" type="button" data-toggle="drawer" data-target="#dw-s2">
+          <span class="sr-only">Toggle drawer</span>
+          <span id="drawer-toggle" class="btn">
+            &#9776;
+          </span>
+        </button>
+        <ul class="nav navbar-nav">
+          <li class="nav-item">
+            <div id="dash"></div>
+          </li>
+        </ul>
+      </div>
+    </header>
+
+    <div class="bmd-layout-canvas">
+      <div class="bmd-layout-container bmd-drawer-f-l bmd-drawer-overlay">
+        <div id="dw-s2" class="bmd-layout-drawer bg-faded">
+            
+          <header>
+            <a class="navbar-brand">Search Settings</a>
+          </header>
+
+          <div id="accordion">
+
+            <div class="card">
+              <div class="card-header" id="headingOne">
               <h1 class="mb-0">
                 <button class="btn btn-link collapsed text-color" data-toggle="collapse" data-target="#collapseOne"
                     aria-expanded="false" aria-controls="collapseOne">
                   Travel Time
                 </button>
               </h1>
-            </div>
-            <div id="collapseOne" class="collapse" aria-labelledby="headingOne" data-parent="#accordion">
-              <div class="card-body">
-                <form class="form-inline form-mixin">
-                  <div class="form-group fg-mixin">
-                    <label for="hours" class="bmd-label-floating text-color">HH</label>
-                    <input id="hrs" style="width: 100%; margin-right:0px;" type="text" class="form-control">
-                  </div>
-                  <div id="colon" class="form-group bmd-label-static">
-                    :
-                  </div>
-                  <div class="form-group fg-mixin">
-                    <label for="minutes" class="bmd-label-floating text-color">MM</label>
-                    <input id="mnts" style="width: 100%; margin-right:0px;" type="text" class="form-control">
-                  </div>
-                  </form>
               </div>
-            </div>
+                <div id="collapseOne" class="collapse" aria-labelledby="headingOne" data-parent="#accordion">
+                <div class="card-body">
+                  <form class="form-inline form-mixin">
+                    <div class="form-group fg-mixin">
+                        <label for="hours" class="bmd-label-floating text-color">HH</label>
+                        <input id="hrs" style="width: 100%; margin-right:0px;" type="text" class="form-control">
+                    </div>
+                    <div id="colon" class="form-group bmd-label-static">
+                        :
+                    </div>
+                    <div class="form-group fg-mixin">
+                        <label for="minutes" class="bmd-label-floating text-color">MM</label>
+                        <input id="mnts" style="width: 100%; margin-right:0px;" type="text" class="form-control">
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>  
+            
             <div class="card">
               <div class="card-header" id="headingTwo">
                 <h1 class="mb-0">
                   <button class="btn btn-link collapsed text-color" data-toggle="collapse" data-target="#collapseTwo"
-                      aria-expanded="false" aria-controls="collapseTwo">
+                        aria-expanded="false" aria-controls="collapseTwo">
                     Home Location
                   </button>
                 </h1>
@@ -85,62 +92,152 @@
                   </div>
                 </div>
               </div>
-            </div>
-          </div>
-        </div>
-        <span id="search-btn-container">
-          <button type="button" id="submit" class="btn btn-primary search-btn">Search</button>
-        </span>
-      </div>
-      <main class="bmd-layout-content">
-        <div hidden class="card-scroller" id="scroller">
-        </div>
-        <div id="map"></div>
-      </main>
+            </div>  
 
-      <div class="modal fade" id="content-modal" tabindex="-1" role="dialog" aria-hidden="true">
-        <div class="modal-dialog modal-lg" role="document">
-          <div class="modal-content">
-            <div class="modal-header">
-              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-              <span aria-hidden="true">&times;</span>
-               </button>
-            </div>
-            <div class="modal-body" id="modal-body">
+          </div>
+        
+          <span id="search-btn-container">
+            <button type="button" id="submit" class="btn btn-primary search-btn">Search</button>
+          </span>
+
+        </div>
+
+        <main class="bmd-layout-content">
+          <div hidden class="card-scroller" id="scroller"></div>
+          <div id="map"></div>
+        </main>
+
+        </div>
+    </div>
+
+    <div class="modal fade" id="content-modal" tabindex="-1" role="dialog" aria-hidden="true">
+      <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body" id="modal-body">
             ...
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="modal fade" id="loading-modal" tabindex="-1" role="dialog" aria-hidden="true">
-        <div class="modal-dialog modal-sm" role="document">
-          <div class="modal-content">
-            <div class="modal-body text-center">
-              <h5> Finding Attractions... </h5>
-            </div>
           </div>
         </div>
       </div>
     </div>
+
+    <div class="modal fade" id="loading-modal" tabindex="-1" role="dialog" aria-hidden="true">
+      <div class="modal-dialog modal-sm" role="document">
+        <div class="modal-content">
+          <div class="modal-body text-center">
+            <h5> Finding Attractions... </h5>
+          </div>
+        </div>
+      </div>
+    </div>
+        
+    <div class="modal fade" id="signUp-modal" tabindex="-1" role="dialog" aria-hidden="true">
+      <div class="modal-dialog modal-sm" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Sign Up</h5>      
+          </div>
+          <div class="modal-body">
+            <form style="margin: auto" id="signUpForm" action="">
+              <div class="form-group">
+                <label for="nameInput" class="bmd-label-floating">Name</label>
+                <input type="text" class="form-control" id="nameSignUp" required>
+              </div>
+              <div class="form-group">
+                <label for="emailInput" class="bmd-label-floating">Email address</label>
+                <input type="email" class="form-control" id="emailSignUp" required>
+                <small class="form-text text-muted">
+                  We will never share your email.
+                </small>
+                <div class="invalid-feedback">
+                  Please enter a valid email.
+                </div>
+                <div class="valid-feedback">
+                  Looks good!
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="passwordSignUp" class="bmd-label-floating">Password</label>
+                <input type="password" class="form-control" minlength="6" id="passwordSignUp" required>
+                <small class="form-text text-muted">
+                  Your password must have at least 6 characters.
+                </small>
+                <div class="invalid-feedback">
+                  Please enter a password longer than 6 characters.
+                </div>
+                <div class="valid-feedback">
+                  Looks good!
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="passwordConfirmation" class="bmd-label-floating">Confirm password</label>
+                <input type="password" class="form-control" id="passwordConfirmation" oninvalid="this.setCustomValidity('Passwords do not match')" required>
+                <div class="invalid-feedback">
+                  Passwords do not match.
+                </div>
+                <div class="valid-feedback">
+                  Looks good!
+                </div>
+              </div>
+              <button type="submit" id="signUp" class="btn btn-primary" >Sign Up</button>
+              <button type="button" class="btn btn-primary" data-dismiss="modal">Cancel</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal fade" id="login-modal" tabindex="-1" role="dialog" aria-hidden="true">
+      <div class="modal-dialog modal-sm" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Login</h5>
+          </div>
+          <div class="modal-body">
+            <form style="margin: auto" id="loginForm" action="">
+              <div class="form-group">
+                <label for="emailInput" class="bmd-label-floating">Email address</label>
+                <input type="email" class="form-control" id="emailLogin">
+              </div>
+              <div class="form-group">
+                <label for="passwordInput" class="bmd-label-floating">Password</label>
+                <input type="password" class="form-control" id="passwordLogin">
+              </div>
+              <div class="text-center">
+                <button type="submit" id="login" class="btn btn-primary">Login</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal">Cancel</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
     <script src="https://unpkg.com/popper.js@1.12.6/dist/umd/popper.js" integrity="sha384-fA23ZRQ3G/J53mElWqVJEGJzU0sTs+SvzG8fXVWP+kJQ1lwFAOkcUOysnlKJC33U" crossorigin="anonymous"></script>
     <script src="https://unpkg.com/bootstrap-material-design@4.1.1/dist/js/bootstrap-material-design.js" integrity="sha384-CauSuKpEqAFajSpkdjv3z9t8E7RlpJ1UP0lKM/+NdtSarroVKu069AlsRPKkFBz9" crossorigin="anonymous"></script>
     <script>$(document).ready(function() { $('body').bootstrapMaterialDesign(); });</script>
-  </div>
   
-  <!-- The core Firebase JS SDK is always required and must be listed first -->
-  <script src="https://www.gstatic.com/firebasejs/7.15.5/firebase-app.js"></script>
+    <!-- The core Firebase JS SDK is always required and must be listed first -->
+    <script src="https://www.gstatic.com/firebasejs/7.15.5/firebase-app.js"></script>
 
-  <!-- TODO: Add SDKs for Firebase products that you want to use
+    <!-- TODO: Add SDKs for Firebase products that you want to use
      https://firebase.google.com/docs/web/setup#available-libraries -->
-  <script src="https://www.gstatic.com/firebasejs/7.15.5/firebase-analytics.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/7.15.5/firebase-auth.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/7.15.5/firebase-database.js"></script>
-  <script>
-  // Initialize Firebase
-  firebase.initializeApp(firebaseConfig);
-  firebase.analytics();
-  </script>
-  <script src="script.js"></script>
-</body>
+    <script src="https://www.gstatic.com/firebasejs/7.15.5/firebase-analytics.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/7.15.5/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/7.15.5/firebase-database.js"></script>
+    <script>
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    firebase.analytics();
+    </script>
+  
+    <script src="script.js"></script>
+    <script src="signup.js"></script>
+    <script src="login.js"></script>
+  </body>
+</html>
