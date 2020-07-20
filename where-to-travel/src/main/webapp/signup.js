@@ -9,6 +9,7 @@ const nameSignUp = document.getElementById('nameSignUp')
 const emailSignUp = document.getElementById('emailSignUp');
 const passwordSignUp = document.getElementById('passwordSignUp');
 const passwordConfirmation = document.getElementById('passwordConfirmation');
+const signUpForm = document.getElementById('signUpForm');
 const name = document.getElementById('nameSignUp');
 
 // On window load, attach all validation functions to input elements.
@@ -40,6 +41,11 @@ window.addEventListener('load', function() {
       form.classList.add('was-validated');
     }, false);
   });
+  
+  signUpForm.addEventListener('submit', function() {
+    signUp();
+    return false;
+  });
 }, false);
 
 /**
@@ -54,17 +60,30 @@ function addFocusOutEvent(inputElement) {
     }
   });
 }
- 
-/**
- * Signs user up using the firebase auth API.
- */
-function signUp() {
-  //TODO: Check for real emails
-  const email = emailSignUp.value;
-  const pass = passwordSignUp.value;
-  const auth = firebase.auth();
 
-  // Sign up
-  const promise = auth.createUserWithEmailAndPassword(email, pass);
-  promise.catch(e => console.log(e.message));
+
+/** Unhides modal containing signup form */
+function showSignUp() {
+  $('#signUp-modal').modal({show: true});
+}
+
+/** Clear all input to form once modal is closed */
+$('#signUp-modal').on('hidden.bs.modal', function(){
+    $(this).find('form')[0].reset();
+});
+ 
+/** Signs up user using Firebase API **/
+function signUp() {
+  const promise = firebase.auth().createUserWithEmailAndPassword(emailSignUp.value, passwordSignUp.value);
+  promise.then(_ => {      
+    // Add user information to the real time database in Firebase
+    let ref = firebase.database().ref('users');
+    let data = {
+      email: emailSignUp.value,    
+      uID: firebase.auth().currentUser.uid
+    };
+    ref.push(data)
+      .then(_ => $('#signUp-modal').modal('hide'))
+      .catch(e => {console.log(e.message); alert(e.message);});
+  });
 }
