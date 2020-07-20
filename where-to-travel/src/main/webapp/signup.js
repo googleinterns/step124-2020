@@ -59,7 +59,7 @@ function addFocusOutEvent(inputElement) {
  * Signs user up using the firebase auth API.
  */
 function signUp() {
-  const promise = auth.createUserWithEmailAndPassword(emailSignUp.value, passwordSignUp.value);
+  const promise = firebase().auth.createUserWithEmailAndPassword(emailSignUp.value, passwordSignUp.value);
     promise.then(e => {
       alert("You have sucessfully signed up!");
       var ref = firebase.database().ref('users/' + firebase.auth().currentUser.uid );
