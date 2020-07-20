@@ -120,12 +120,13 @@ function showInfoModal() {
 function getHomeLocation(useAddress) { 
   const addressInput = document.getElementById('addressInput');
 
-  let locationFunction = () => getLocationFromBrowser();
+  let locationFunction;
   if (useAddress) {
     locationFunction = () => getLocationFromAddress(addressInput.value);
+  } else {
+    locationFunction = () => getLocationFromBrowser();
   }
 
- 
   locationFunction().then(homeObject => {
     closeLocationModal();
     home = homeObject;
