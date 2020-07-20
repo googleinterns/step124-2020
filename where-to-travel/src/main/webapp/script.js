@@ -58,6 +58,10 @@ let focusedPin;
 let homeMarker = null;
 let markers = [];
 
+// API service objects
+let placesService;
+let distanceMatrixService;
+
 // Keeps track of most recent search request
 let globalNonce;
 
@@ -86,6 +90,9 @@ function initialize() {
   };
   map = new google.maps.Map(document.getElementById('map'), mapOptions);
 
+  placesService = new google.maps.places.PlacesService(map);
+  distanceMatrixService = new google.maps.DistanceMatrixService();
+   
   showInfoModal();
 }
 
@@ -295,32 +302,22 @@ function submitDataListener(event) {
  */
 function populatePlaces(placeArray) {
   for(place of placeArray) {
-    const name = place.name;
-    const coordinates = place.geometry.location;
-
-    const directionsLink = 'https://www.google.com/maps/dir/' +
-      home.lat + ',' + home.lng + '/' +
-      coordinates.lat() + ',' + coordinates.lng();
-
-    const address = place.formatted_address;
-    const timeStr = place.timeAsString;
-
     // marker creation
     let placeMarker = new google.maps.Marker({
-      position: coordinates,
+      position: place.geometry.location,
       map: map,
-      title: name,
+      title: place.name,
       icon: PIN_PATH,
     });
 
-    const htmlContent = getLocationCardHtml(name, address, directionsLink, timeStr);
+    const htmlContent = getLocationCardHtml(place);
 
     // For the material bootstrap library, the preferred method of dom interaction is jquery,
     // especially for adding elements.
     let cardElement = $(htmlContent).click(function(event) {
       if(event.target.nodeName != 'SPAN') {
         toggleFocusOff();
-        selectLocationMarker(name);
+        selectLocationMarker(place.name);
         $(this).addClass('active-card');
        focusedCard = this;
       }
@@ -380,25 +377,26 @@ function populatePlaces(placeArray) {
 /**
  * Helper function that returns the an HTML string representing a place card
  * that can be added to the DOM.
- * @param {string} title the place title
- * @param {string} directionsLink the link to the GMaps directions for this place
- * @param {string} timeStr the amount of time it takes to travel to this place, as a string
+ * @param {Object} place Contains name, lat/lng coordinates, place_id, and travel time to place
+ * @return {String} HTML content to place inside infocard corresponding to place
  */
-function getLocationCardHtml(title, address, directionsLink, timeStr) {
-  const iconId = 'icon' + title;
-  // Link to google search query with name and address of place for user to get more information
-  const titleLink = 'https://www.google.com/search?q=' + encodeURIComponent(title + ' ' + address);
+function getLocationCardHtml(place) {
+  const name = place.name;
+  const timeStr = place.timeAsString;
+  const place_id = place.place_id;
+    
+  const iconId = 'icon' + name;
   return innerHtml = '' +
-    `<div class="card location-card" placeName="${title}" style="margin-right: 0;">
+    `<div class="card location-card" placeName="${name}" style="margin-right: 0;">
       <div class="card-body">
-        <h5 class="card-title">
-        <a target="_blank" href="${titleLink}">${title}</a>
+        <h5 class="card-title">${name}
         <span class="icon" id="${iconId}">
           &#9733
         <span>
         </h5>
-        <a target="_blank" href="${directionsLink}" class="btn btn-primary active">Directions</a>
-        </h5>
+        <div id=${place_id}>
+          <a onclick="populateMorePlaceInfo('${place_id}')" class="btn btn-primary active">More Information</a>
+        </div>
         <h6>${timeStr}</h6>
       </div>
     </div>`;
@@ -630,8 +628,7 @@ function getPlacesFromDirection(lat, lng) {
       resolve(place_candidates);
     }
 
-    service = new google.maps.places.PlacesService(map);
-    service.textSearch(request, callback);
+    placesService.textSearch(request, callback);
   });
 }
 
@@ -679,8 +676,7 @@ function addAcceptablePlaces(time, places, acceptablePlacesInfo) {
       destinations.push(destination);
     }
 
-    let service = new google.maps.DistanceMatrixService();
-    service.getDistanceMatrix({
+    distanceMatrixService.getDistanceMatrix({
       origins: [home],
       destinations: destinations,
       travelMode: 'DRIVING',
@@ -706,7 +702,7 @@ function addAcceptablePlaces(time, places, acceptablePlacesInfo) {
               acceptablePlacesInfo.places.push({
                 name: places[j].name,
                 geometry: places[j].geometry,
-                formatted_address: places[j].formatted_address,
+                place_id: places[j].place_id,
                 timeInSeconds: destination_time,
                 timeAsString: destination_info.duration.text
               });
@@ -717,4 +713,199 @@ function addAcceptablePlaces(time, places, acceptablePlacesInfo) {
       resolve(acceptablePlacesInfo);
     }
   });
+}
+
+/** 
+ * Queries Places API with place details request using place_id to get additional
+ * information about place and populates this information inside place's infocard. 
+ *
+ * @param {String} place_id Textual identifier of place for PlaceDetails request
+ */
+function populateMorePlaceInfo(place_id) {
+  let request = {
+    placeId: place_id,
+    fields: [
+      'formatted_address',
+      'formatted_phone_number',
+      'geometry',
+      'opening_hours', 
+      'rating', 
+      'website' 
+    ]
+  };
+
+  placesService.getDetails(request, callback);
+
+  function callback(place, status) {
+    if (status == google.maps.places.PlacesServiceStatus.OK) {
+      
+      // Left side of card contains (if available) rating, address,phone_number
+      const leftHTML = getLeftCardHTML(place);
+      // Right side of card contains listing of places' opening hours
+      const rightHTML = getRightCardHTML(place);
+      // Bottom of card contains button with link to directions, website (if available), and hide info.
+      const bottomHTML = getBottomCardHTML(place, place_id);
+
+      let newHTML = '' +
+        `<div class="container">
+           <div class="row">
+             <div class="col">
+               ${leftHTML}
+             </div>
+             <div class="col">
+              ${rightHTML}
+             </div>
+           </div>
+         </div>
+         ${bottomHTML}`;
+      
+      // Place content in infocard corresponding to place
+      document.getElementById(place_id).innerHTML = newHTML;
+    }
+  }
+}
+
+/**
+ * Places information about place including formatted address, and if available, rating and formatted
+ * phone number in HTML string that makes up content of left side of infocard corresponding to place.
+ * 
+ * @param {Object} place Contains (if available) rating, formatted address, and formatted phone number 
+ * @return {String} HTML content that formats passed in information for left side of infocard
+ */
+function getLeftCardHTML(place) {
+  let leftHTML = ``;
+
+  // If there is a rating, convert to percentage out of five and fill in stars according to percentage
+  if (place.rating) {
+    const percent = Math.round((place.rating/5) * 100);
+    leftHTML += `<div class="stars"><span style="width:${percent}%" class="stars-rating"></span></div><br/>`;
+  }
+
+  leftHTML += `<p><b>Address:</b> &nbsp ${place.formatted_address}</p>`;
+
+  if (place.formatted_phone_number) {
+    leftHTML += `<p><b>Phone:</b> &nbsp ${place.formatted_phone_number}</p>`;
+  }
+
+  return leftHTML;
+}
+
+/**
+ * Places information about opening hours, if available, in HTML string that makes up content of 
+ * right side of infocard corresponding to place.
+ * 
+ * @param {Object} place Contains (if available) opening hours of place
+ * @return {String} HTML content that formats passed in information for right side of infocard
+ */
+function getRightCardHTML(place) {
+  const rightHTML = place.opening_hours ? getOpeningHours(place.opening_hours) : '';
+  return rightHTML;
+}
+
+/**
+ * Places links for directions and website (if available) in HTML buttons and add HTML button  
+ * to hide information in infocard for bottom of infocard corresponding to place.
+ * 
+ * @param {Object} place Contains (if available) link to website for place
+ * @param {String} place_id Textual identifier for place 
+ * @return {String} HTML content that formats passed in information for bottom of infocard
+ */
+function getBottomCardHTML(place, place_id) {
+    // Link to Google Maps directions from home location to place 
+    const directionsLink = 'https://www.google.com/maps/dir/' +
+      home.lat + ',' + home.lng + '/' +
+      place.geometry.location.lat() + ',' + place.geometry.location.lng();
+
+    // Always add button for directions
+    let bottomHTML = 
+      `<a target="_blank" class="btn btn-primary active" href=${directionsLink}>
+         Directions
+       </a>
+       &nbsp`;
+
+    // If there is a listed website, add a button for it
+    if (place.website) {
+      bottomHTML += 
+        `<a target="_blank" class="btn btn-primary active" href=${place.website}>
+           Website
+         </a>
+         &nbsp`;
+    }
+
+    // Always add button for hiding information
+    bottomHTML += 
+      `<a class="btn btn-primary active" onclick="removeMorePlaceInfo('${place_id}')">
+          Hide Information
+       </a>`;
+
+    return bottomHTML;
+}
+
+/**
+ * Gets current day's hours and checks if place is currently open and puts resulting information in one line. 
+ * Underneath this line, starting from the next day, adds the opening hours for each day of the week line after 
+ * line. Returns resulting HTML string for right side of infocard. 
+ * 
+ * @param {Object} opening_hours Contains function to check if place is open and string array of operating hours
+ * @return {String} HTML content that formats hours for right side of infocard
+ */
+function getOpeningHours(opening_hours) {
+  const d = new Date();
+  // getDay() starts the week on Sunday and Places API starts week on Monday. 
+  const dayIndex = (d.getDay() + 6) % 7;
+  const weekday_text = opening_hours.weekday_text;
+
+  // Replaces day of week to two letter abbreviation 
+  const todaysHours = shortenedWeekdayText(weekday_text, dayIndex); 
+  
+  let html = ``;
+
+  // If place is currently open, show open in green, otherwise show closed in red.
+  if (opening_hours.isOpen()) {
+    html = `<p><b>Hours:</b> &nbsp <span style = "color:#6CC551;">Open</span> &nbsp ${todaysHours} </p>`;  
+  } else {
+    html = `<p><b>Hours:</b> &nbsp <span style = "color:#D70D00;">Closed</span> &nbsp ${todaysHours} </p>`; 
+  }
+
+  // Add the rest of the opening hours for each day of the week starting from next day
+  for (let i = dayIndex + 1; i % 7 != dayIndex; i++) {
+    let index = i >= 7 ? i % 7 : i; 
+    if (index + 1 != dayIndex) {
+      html += `<p class="no-break">${shortenedWeekdayText(weekday_text, index)}</p>`;
+    } else {
+      html += `<p>${shortenedWeekdayText(weekday_text, index)}</p>`
+    }
+  }
+
+  return html;
+}
+
+/**
+ * Replaces full name of weekday in string with two letter abbreviation and returns new string.
+ * 
+ * @param {array} weekday_text Array of strings with weekday and times that places are open
+ * @param {number} dayIndex Integer corresponding to day of week where 0->Monday
+ * @return {String} String that contains replacement with two letter abbreviation
+ */
+function shortenedWeekdayText(weekday_text, dayIndex) {
+    const shortDays = ['Mo:','Tu:','We:','Th:','Fr:','Sa:','Su:'];
+
+    const textComps = weekday_text[dayIndex].split(' ');
+    // First word in string is always weekday
+    textComps[0] = shortDays[dayIndex];
+
+    return textComps.join(' ');
+}
+
+/**
+ * Creates and returns html string containing button to show more information about a place
+ * 
+ * @param {String} place_id Textual identifier for place
+ * @return {String} HTML string containing button to show more information about place
+ */
+function removeMorePlaceInfo(place_id) {
+    document.getElementById(place_id).innerHTML =
+      `<a onclick="populateMorePlaceInfo('${place_id}')" class="btn btn-primary active">
+         More Information
+       </a>`;
 }
