@@ -332,7 +332,7 @@ function populatePlaces(placeArray) {
 
   $('.icon').click(function() {
     $(this).toggleClass('press');
-    if (firebase.auth().currentUser && $(this).hasClass('press') == true) {
+    if (firebase.auth().currentUser && $(this).hasClass('press')) {
       const name = $(this).parent().parent().parent().attr('placeName');
       const link = $(this).parent().next().attr('href');
       const time = $(this).parent().next().next().text();
@@ -346,11 +346,10 @@ function populatePlaces(placeArray) {
         time: time,
       }
       ref.set(data);
-    } else if (firebase.auth().currentUser && $(this).hasClass('press') == false) {
+    } else if (firebase.auth().currentUser && !$(this).hasClass('press')) {
       const name = $(this).parent().parent().parent().attr('placeName');
        // Delete user saved places when the star is not pressed
-      var uID = firebase.auth().currentUser.uid;
-      var ref = firebase.database().ref('users/' + uID + '/' + 'places' + '/' + name);
+      var ref = firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/' + 'places' + '/' + name);
       ref.remove();
     }
   });
