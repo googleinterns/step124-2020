@@ -48,6 +48,9 @@ const PIN_PATH = 'icons/pin.svg';
 const SELECTED_PIN_PATH = 'icons/selectedPin.svg';
 const HOME_PIN_PATH = 'icons/home.svg';
 
+const INFO_HTML_PATH = 'info.txt';
+const NO_PLACES_HTML_PATH = 'noPlaces.txt';
+
 let map;
 let user = false;
 let home = null;
@@ -86,7 +89,7 @@ async function initialize() {
   };
   map = new google.maps.Map(document.getElementById('map'), mapOptions);
 
-  showModal('info.txt');
+  showModal(INFO_HTML_PATH);
 }
 
 /**
@@ -316,7 +319,7 @@ function submitDataListener(event) {
 function populatePlaces(placeArray) {
   // if place array is empty, show the no places info
   if(!placeArray) {
-    showModal('noPlaces.txt');
+    showModal(NO_PLACES_HTML_PATH);
   }
   for(place of placeArray) {
     const name = place.name;
@@ -435,7 +438,7 @@ function getLocationCardHtml(title, address, directionsLink, timeStr) {
  * @returns the HTML for login as a string
  */
 function getLoginHtml() {
-  return `<img onclick="showModal('info.txt')" class="btn btn-icon" src="icons/help.svg">
+  return `<img onclick="showModal(${INFO_HTML_PATH})" class="btn btn-icon" src="icons/help.svg">
           <a class="btn btn-outline-primary" style="text-align: center" href="login.html">Login</a>
           <span id="nav-text">or</span>
           <a class="btn btn-outline-primary" href="signup.html">Sign up</a>`;
@@ -448,7 +451,7 @@ function getLoginHtml() {
  * @returns the HTML for user dashboard as a string 
  */
 function getUserDashHtml(user) {
-  return `<img onclick="showModal('info.txt')" class="btn btn-icon" src="icons/help.svg">
+  return `<img onclick="showModal(${INFO_HTML_PATH})" class="btn btn-icon" src="icons/help.svg">
           <a class="btn btn-outline-primary" style="color: #049688;" id="logout">Logout</a>`;
 }
 
