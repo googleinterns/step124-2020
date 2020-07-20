@@ -43,8 +43,9 @@ window.addEventListener('load', function() {
   }); 
 }, false);
 
+
 $(document).ready(function() {
-    $(document).on('submit', '#signUpForm', function() {
+  $(document).on('submit', '#signUpForm', function() {
     signUp();
     return false;
   });
