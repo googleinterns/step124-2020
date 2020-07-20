@@ -73,7 +73,7 @@ script.async = true;
 document.head.appendChild(script);
 
 /** Initializes map window, runs on load. */
-async function initialize() {
+function initialize() {
   const submit = document.getElementById(SUBMIT_ID);
   submit.addEventListener('click', submitDataListener);
 
@@ -411,9 +411,9 @@ function getLocationCardHtml(title, address, directionsLink, timeStr) {
  */
 function getLoginHtml() {
   return `<img onclick="showInfoModal()" class="btn btn-icon" src="icons/help.svg">
-          <a class="btn btn-outline-primary" style="text-align: center" href="login.html">Login</a>
+          <a class="btn btn-outline-primary" onclick="showLogin()">Login</a>
           <span id="nav-text">or</span>
-          <a class="btn btn-outline-primary" href="signup.html">Sign up</a>`;
+          <a class="btn btn-outline-primary" onclick="showSignUp()">Sign up</a>`;
 }
 
 /**
