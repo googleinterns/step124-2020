@@ -79,7 +79,6 @@ $('#signUp-modal').on('hidden.bs.modal', function(){
 function signUp() {
   const promise = firebase().auth.createUserWithEmailAndPassword(emailSignUp.value, passwordSignUp.value);
     promise.then(e => {
-      alert("You have sucessfully signed up!");
       let ref = firebase.database().ref('users/' + firebase.auth().currentUser.uid );
       let data = {
         name: nameSignUp.value,
