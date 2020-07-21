@@ -117,3 +117,10 @@ html {
 .text-color {
   color: #1E3C19;
 }
+
+@media screen and (max-width: 398px) {
+  #drawer-toggle {
+    color: #049688;
+    font-size: 0.75em;
+  }
+}
