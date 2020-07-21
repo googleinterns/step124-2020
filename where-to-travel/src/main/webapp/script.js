@@ -466,9 +466,9 @@ function getLocationCardHtml(place) {
  */
 function getLoginHtml() {
   return `<img onclick="showInfoModal()" class="btn btn-icon" src="icons/help.svg">
-          <a class="btn btn-outline-primary" onclick="showLogin()">Login</a>
+          <a class="btn btn-outline-primary btn-color" onclick="showLogin()">Login</a>
           <span id="nav-text">or</span>
-          <a class="btn btn-outline-primary" onclick="showSignUp()">Sign up</a>`;
+          <a class="btn btn-outline-primary btn-color" onclick="showSignUp()">Sign up</a>`;
 }
 
 /**
@@ -479,7 +479,7 @@ function getLoginHtml() {
  */
 function getUserDashHtml(user) {
   return `<img onclick="showInfoModal()" class="btn btn-icon" src="icons/help.svg">
-          <a class="btn btn-outline-primary" style="color: #049688;" id="logout">Logout</a>`;
+          <a class="btn btn-outline-primary btn-color" style="color: #049688;" id="logout">Logout</a>`;
 }
 
 /**
