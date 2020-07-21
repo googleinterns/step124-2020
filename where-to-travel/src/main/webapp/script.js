@@ -58,9 +58,13 @@ let focusedPin;
 let homeMarker = null;
 let markers = [];
 
+// Flag indicating if geolocation is running
+let geoLoading = false;
+
 // API service objects
-let placesService;
 let distanceMatrixService;
+let geocoder;
+let placesService;
 
 // Keeps track of most recent search request
 let globalNonce;
@@ -89,10 +93,16 @@ function initialize() {
     styles: MAP_STYLES,
   };
   map = new google.maps.Map(document.getElementById('map'), mapOptions);
-
-  placesService = new google.maps.places.PlacesService(map);
+  
+  // Add autocomplete capabality for address input
+  const addressInput = document.getElementById('addressInput');
+  let autocomplete = new google.maps.places.Autocomplete(addressInput);
+    
+  // Initialize API service objects
   distanceMatrixService = new google.maps.DistanceMatrixService();
-   
+  geocoder = new google.maps.Geocoder();
+  placesService = new google.maps.places.PlacesService(map);
+  
   showInfoModal();
 }
 
@@ -121,21 +131,54 @@ firebase.auth().onAuthStateChanged(function(user) {
  *
  * @param {boolean} useAddress Flag indicating whether to get location from browser or address
  */
-function getHomeLocation(useAddress) {
-  let locationFunction = () => getLocationFromBrowser();
+function getHomeLocation(useAddress) { 
+  const addressInput = document.getElementById('addressInput');
 
+  let locationFunction;
   if (useAddress) {
-    const addressInput = document.getElementById('addressInput').value;
-    locationFunction = () => getLocationFromAddress(addressInput);
+    locationFunction = () => getLocationFromAddress(addressInput.value);
+  } else {
+    locationFunction = () => getLocationFromBrowser();
   }
 
   locationFunction().then(homeObject => {
+    closeLocationModal();
     home = homeObject;
+
+    // If location is from browser, reverse geocode and populate address input
+    if(!useAddress) {
+      geocoder.geocode({location: home}, function(results, status) {
+        if (status === "OK") {
+          if (results[0]) {
+            addressInput.value = results[0].formatted_address;
+          }
+        }
+      });
+    }
+    
     setHomeMarker();
   }).catch(message => {
+    closeLocationModal();
     const messageContent = '<p>' + message + '</p>';
     openModal(messageContent);
   });
+}
+
+
+/** Opens modal telling user that location is being found if geolocation is running */
+function openLocationModal() {
+  if (geoLoading) {
+    $('#location-modal').modal('show');
+  }
+}
+
+/** 
+ *  Closes modal telling user that location is being found and sets flag
+ *  indicating geolocation is done running.
+ */
+function closeLocationModal() {
+  $('#location-modal').modal('hide');
+  geoLoading = false;
 }
 
 /**
@@ -161,7 +204,14 @@ function getLocationFromBrowser() {
     }
 
     if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(success, deniedAccessUserLocation);
+      geoLoading = true;
+
+      // Prevents caching of results in case user moves location
+      const options = {maximumAge: 0};
+      navigator.geolocation.getCurrentPosition(success, deniedAccessUserLocation, options); 
+
+      // Wait and only open modal if geolocation is still running after a while
+      setTimeout(openLocationModal, 500);    
     } else {
       reject('Browser does not support geolocation. Please enter an ' +
              'address to set a home location.');
@@ -181,7 +231,6 @@ function getLocationFromAddress(address) {
       reject('Entered address is empty. Please enter a non-empty address and try again.');
     }
 
-    const geocoder = new google.maps.Geocoder();
     geocoder.geocode({address: address}, function(results, status) {
       if (status == 'OK') {
         const lat = results[0].geometry.location.lat;
@@ -221,9 +270,7 @@ function openModal(content) {
   const modalBody = document.getElementById('modal-body');
   modalBody.innerHTML = content;
 
-  $('#content-modal').modal({
-    show: true
-  });
+  $('#content-modal').modal('show');
   map.addListener('click', toggleFocusOff);
 }
 
@@ -283,7 +330,7 @@ function submitDataListener(event) {
     const time = hours * 3600 + minutes * 60;
 
     // Pop up modal that shows loading status
-    $('#loading-modal').modal({show: true});
+    $('#loading-modal').modal('show');
 
     getPlacesFromTime(time).then(places => {
       // Hide modal that shows loading status
