@@ -86,8 +86,8 @@ function signUp() {
         email: emailSignUp.value,    
         uID: firebase.auth().currentUser.uid
       };
-      ref.push(data)
-        .then(_ => $('#signUp-modal').modal('hide'))
-        .catch(e => {console.log(e.message); alert(e.message);});
-    }).catch(e => console.log(e.message), alert(e.message));
+    ref.set(data)
+      .then(_ => $('#signUp-modal').modal('hide'))
+      .catch(e => {console.log(e.message); alert(e.message);});
+  }).catch(e => console.log(e.message), alert(e.message));
 }
