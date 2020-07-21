@@ -438,6 +438,7 @@ function getLocationCardHtml(place) {
       <div class="card-body">
         <h5 class="card-title">${name}
         <span class="icon" id="${iconId}">
+        //try add on onclick atribute = savedplase ${place}
           &#9733
         <span>
         </h5>
