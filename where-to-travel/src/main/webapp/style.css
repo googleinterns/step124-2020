@@ -121,6 +121,29 @@ html {
 @media screen and (max-width: 398px) {
   #drawer-toggle {
     color: #049688;
-    font-size: 0.75em;
+    font-size: 1em;
+  }
+  
+  .navbar {
+    font-size: 1em;
+  }
+
+  .btn-icon {
+    margin: 0 3px 0 0;
+    padding: 0;
+  }
+
+  #nav-text {
+    margin-left: 4px;
+    margin-right: 4px;
+  }
+
+  .btn-small-padding {
+    padding: 5px 10px 5px 10px
+  }
+
+  .card-scroller {
+    max-width: 60%;
+    padding: 0;
   }
 }
