@@ -40,13 +40,16 @@ window.addEventListener('load', function() {
       }
       form.classList.add('was-validated');
     }, false);
-  });
-  
-  signUpForm.addEventListener('submit', function() {
+  }); 
+}, false);
+
+
+$(document).ready(function() {
+  $(document).on('submit', '#signUpForm', function() {
     signUp();
     return false;
   });
-}, false);
+});
 
 /**
  * Attaches a listener to the focusout event for an input element.
@@ -79,11 +82,12 @@ function signUp() {
     // Add user information to the real time database in Firebase
     let ref = firebase.database().ref('users');
     let data = {
+      name: nameSignUp.value,
       email: emailSignUp.value,    
       uID: firebase.auth().currentUser.uid
     };
     ref.push(data)
       .then(_ => $('#signUp-modal').modal('hide'))
       .catch(e => {console.log(e.message); alert(e.message);});
-  });
+  }).catch(e => {console.log(e.message); alert(e.message);});
 }
