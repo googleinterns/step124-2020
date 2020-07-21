@@ -87,6 +87,6 @@ function signUp() {
       };
     ref.set(data)
       .then(_ => $('#signUp-modal').modal('hide'))
-      .catch(_ => {console.log(e.message); alert(e.message);});
-  }).catch(_ => console.log(e.message), alert(e.message));
+      .catch(_ => {console.log(_.message); alert(_.message);});
+  }).catch(_ => console.log(_.message), alert(_.message));
 }
