@@ -112,7 +112,9 @@ function addListenerToSearchInput(element, type, max) {
   element.addEventListener('focusout', function (event) {
     // if value is empty, set to 0, otherwise, parse the value
     const value = (event.target.value === '') ? 0 : parseInt(event.target.value);
-    if (value < 0 || value > max) {
+    if (isNaN(value)) {
+      $('#' + FEEDBACK_ID).append(`<p id="hour-feedback" class="feedback">Please input a valid number with no letters</p>`);
+    } else if (value < 0 || value > max) {
       $('#' + FEEDBACK_ID).append(`<p id="hour-feedback" class="feedback">Please input a valid ${type} value between 0 and ${max}</p>`);
     } else {
       $('#' + type + 'feedback').remove();
