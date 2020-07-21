@@ -9,6 +9,7 @@ const nameSignUp = document.getElementById('nameSignUp')
 const emailSignUp = document.getElementById('emailSignUp');
 const passwordSignUp = document.getElementById('passwordSignUp');
 const passwordConfirmation = document.getElementById('passwordConfirmation');
+const signUpForm = document.getElementById('signUpForm');
 const name = document.getElementById('nameSignUp');
 
 // On window load, attach all validation functions to input elements.
@@ -39,8 +40,16 @@ window.addEventListener('load', function() {
       }
       form.classList.add('was-validated');
     }, false);
-  });
+  }); 
 }, false);
+
+
+$(document).ready(function() {
+  $(document).on('submit', '#signUpForm', function() {
+    signUp();
+    return false;
+  });
+});
 
 /**
  * Attaches a listener to the focusout event for an input element.
@@ -54,21 +63,31 @@ function addFocusOutEvent(inputElement) {
     }
   });
 }
+
+
+/** Unhides modal containing signup form */
+function showSignUp() {
+  $('#signUp-modal').modal({show: true});
+}
+
+/** Clear all input to form once modal is closed */
+$('#signUp-modal').on('hidden.bs.modal', function(){
+    $(this).find('form')[0].reset();
+});
  
-/**
- * Signs user up using the firebase auth API.
- */
+/** Signs up user using Firebase API **/
 function signUp() {
   const promise = firebase().auth.createUserWithEmailAndPassword(emailSignUp.value, passwordSignUp.value);
     promise.then(e => {
       alert("You have sucessfully signed up!");
-      var ref = firebase.database().ref('users/' + firebase.auth().currentUser.uid );
-        var data = {
-          name: name,
-          email: email,    
-          uID: firebase.auth().currentUser.uid,
-        }
-     ref.set(data);
-    });
-  promise.catch(e => console.log(e.message), alert(e.message));
+      let ref = firebase.database().ref('users/' + firebase.auth().currentUser.uid );
+      let data = {
+        name: nameSignUp.value,
+        email: emailSignUp.value,    
+        uID: firebase.auth().currentUser.uid
+      };
+      ref.push(data)
+        .then(_ => $('#signUp-modal').modal('hide'))
+        .catch(e => {console.log(e.message); alert(e.message);});
+    }).catch(e => console.log(e.message), alert(e.message));
 }
