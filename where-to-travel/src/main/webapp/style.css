@@ -151,3 +151,28 @@ html {
 .text-color {
   color: #1E3C19;
 }
+
+
+.multi-select-pill {
+  margin: 5px;
+  font-size: 24px;
+  border: 1px solid #049688;
+  color: #049688;
+  background-color: white;
+  display: inline-block;
+  padding: 5px 10px 5px 10px;
+  border-radius: 25px;
+  cursor: pointer;
+  transition: box-shadow .2s cubic-bezier(.4,0,1,1),background-color .2s cubic-bezier(.4,0,.2,1),color .2s cubic-bezier(.4,0,.2,1)
+}
+
+.multi-select-pill:hover {
+  border: 1px solid white;
+  background-color: #049688;
+  color: white;
+}
+
+.selected {
+  background-color: #049688;
+  color: white;
+}

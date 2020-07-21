@@ -80,6 +80,16 @@ script.async = true;
 
 document.head.appendChild(script);
 
+$('.multi-select-pill').click(function () {
+  let clickedElement = $(this);
+  $(this).toggleClass('selected');
+  $(this).parent().children('.multi-select-pill').each(function() {
+    if (!$(this) === clickedElement) {
+      $(this).removeClass('.selected');
+    }
+  });
+});
+
 /** Initializes map window, runs on load. */
 function initialize() {
   const submit = document.getElementById(SUBMIT_ID);
