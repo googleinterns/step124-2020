@@ -69,6 +69,9 @@ let placesService;
 // Keeps track of most recent search request
 let globalNonce;
 
+// Query for Place Search
+let placesType = 'Tourist Attractions';
+
 // Add gmap js library to head of page
 const script = document.createElement('script');
 script.src =
@@ -658,7 +661,7 @@ function getPlacesFromDirection(lat, lng) {
     const boundBox = new google.maps.LatLngBounds(sw, ne);
 
     const request = {
-      query: 'Tourist Attractions',
+      query: placesType,
       bounds: boundBox,
     };
 
