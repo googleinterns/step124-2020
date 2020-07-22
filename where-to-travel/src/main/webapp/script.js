@@ -51,6 +51,7 @@ const HOME_PIN_PATH = 'icons/home.svg';
 let map;
 let user = false;
 let home = null;
+let placeType;
 
 let focusedCard;
 let focusedPin;
@@ -81,13 +82,14 @@ script.async = true;
 document.head.appendChild(script);
 
 $('.multi-select-pill').click(function () {
-  let clickedElement = $(this);
-  $(this).toggleClass('selected');
-  $(this).parent().children('.multi-select-pill').each(function() {
-    if (!$(this) === clickedElement) {
-      $(this).removeClass('.selected');
-    }
-  });
+  let pillText = $(this).text();
+  if(pillText === selectedPillText) {
+    $(this).toggleClass('selected');
+  } else {
+    selectedPillText = pillText;
+    $(event.target).parent().children('.multi-select-pill').removeClass('selected');
+    $(this).toggleClass('selected');
+  }
 });
 
 /** Initializes map window, runs on load. */
