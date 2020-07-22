@@ -49,7 +49,7 @@ const MINUTE_MAX_SEARCH = 59;
 const PIN_PATH = 'icons/pin.svg';
 const SELECTED_PIN_PATH = 'icons/selectedPin.svg';
 const HOME_PIN_PATH = 'icons/home.svg';
-const INT_REGEX_MATCHER = '/^\d+$/';
+const INT_REGEX_MATCHER = /^\d+$/;
 
 let map;
 let user = false;
@@ -99,7 +99,7 @@ async function initialize() {
  */
 function attachSearchValidation() {
   addListenerToSearchInput(document.getElementById(HOURS_ID), 'hour', HOURS_MAX_SEARCH);
-  addListenerToSearchInput(document.getElementById(MINUTES_ID, 'minute', MINUTE_MAX_SEARCH));
+  addListenerToSearchInput(document.getElementById(MINUTES_ID), 'minute', MINUTE_MAX_SEARCH);
 }
 
 /**
@@ -111,17 +111,17 @@ function attachSearchValidation() {
  */
 function addListenerToSearchInput(element, type, max) {
   element.addEventListener('focusout', function (event) {
-    $('#' + type + 'feedback').remove();
+    $('#' + type + '-feedback').remove();
     // if value is empty, set to 0, otherwise, parse the value
     const stringInput = event.target.value;
 
     const intValue = (stringInput === '') ? 0 : parseInt(stringInput);
-    if (INT_REGEX_MATCHER.test(stringInput)) {
-      $('#' + FEEDBACK_ID).append(`<p id="${type}-feedback" class="feedback">Please input a valid ${type} integer without numbers or other characters</p>`);
+    if (!INT_REGEX_MATCHER.test(stringInput)) {
+      $('#' + FEEDBACK_ID).append('<p id="' + type +'-feedback" class="feedback">Please input a valid ' + type + ' integer without numbers or other characters</p>');
     } else if (intValue < 0 || intValue > max) {
-      $('#' + FEEDBACK_ID).append(`<p id="${type}-feedback" class="feedback">Please input a valid ${type} value between 0 and ${max}</p>`);
+      $('#' + FEEDBACK_ID).append('<p id="' + type + '-feedback" class="feedback">Please input a valid ' + type + ' value between 0 and ' + max + '</p>');
     } else {
-      $('#' + type + 'feedback').remove();
+      $('#' + type + '-feedback').remove();
     }
   });
 }
@@ -282,10 +282,12 @@ function submitDataListener(event) {
   if (home == null) {
     const content = '<p> No home location found. Please set a home location and try again.</p>';
     openModal(content);
-  } else if (!($('#' + FEEDBACK_ID).children().length)) {
+  } else if ($('#' + FEEDBACK_ID).children().length >= 1) {
     const content = '<p> Please enter valid search parameters</p>';
     openModal(content);
   } else {
+    console.log($('#' + FEEDBACK_ID).children().length);
+    console.log($('#' + FEEDBACK_ID).children());
     $('#dw-s2').data('bmd.drawer').hide();
     clearPlaces();
     const hours = document.getElementById(HOURS_ID).value;
