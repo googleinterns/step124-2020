@@ -111,6 +111,7 @@ function attachSearchValidation() {
  */
 function addListenerToSearchInput(element, type, max) {
   element.addEventListener('focusout', function (event) {
+    $('#' + type + 'feedback').remove();
     // if value is empty, set to 0, otherwise, parse the value
     const stringInput = event.target.value;
 
@@ -281,8 +282,10 @@ function submitDataListener(event) {
   if (home == null) {
     const content = '<p> No home location found. Please set a home location and try again.</p>';
     openModal(content);
-  }
-  else {
+  } else if (!($('#' + FEEDBACK_ID).children().length)) {
+    const content = '<p> Please enter valid search parameters</p>';
+    openModal(content);
+  } else {
     $('#dw-s2').data('bmd.drawer').hide();
     clearPlaces();
     const hours = document.getElementById(HOURS_ID).value;
