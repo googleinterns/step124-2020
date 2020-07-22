@@ -98,8 +98,8 @@ async function initialize() {
  * Attaches listeners to the focusout event for search inputs.
  */
 function attachSearchValidation() {
-  addListenerToSearchInput(document.getElementById(HOURS_ID), 'hour', HOURS_MAX_SEARCH);
-  addListenerToSearchInput(document.getElementById(MINUTES_ID), 'minute', MINUTE_MAX_SEARCH);
+  addListenerToSearchInput(document.getElementById(HOURS_ID), 'hours', HOURS_MAX_SEARCH);
+  addListenerToSearchInput(document.getElementById(MINUTES_ID), 'minutes', MINUTE_MAX_SEARCH);
 }
 
 /**
@@ -116,10 +116,8 @@ function addListenerToSearchInput(element, type, max) {
     const stringInput = event.target.value;
 
     const intValue = (stringInput === '') ? 0 : parseInt(stringInput);
-    if (!INT_REGEX_MATCHER.test(stringInput)) {
-      $('#' + FEEDBACK_ID).append('<p id="' + type +'-feedback" class="feedback">Please input a valid ' + type + ' integer without numbers or other characters</p>');
-    } else if (intValue < 0 || intValue > max) {
-      $('#' + FEEDBACK_ID).append('<p id="' + type + '-feedback" class="feedback">Please input a valid ' + type + ' value between 0 and ' + max + '</p>');
+    if (!INT_REGEX_MATCHER.test(stringInput) || intValue < 0 || intValue > max) {
+      $('#' + FEEDBACK_ID).append('<p id="' + type + '-feedback" class="feedback">Please input a valid ' + type + ' whole number between 0 and ' + max + '</p>');
     } else {
       $('#' + type + '-feedback').remove();
     }
