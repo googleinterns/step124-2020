@@ -364,11 +364,12 @@ function populatePlaces(placeArray) {
     let cardElement = $(htmlContent).click(function(event) {
       if(event.target.nodeName != 'SPAN') {
         toggleFocusOff();
-        selectLocationMarker(place.name);
+        selectLocationMarker($(this).attr('placeName'));
         $(this).addClass('active-card');
        focusedCard = this;
       }
     });
+
     $('#' + SCROLL_ID).append(cardElement);
 
     // Add events to focus card and pin
@@ -481,6 +482,7 @@ function selectLocationMarker(title) {
     if (marker.getTitle() == title) {
       focusedPin = marker;
       marker.setIcon(SELECTED_PIN_PATH);
+      break;
     }
   }
 }
@@ -548,7 +550,7 @@ function clearPlaces() {
  * @param {Object} time Travel time requested by user in seconds
  * @return {Array} Array of objects containing information about places within the requested time
  */
- function getPlacesFromTime(time) {
+function getPlacesFromTime(time) {
   return new Promise(async function(resolve, reject){    
     const localNonce = globalNonce = new Object(); 
     // First try one bounding box around user's location
@@ -562,7 +564,7 @@ function clearPlaces() {
 
     let places = filterResults.places;
 
-    // Initial distance from the user's location for the bounding boxes
+     // Initial distance from the user's location for the bounding boxes
     const initSpread = Math.max(1, Math.ceil(time/7200));
     let attempts = 0;
 
@@ -688,18 +690,18 @@ function getPlacesFromDirection(lat, lng) {
  * @return {Object} Contains average time of all places and an array of places objects that are within time
  */
 async function filterByTime(time, listPlaces) {
-    let filterInfo = {total_time: 0, total_places: 0, places: []};
+  let filterInfo = {total_time: 0, total_places: 0, places: []};
 
-    for (let i = 0; i < listPlaces.length; i += 25) {
-      filterInfo = await addAcceptablePlaces(time, listPlaces.slice(i, i + 25), filterInfo);
-    }
+  for (let i = 0; i < listPlaces.length; i += 25) {
+    filterInfo = await addAcceptablePlaces(time, listPlaces.slice(i, i + 25), filterInfo);
+  }
 
-    let avg_time = 0;
-    if (filterInfo.total_places != 0) {
-      avg_time = filterInfo.total_time/filterInfo.total_places;
-    }
+  let avg_time = 0;
+  if (filterInfo.total_places != 0) {
+    avg_time = filterInfo.total_time/filterInfo.total_places;
+  }
 
-    return {avg_time: avg_time, places: filterInfo.places};
+  return {avg_time: avg_time, places: filterInfo.places};
 }
 
 /**
