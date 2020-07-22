@@ -84,9 +84,10 @@ document.head.appendChild(script);
 $('.multi-select-pill').click(function () {
   let pillText = $(this).text();
   if(pillText === selectedPillText) {
+    placeType = '';
     $(this).toggleClass('selected');
   } else {
-    selectedPillText = pillText;
+    placeType = pillText;
     $(event.target).parent().children('.multi-select-pill').removeClass('selected');
     $(this).toggleClass('selected');
   }
