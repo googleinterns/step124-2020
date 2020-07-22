@@ -4,22 +4,22 @@
  *
  * @param {array} placeArray Array of Google Maps Place Objects
  */
-function displaySaved() {
-  let ref = firebase.database().ref('users/' + tPYO5KQJsbPnQseiaDFh6yGyg3b2 + '/' + 'places' + '/' + 'Paint Pots')
-  // Import Admin SDK
-  var admin = require("firebase-admin");
+// function displaySaved() {
+//   let ref = firebase.database().ref('users/' + tPYO5KQJsbPnQseiaDFh6yGyg3b2 + '/' + 'places' + '/' + 'Paint Pots')
+//   // Import Admin SDK
+//   var admin = require("firebase-admin");
 
-  // Get a database reference to our posts
-  var db = admin.database();
-  var ref = db.ref("server/saving-data/fireblog/posts");
+//   // Get a database reference to our posts
+//   var db = admin.database();
+//   var ref = db.ref("server/saving-data/fireblog/posts");
 
-  // Attach an asynchronous callback to read the data at our posts reference
-  ref.on("value", function(snapshot) {
-    console.log(snapshot.val());
-  }, function (errorObject) {
-  console.log("The read failed: " + errorObject.code);
-});
-}
+//   // Attach an asynchronous callback to read the data at our posts reference
+//   ref.on("value", function(snapshot) {
+//     console.log(snapshot.val());
+//   }, function (errorObject) {
+//   console.log("The read failed: " + errorObject.code);
+// });
+// }
   
 //   for(place of placeArray) {
 //     // marker creation

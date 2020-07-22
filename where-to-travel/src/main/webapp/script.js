@@ -437,7 +437,7 @@ function getLocationCardHtml(place) {
     `<div class="card location-card" placeName="${name}" style="margin-right: 0;">
       <div class="card-body">
         <h5 class="card-title">${name}
-        <span class="icon" id="${iconId}" onclick="savePlace(${place});">
+        <span class="icon" id="${iconId}" onclick="savePlace('${JSON.stringify(place)}')">
           &#9733
         <span>
         </h5>
@@ -450,6 +450,8 @@ function getLocationCardHtml(place) {
 }
 
 function savePlace(place) {
+    console.log(place);
+  place = JSON.parse(place);
   if (firebase.auth().currentUser ) { //&& $(this).hasClass('press')
       const name = place.name;
       console.log(name);
