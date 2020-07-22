@@ -286,8 +286,6 @@ function submitDataListener(event) {
     const content = '<p> Please enter valid search parameters</p>';
     openModal(content);
   } else {
-    console.log($('#' + FEEDBACK_ID).children().length);
-    console.log($('#' + FEEDBACK_ID).children());
     $('#dw-s2').data('bmd.drawer').hide();
     clearPlaces();
     const hours = document.getElementById(HOURS_ID).value;
