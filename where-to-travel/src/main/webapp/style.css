@@ -103,6 +103,25 @@ html {
   z-index: 1;
 }
 
+.multi-select-pill {
+  background-color: white;
+  border: 1px solid #049688;
+  border-radius: 25px;
+  color: #049688;
+  cursor: pointer;
+  display: inline-block;
+  font-size: 24px;
+  margin: 5px;
+  padding: 5px 10px 5px 10px;
+  transition: box-shadow .2s cubic-bezier(.4,0,1,1),background-color .2s cubic-bezier(.4,0,.2,1),color .2s cubic-bezier(.4,0,.2,1)
+}
+
+.multi-select-pill:hover {
+  background-color: #049688;
+  border: 1px solid white;
+  color: white;
+}
+
 #nav-text {
   margin-right: 10px;
   margin-left: 10px;
@@ -124,6 +143,11 @@ html {
   margin-top: 5px;
   margin-right: auto;
   margin-left: auto;
+}
+
+.selected {
+  background-color: #049688;
+  color: white;
 }
 
 .stars {
@@ -150,29 +174,4 @@ html {
 
 .text-color {
   color: #1E3C19;
-}
-
-
-.multi-select-pill {
-  margin: 5px;
-  font-size: 24px;
-  border: 1px solid #049688;
-  color: #049688;
-  background-color: white;
-  display: inline-block;
-  padding: 5px 10px 5px 10px;
-  border-radius: 25px;
-  cursor: pointer;
-  transition: box-shadow .2s cubic-bezier(.4,0,1,1),background-color .2s cubic-bezier(.4,0,.2,1),color .2s cubic-bezier(.4,0,.2,1)
-}
-
-.multi-select-pill:hover {
-  border: 1px solid white;
-  background-color: #049688;
-  color: white;
-}
-
-.selected {
-  background-color: #049688;
-  color: white;
 }
