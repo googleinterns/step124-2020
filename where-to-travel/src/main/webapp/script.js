@@ -49,6 +49,7 @@ const MINUTE_MAX_SEARCH = 59;
 const PIN_PATH = 'icons/pin.svg';
 const SELECTED_PIN_PATH = 'icons/selectedPin.svg';
 const HOME_PIN_PATH = 'icons/home.svg';
+const INT_REGEX_MATCHER = '/^\d+$/';
 
 let map;
 let user = false;
@@ -114,7 +115,9 @@ function addListenerToSearchInput(element, type, max) {
     const stringInput = event.target.value;
 
     const intValue = (stringInput === '') ? 0 : parseInt(stringInput);
-    if (value < 0 || value > max) {
+    if (INT_REGEX_MATCHER.test(stringInput)) {
+      $('#' + FEEDBACK_ID).append(`<p id="${type}-feedback" class="feedback">Please input a valid ${type} integer without numbers or other characters</p>`);
+    } else if (intValue < 0 || intValue > max) {
       $('#' + FEEDBACK_ID).append(`<p id="${type}-feedback" class="feedback">Please input a valid ${type} value between 0 and ${max}</p>`);
     } else {
       $('#' + type + 'feedback').remove();
