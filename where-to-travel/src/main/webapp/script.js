@@ -363,7 +363,7 @@ function populatePlaces(placeArray) {
   if(!placeArray) {
     showModal(NO_PLACES_HTML_PATH);
   }
-  for(place of placeArray) {
+  for(let place of placeArray) {
     // marker creation
     let placeMarker = new google.maps.Marker({
       position: place.geometry.location,
@@ -379,7 +379,7 @@ function populatePlaces(placeArray) {
     let cardElement = $(htmlContent).click(function(event) {
       if(event.target.nodeName != 'SPAN') {
         toggleFocusOff();
-        selectLocationMarker(place.name);
+        selectLocationMarker($(this).attr('placeName'));
         $(this).addClass('active-card');
        focusedCard = this;
       }
@@ -448,7 +448,7 @@ function getLocationCardHtml(place) {
   const place_id = place.place_id;
     
   const iconId = 'icon' + name;
-  return innerHtml = '' +
+  const innerHtml = '' +
     `<div class="card location-card" placeName="${name}" style="margin-right: 0;">
       <div class="card-body">
         <h5 class="card-title">${name}
@@ -462,6 +462,8 @@ function getLocationCardHtml(place) {
         <h6>${timeStr}</h6>
       </div>
     </div>`;
+
+    return innerHtml;
 }
 
 /**
@@ -471,9 +473,9 @@ function getLocationCardHtml(place) {
  */
 function getLoginHtml() {
   return `<img onclick="showModal(${INFO_HTML_PATH})" class="btn btn-icon" src="icons/help.svg">
-          <a class="btn btn-outline-primary" style="text-align: center" href="login.html">Login</a>
+          <a class="btn btn-outline-primary" onclick="showLogin()">Login</a>
           <span id="nav-text">or</span>
-          <a class="btn btn-outline-primary btn-small-padding" href="signup.html">Sign up</a>`;
+          <a class="btn btn-outline-primary btn-small-padding" onclick="showSignUp()">Sign Up</a>`;
 }
 
 /**
@@ -493,7 +495,7 @@ function getUserDashHtml(user) {
  * @param {string} title the name of the place whose marker to focus
 */
 function selectLocationMarker(title) {
-  for (marker of markers) {
+  for (let marker of markers) {
     if (marker.getTitle() == title) {
       focusedPin = marker;
       marker.setIcon(SELECTED_PIN_PATH);
@@ -507,7 +509,7 @@ function selectLocationMarker(title) {
  */
 function selectLocationCard(title) {
   scrollWindow = document.getElementById(SCROLL_ID);
-  for (locationCard of scrollWindow.childNodes) {
+  for (let locationCard of scrollWindow.childNodes) {
     if (locationCard.hasChildNodes() && locationCard.getAttribute("placeName") == title) {
       locationCard.classList.add("active-card");
       focusedCard = locationCard;
@@ -550,7 +552,7 @@ function clearPlaces() {
     parent.firstChild.remove();
   }
   parent.hidden = true;
-  for (marker of markers) {
+  for (let marker of markers) {
     marker.setMap(null);
   }
   markers = [];
@@ -599,7 +601,7 @@ function clearPlaces() {
     while (attempts < ATTEMPTS_THRESHOLD && places.length < PLACES_THRESHOLD) {
       let new_directions = [];
 
-      for (direction of directions) {
+      for (let direction of directions) {
         let latSpread = direction[0];
         let lngSpread = direction[1];
 
@@ -678,7 +680,7 @@ function getPlacesFromDirection(lat, lng) {
 
     function callback(results, status) {
       if (status == google.maps.places.PlacesServiceStatus.OK) {
-        for (result of results) {
+        for (let result of results) {
           if (result.business_status == 'OPERATIONAL') {
             place_candidates.push(result);
           }
@@ -732,7 +734,7 @@ function addAcceptablePlaces(time, places, acceptablePlacesInfo) {
     let destinations = [];
 
     // Iterate through places to get all latitudes and longitudes of destinations
-    for (place of places) {
+    for (let place of places) {
       let lat = place.geometry.location.lat();
       let lng = place.geometry.location.lng();
       let destination = new google.maps.LatLng(lat, lng);
