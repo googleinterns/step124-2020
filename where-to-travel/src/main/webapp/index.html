@@ -9,38 +9,33 @@
         integrity="sha384-wXznGJNEXNG1NFsbm0ugrLFMQPWswR3lds2VeinahP8N0zJw9VWSopbjv2x7WCvX" crossorigin="anonymous">
     <link rel="stylesheet" href="style.css">
     <script src="secrets.json"></script>
+    <meta name="viewport" content="width=640, initial-scale=0.5, user-scalable=no" />
   </head>
-
-  <body onload="initialize();">    
-    <header class="bmd-layout-header">
-      <div class="navbar navbar-dark bg-faded">
-        <button class="navbar-toggler" type="button" data-toggle="drawer" data-target="#dw-s2">
-          <span class="sr-only">Toggle drawer</span>
-          <span id="drawer-toggle" class="btn">
-            &#9776;
-          </span>
-        </button>
-        <ul class="nav navbar-nav">
-          <li class="nav-item">
-            <div id="dash"></div>
-          </li>
-        </ul>
-      </div>
-    </header>
-
-    <div class="bmd-layout-canvas">
-      <div class="bmd-layout-container bmd-drawer-f-l bmd-drawer-overlay">
-        <div id="dw-s2" class="bmd-layout-drawer bg-faded">
-            
-          <header>
-            <a class="navbar-brand text-center">Search Settings</a>
-          </header>
-
-          <div id="accordion">
-
-            <div class="card">
-              <div class="card-header text-center" id="headingOne">
-
+  <body onload="initialize();">
+    <div class="bmd-layout-container bmd-drawer-f-l bmd-drawer-overlay">
+      <header class="bmd-layout-header">
+        <div class="navbar navbar-dark bg-faded">
+          <button class="navbar-toggler" type="button" data-toggle="drawer" data-target="#dw-s2">
+            <span class="sr-only">Toggle drawer</span>
+            <span id="drawer-toggle" class="btn">
+              &#9776;
+            </span>
+          </button>
+          <ul class="nav navbar-nav">
+            <li class="nav-item">
+              <div id="dash">
+              </div>
+            </li>
+          </ul>
+        </div>
+      </header>
+      <div id="dw-s2" class="bmd-layout-drawer bg-faded">
+        <header>
+          <a class="navbar-brand">Search Settings</a>
+        </header>
+        <div id="accordion">
+          <div class="card">
+            <div class="card-header" id="headingOne">
               <h1 class="mb-0">
                 <button class="btn btn-link collapsed text-color" data-toggle="collapse" data-target="#collapseOne"
                     aria-expanded="false" aria-controls="collapseOne">
