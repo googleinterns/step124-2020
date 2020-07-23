@@ -83,7 +83,7 @@ document.head.appendChild(script);
 
 $('.multi-select-pill').click(function () {
   let pillText = $(this).text();
-  if(pillText === selectedPillText) {
+  if(pillText === placeType) {
     placeType = '';
     $(this).toggleClass('selected');
   } else {
