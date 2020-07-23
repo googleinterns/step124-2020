@@ -60,6 +60,7 @@ const NO_PLACES_HTML_PATH = 'noPlaces.txt';
 let map;
 let user = false;
 let home = null;
+let placeType;
 
 let focusedCard;
 let focusedPin;
@@ -88,6 +89,18 @@ script.defer = true;
 script.async = true;
 
 document.head.appendChild(script);
+
+$('.multi-select-pill').click(function () {
+  let pillText = $(this).text();
+  if(pillText === placeType) {
+    placeType = '';
+    $(this).toggleClass('selected');
+  } else {
+    placeType = pillText;
+    $(event.target).parent().children('.multi-select-pill').removeClass('selected');
+    $(this).toggleClass('selected');
+  }
+});
 
 /** Initializes map window, runs on load. */
 function initialize() {
@@ -472,9 +485,9 @@ function getLocationCardHtml(place) {
  */
 function getLoginHtml() {
   return `<img onclick="showModal(${INFO_HTML_PATH})" class="btn btn-icon" src="icons/help.svg">
-          <a class="btn btn-outline-primary" onclick="showLogin()">Login</a>
+          <a class="btn btn-outline-primary btn-color" onclick="showLogin()">Login</a>
           <span id="nav-text">or</span>
-          <a class="btn btn-outline-primary btn-small-padding" onclick="showSignUp()">Sign Up</a>`;
+          <a class="btn btn-outline-primary btn-color" onclick="showSignUp()">Sign up</a>`;
 }
 
 /**
@@ -484,8 +497,8 @@ function getLoginHtml() {
  * @returns the HTML for user dashboard as a string 
  */
 function getUserDashHtml(user) {
-  return `<img onclick="showModal(${INFO_HTML_PATH})" class="btn btn-icon" src="icons/help.svg">
-          <a class="btn btn-outline-primary" style="color: #049688;" id="logout">Logout</a>`;
+  return `<img onclick="showInfoModal(showModal(${INFO_HTML_PATH}))" class="btn btn-icon" src="icons/help.svg">
+          <a class="btn btn-outline-primary btn-color" style="color: #049688;" id="logout">Logout</a>`;
 
 }
 
