@@ -1,3 +1,9 @@
+/**
+ * A collection of functions for Where To app. This file includes most JS,
+ * including DOM interaction and API calls.
+ */
+'use strict';
+
 // This is map stylings for the GMap api
 const MAP_STYLES = [
   {
@@ -48,6 +54,9 @@ const PIN_PATH = 'icons/pin.svg';
 const SELECTED_PIN_PATH = 'icons/selectedPin.svg';
 const HOME_PIN_PATH = 'icons/home.svg';
 
+const INFO_HTML_PATH = 'info.txt';
+const NO_PLACES_HTML_PATH = 'noPlaces.txt';
+
 let map;
 let user = false;
 let home = null;
@@ -93,7 +102,8 @@ function initialize() {
     styles: MAP_STYLES,
   };
   map = new google.maps.Map(document.getElementById('map'), mapOptions);
-  
+
+  showModal(INFO_HTML_PATH);
   // Add autocomplete capabality for address input
   const addressInput = document.getElementById('addressInput');
   let autocomplete = new google.maps.places.Autocomplete(addressInput);
@@ -103,18 +113,19 @@ function initialize() {
   geocoder = new google.maps.Geocoder();
   placesService = new google.maps.places.PlacesService(map);
   
-  showInfoModal();
+  showModal(INFO_HTML_PATH);
 }
 
 /**
- * Populates and opens modal with html content from info.txt that provides
- * description of website to user
+ * Opens the modal, then populates it with the html at the specified filepath.
+ * @param htmlFilePath the path to the html to populate the modal with as text
  */
-function showInfoModal() {
-  fetch('info.txt')
+function showModal(htmlFilePath) {
+  fetch(htmlFilePath)
     .then(response => response.text())
     .then(content => openModal(content));
 }
+
 
 firebase.auth().onAuthStateChanged(function(user) {
   $('#' + DASH_ID).empty();
@@ -348,6 +359,10 @@ function submitDataListener(event) {
  * @param {array} placeArray Array of Google Maps Place Objects
  */
 function populatePlaces(placeArray) {
+  // if place array is empty, show the no places info
+  if(!placeArray) {
+    showModal(NO_PLACES_HTML_PATH);
+  }
   for(place of placeArray) {
     // marker creation
     let placeMarker = new google.maps.Marker({
@@ -455,8 +470,8 @@ function getLocationCardHtml(place) {
  * @returns the HTML for login as a string
  */
 function getLoginHtml() {
-  return `<img onclick="showInfoModal()" class="btn btn-icon" src="icons/help.svg">
-          <a class="btn btn-outline-primary btn-small-padding" style="text-align: center" href="login.html">Login</a>
+  return `<img onclick="showModal(${INFO_HTML_PATH})" class="btn btn-icon" src="icons/help.svg">
+          <a class="btn btn-outline-primary" style="text-align: center" href="login.html">Login</a>
           <span id="nav-text">or</span>
           <a class="btn btn-outline-primary btn-small-padding" href="signup.html">Sign up</a>`;
 }
@@ -468,8 +483,9 @@ function getLoginHtml() {
  * @returns the HTML for user dashboard as a string 
  */
 function getUserDashHtml(user) {
-  return `<img onclick="showInfoModal()" class="btn btn-icon" src="icons/help.svg">
-          <a class="btn btn-outline-primary btn-small-padding" style="color: #049688;" id="logout">Logout</a>`;
+  return `<img onclick="showModal(${INFO_HTML_PATH})" class="btn btn-icon" src="icons/help.svg">
+          <a class="btn btn-outline-primary" style="color: #049688;" id="logout">Logout</a>`;
+
 }
 
 /**
