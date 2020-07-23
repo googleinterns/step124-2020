@@ -175,7 +175,6 @@ function getHomeLocation(useAddress) {
   });
 }
 
-
 /** Opens modal telling user that location is being found if geolocation is running */
 function openLocationModal() {
   if (geoLoading) {
@@ -596,7 +595,6 @@ function clearPlaces() {
       [-initSpread, initSpread], // Southeast
       [-initSpread, -initSpread] // Southwest
     ];
-
 
     while (attempts < ATTEMPTS_THRESHOLD && places.length < PLACES_THRESHOLD) {
       let new_directions = [];
