@@ -936,7 +936,7 @@ function getOpeningHours(opening_hours) {
     if ((index + 1) % 7 != dayIndex) {
       html += `<p class="no-break">${shortenedWeekdayText(weekday_text, index)}</p>`;
     } else {
-      html += `<p>${shortenedWeekdayText(weekday_text, index)}</p>`
+      html += `<p>${shortenedWeekdayText(weekday_text, index)}</p>`;
     }
   }
 
