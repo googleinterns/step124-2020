@@ -105,8 +105,6 @@ function initialize() {
   distanceMatrixService = new google.maps.DistanceMatrixService();
   geocoder = new google.maps.Geocoder();
   placesService = new google.maps.places.PlacesService(map);
-  
-  $('#dw-s2').data('bmd.drawer').show();
 }
 
 /**
@@ -330,8 +328,6 @@ function submitDataListener(event) {
 
     // Convert hours and minutes into seconds
     const time = hours * 3600 + minutes * 60;
-
-    $('#dw-s2').data('bmd.drawer').hide();
 
     // Pop up modal that shows loading status
     $('#loading-modal').modal('show');
