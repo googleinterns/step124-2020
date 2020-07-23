@@ -60,7 +60,7 @@ const NO_PLACES_HTML_PATH = 'noPlaces.txt';
 let map;
 let user = false;
 let home = null;
-let placeType;
+let placeType = 'Tourist Attractions';
 
 let focusedCard;
 let focusedPin;
@@ -93,7 +93,7 @@ document.head.appendChild(script);
 $('.multi-select-pill').click(function () {
   let pillText = $(this).text();
   if(pillText === placeType) {
-    placeType = '';
+    placeType = 'Tourist Attractions';
     $(this).toggleClass('selected');
   } else {
     placeType = pillText;
@@ -685,7 +685,7 @@ function getPlacesFromDirection(lat, lng) {
     const boundBox = new google.maps.LatLngBounds(sw, ne);
 
     const request = {
-      query: 'Tourist Attractions',
+      query: placeType,
       bounds: boundBox,
     };
 
