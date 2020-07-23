@@ -398,26 +398,26 @@ function populatePlaces(placeArray) {
   // Handle favoriting a place
   $('.icon').click(function() {
     $(this).toggleClass('press');
-    // if (firebase.auth().currentUser && $(this).hasClass('press')) {
-    //   const name = $(this).parent().parent().parent().attr('placeName');
-    //   const link = $(this).parent().next().attr('href');
-    //   const time = $(this).parent().next().next().text();
-    //    // Add users saved places to the real time database in Firebase when star is pressed
-    //   const database = firebase.database();
-    //   var uID = firebase.auth().currentUser.uid;
-    //   var ref = database.ref('users/' + uID + '/' + 'places' + '/' + name);
-    //   var data = {
-    //     name: name,
-    //     link: link,
-    //     time: time,
-    //   }
-    //   ref.set(data);
-    // } else if (firebase.auth().currentUser && (!$(this).hasClass('press'))) {
-    //   const name = $(this).parent().parent().parent().attr('placeName');
-    //    // Delete user saved places when the star is not pressed
-    //   var ref = firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/' + 'places' + '/' + name);
-    //   ref.remove();
-    // }
+    if (firebase.auth().currentUser && $(this).hasClass('press')) {
+      const name = $(this).parent().parent().parent().attr('placeName');
+      const time = $(this).parent().next().next().text();
+      const placeId = $(this).parent().next().next().next().attr('savedPlaceId')
+       // Add users saved places to the real time database in Firebase when star is pressed
+      const database = firebase.database();
+      var uID = firebase.auth().currentUser.uid;
+      var ref = database.ref('users/' + uID + '/' + 'places' + '/' + name);
+      var data = {
+        name: name,
+        time: time,
+        placeId: placeId
+      }
+      ref.set(data);
+    } else if (firebase.auth().currentUser && (!$(this).hasClass('press'))) {
+      const name = $(this).parent().parent().parent().attr('placeName');
+       // Delete user saved places when the star is not pressed
+      var ref = firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/' + 'places' + '/' + name);
+      ref.remove();
+    }
   });
 }
 
@@ -437,7 +437,7 @@ function getLocationCardHtml(place) {
     `<div class="card location-card" placeName="${name}" style="margin-right: 0;">
       <div class="card-body">
         <h5 class="card-title">${name}
-        <span class="icon" id="${iconId}" onclick="savePlace('${JSON.stringify(place)}')">
+        <span class="icon" id="${iconId}">
           &#9733
         <span>
         </h5>
@@ -445,39 +445,10 @@ function getLocationCardHtml(place) {
           <a onclick="populateMorePlaceInfo('${place_id}')" class="btn btn-primary active">More Information</a>
         </div>
         <h6>${timeStr}</h6>
-      </div>
+        <div savedPlaceId="${place_id}" style="visibility: hidden">
+        </div>
     </div>`;
 }
-
-function savePlace(place) {
-    console.log(place);
-  place = JSON.parse(place);
-  if (firebase.auth().currentUser ) { //&& $(this).hasClass('press')
-      const name = place.name;
-      console.log(name);
-      //const geometry = place.geometry;
-      const place_id = place.place_id;
-      const timeInSeconds = place.timeInSeconds;
-      const timeAsString = place.timeAsString;
-       // Add users saved places to the real time database in Firebase when star is pressed
-      const database = firebase.database();
-      var uID = firebase.auth().currentUser.uid;
-      var ref = database.ref('users/' + uID + '/' + 'places' + '/' + name);
-      var data = {
-        name: name,
-       // geometry: geometry,
-        place_id: place_id,
-        timeInSeconds: timeInSeconds,
-        timeAsString: timeAsString
-      }
-      ref.set(data);
-    } else if (firebase.auth().currentUser && (!$(this).hasClass('press'))) {
-       // Delete user saved places when the star is not pressed
-      var ref = firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/' + 'places' + '/' + place.name);
-      ref.remove();
-    }
-}
-
 
 
 /**
