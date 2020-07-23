@@ -70,7 +70,7 @@ let placesService;
 let globalNonce;
 
 // Query for Place Search
-let placesType = 'Tourist Attractions';
+let placeType = 'Tourist Attractions';
 
 // Add gmap js library to head of page
 const script = document.createElement('script');
@@ -106,7 +106,7 @@ function initialize() {
   geocoder = new google.maps.Geocoder();
   placesService = new google.maps.places.PlacesService(map);
   
-  showInfoModal();
+  $('#dw-s2').data('bmd.drawer').show();
 }
 
 /**
@@ -324,13 +324,14 @@ function submitDataListener(event) {
     openModal(content);
   }
   else {
-    $('#dw-s2').data('bmd.drawer').hide();
     clearPlaces();
     const hours = document.getElementById(HOURS_ID).value;
     const minutes = document.getElementById(MINUTES_ID).value;
 
     // Convert hours and minutes into seconds
     const time = hours * 3600 + minutes * 60;
+
+    $('#dw-s2').data('bmd.drawer').hide();
 
     // Pop up modal that shows loading status
     $('#loading-modal').modal('show');
@@ -661,7 +662,7 @@ function getPlacesFromDirection(lat, lng) {
     const boundBox = new google.maps.LatLngBounds(sw, ne);
 
     const request = {
-      query: placesType,
+      query: placeType,
       bounds: boundBox,
     };
 
