@@ -69,6 +69,11 @@ html {
   height: 100%;
 }
 
+h5 {
+  margin-left: auto;
+  margin-right: auto;
+}
+
 .icon {
   background:#fff;
   border-radius:50%;
@@ -106,6 +111,10 @@ html {
 #nav-text {
   margin-right: 10px;
   margin-left: 10px;
+}
+
+:not(.bmd-drawer-out).bmd-drawer-in.bmd-drawer-f-l>.bmd-layout-content {
+  margin-left: 360px;
 }
 
 .over-card {
