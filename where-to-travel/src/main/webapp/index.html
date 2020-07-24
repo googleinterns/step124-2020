@@ -11,29 +11,30 @@
     <script src="secrets.json"></script>
   </head>
 
-  <body onload="initialize();">    
-    <header class="bmd-layout-header">
-      <div style="text-align:center" class="navbar navbar-dark bg-faded">
-
-        <h5>
-          Planning a road trip? Enter a home location and your desired travel time to find interesting attractions!
-        </h5>
-
-        <ul class="nav navbar-nav">
-          <li class="nav-item">
-            <div id="dash"></div>
-          </li>
-        </ul>
-      </div>
-    </header>
+  <body onload="initialize();">      
 
     <div class="bmd-layout-canvas">
+      
+      <header class="bmd-layout-header">
+        <div class="navbar bg-faded">
+          <div class="text-center" style="width:330px">
+            <a class="navbar-brand text-center text-color" href="#"> <img src="icons/pin.svg" width="16" height="32"> Where to?</a>
+          </div>
+
+          <span class="navbar-text">
+            Planning a road trip? Enter a home location and travel time to find interesting attractions!
+          </span>    
+
+          <ul class="nav navbar-nav">
+            <li class="nav-item">
+              <div id="dash"></div>
+            </li>
+          </ul>
+        </div>
+      </header>
+   
       <div class="bmd-layout-container bmd-drawer-f-l">
         <div id="dw-s2" class="bmd-layout-drawer bg-faded">
-            
-          <header>
-            <a class="navbar-brand text-center">Search Settings</a>
-          </header>
 
           <div id="accordion">
             <div class="card">
@@ -96,8 +97,8 @@
         </div>
 
         <main class="bmd-layout-content content">
-          <div hidden class="card-scroller" id="scroller"></div>
-          <div id="map"></div>
+          <div hidden class="card-scroller" id="scroller" style="margin-left: 360px"></div>
+          <div id="map" style="margin-left: 360px"></div>
         </main>
 
         </div>
