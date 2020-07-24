@@ -401,7 +401,7 @@ function populatePlaces(placeArray) {
     if (firebase.auth().currentUser && $(this).hasClass('press')) {
       const name = $(this).parent().parent().parent().attr('placeName');
       const time = $(this).parent().next().next().text();
-      const placeId = $(this).parent().next().next().next().attr('savedPlaceId')
+      const placeId = $(this).parent().next().next().next().attr('savedPlaceId');
        // Add users saved places to the real time database in Firebase when star is pressed
       const database = firebase.database();
       var uID = firebase.auth().currentUser.uid;
@@ -409,9 +409,10 @@ function populatePlaces(placeArray) {
       var data = {
         name: name,
         time: time,
-        placeId: placeId
+        placeId: placeId,
       }
       ref.set(data);
+      addGeometry(name, placeId);
     } else if (firebase.auth().currentUser && (!$(this).hasClass('press'))) {
       const name = $(this).parent().parent().parent().attr('placeName');
        // Delete user saved places when the star is not pressed
@@ -419,6 +420,36 @@ function populatePlaces(placeArray) {
       ref.remove();
     }
   });
+}
+
+/**
+ * Helper function that adds the lat/lng to the place in the database under geometry.
+ * @param {String} name The name of the place
+ * @param {String} place_id The place ID
+ */
+function addGeometry(name, place_id) { 
+  console.log('addGeometry() was called');
+  let request = {
+    placeId: place_id,
+    fields: [
+      'geometry'
+    ]
+  }
+
+  placesService.getDetails(request, callback);
+  function callback(place, status) {
+    if (status == google.maps.places.PlacesServiceStatus.OK) {
+      var data = {
+        lat: place.geometry.location.lat(),
+        lng: place.geometry.location.lng()
+       }
+       var ref = firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/' + 'places' + '/' + name + '/' + 'geometry');
+       ref.set(data);
+    }
+    else {
+      console.log(status)
+    }
+  }
 }
 
 /**
