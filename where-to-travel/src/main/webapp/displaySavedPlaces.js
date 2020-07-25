@@ -4,31 +4,36 @@
  *
  * @param {array} placeArray Array of Google Maps Place Objects
  */
-// function displaySaved() {
-//   let ref = firebase.database().ref('users/' + tPYO5KQJsbPnQseiaDFh6yGyg3b2 + '/' + 'places' + '/' + 'Paint Pots')
-//   // Import Admin SDK
-//   var admin = require("firebase-admin");
 
-//   // Get a database reference to our posts
-//   var db = admin.database();
-//   var ref = db.ref("server/saving-data/fireblog/posts");
+function savedPlaces() {
+    const placesSnapshot = firebase.database().ref('users/'+ firebase.auth().currentUser.uid + '/' + 'places').once('value', function(placesSnapshot){
+        placesSnapshot.forEach((placesSnapshot) => {
+            const placeName = placesSnapshot.key;
+            //console.log(placeName);
+            const place = placesSnapshot.val();
+            //console.log(place);
+            displaySaved(place, place.placeId);
+            //const placeIds = place.placeId;
+            //console.log(placeIds);
+        });
+    });
+}
 
-//   // Attach an asynchronous callback to read the data at our posts reference
-//   ref.on("value", function(snapshot) {
-//     console.log(snapshot.val());
-//   }, function (errorObject) {
-//   console.log("The read failed: " + errorObject.code);
-// });
-// }
-  
-//   for(place of placeArray) {
-//     // marker creation
-//     let placeMarker = new google.maps.Marker({
-//       position: place.geometry.location,
-//       map: map,
-//       title: place.name,
-//       icon: PIN_PATH,
-//     });
+function displaySaved(placeFromDataBase, placeId) {
+    console.log('displaySaved() was called');
+   
+  let placeMarker = new google.maps.Marker({
+    position: placeFromDataBase.geometry,
+    map: map,
+    title: placeFromDataBase.name,
+    icon: PIN_PATH,
+  });
+}
+
+
+
+
+//
 
 //     const htmlContent = getLocationCardHtml(place);
 
@@ -64,7 +69,6 @@
 //     });
 
 //     markers.push(placeMarker);
-//   }
 
 //   document.getElementById(SCROLL_ID).hidden = false;
 
@@ -93,3 +97,4 @@
 //     }
 //   });
 // }
+//
