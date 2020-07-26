@@ -70,7 +70,7 @@ let placesService;
 let globalNonce;
 
 // Keep a list of all Saved places
-let savedPlaceId = new Set();
+var savedPlacesSet = new Set();
 
 // Add gmap js library to head of page
 const script = document.createElement('script');
@@ -125,6 +125,7 @@ firebase.auth().onAuthStateChanged(function(user) {
     addUserDash();
   } else {
     addLoginButtons();
+    //
   }
 });
 
@@ -361,6 +362,12 @@ function populatePlaces(placeArray) {
     });
 
     const htmlContent = getLocationCardHtml(place);
+    if(savedPlacesSet.has(place.place_id) === true) {
+       let iconId = 'icon' + place.name
+       $(this).addClass('press');
+       console.log(iconId)
+      console.log('The id is in the set');
+    }
 
     // For the material bootstrap library, the preferred method of dom interaction is jquery,
     // especially for adding elements.
@@ -397,13 +404,11 @@ function populatePlaces(placeArray) {
   }
 
   document.getElementById(SCROLL_ID).hidden = false;
-
   // Handle favoriting a place
   $('.icon').click(function() {
     const name = $(this).parent().parent().parent().attr('placeName');
     const placeId = $(this).parent().next().next().next().attr('savedPlaceId');
-    //if the id is in the hash table $(this).classList.add('press);
-    
+    // Have the star be pressed if the place is saved
     $(this).toggleClass('press');
     if (firebase.auth().currentUser && $(this).hasClass('press')) {
       const time = $(this).parent().next().next().text();
@@ -418,12 +423,12 @@ function populatePlaces(placeArray) {
       }
       ref.set(data);
       addGeometry(name, placeId);
-      savedPlaceId.add(placeId);
+      savedPlacesSet.add(placeId);
     } else if (firebase.auth().currentUser && (!$(this).hasClass('press'))) {
        // Delete user saved places when the star is not pressed
       var ref = firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/' + 'places' + '/' + name);
       ref.remove();
-      savedPlaceId.delete(placeId);
+      savedPlacesSet.delete(placeId);
     }
   });
 }
@@ -456,6 +461,23 @@ function addGeometry(name, place_id) {
     }
   }
 }
+
+/**
+ * Calls the database and displays all saved places.
+ */
+function savedPlaces() {
+  const placesSnapshot = firebase.database().ref('users/'+ firebase.auth().currentUser.uid + '/' + 'places').once('value', function(placesSnapshot){
+    var placeArray = [];
+    placesSnapshot.forEach((placesSnapshot) => {
+      let place = placesSnapshot.val();
+      placeArray.push(place);
+      savedPlacesSet.add(place.place_id);
+    });
+    populatePlaces(placeArray);
+    console.log(savedPlacesSet);
+  });
+}
+
 
 /**
  * Helper function that returns the an HTML string representing a place card
