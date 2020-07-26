@@ -124,9 +124,10 @@ firebase.auth().onAuthStateChanged(function(user) {
   $('#' + DASH_ID).empty();
   if (user) {
     addUserDash();
+    // When a user logs out, clear the saved plases set
+    savedPlacesSet.clear();
   } else {
     addLoginButtons();
-    //
   }
 });
 
