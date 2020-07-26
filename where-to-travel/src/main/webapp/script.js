@@ -408,8 +408,8 @@ function populatePlaces(placeArray) {
       var ref = database.ref('users/' + uID + '/' + 'places' + '/' + name);
       var data = {
         name: name,
-        time: time,
-        placeId: placeId,
+        timeAsString: time,
+        place_id: placeId,
       }
       ref.set(data);
       addGeometry(name, placeId);
