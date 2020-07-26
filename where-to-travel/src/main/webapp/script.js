@@ -69,8 +69,9 @@ let placesService;
 // Keeps track of most recent search request
 let globalNonce;
 
-// Keep a list of all Saved places
+// Keep a list of all Saved  and displayed places
 var savedPlacesSet = new Set();
+var displayedPlacesSet = new Set();
 
 // Add gmap js library to head of page
 const script = document.createElement('script');
@@ -353,6 +354,9 @@ function submitDataListener(event) {
  */
 function populatePlaces(placeArray) {
   for(place of placeArray) {
+    if (savedPlacesSet.has(place.place_id) || displayedPlacesSet.has(place.place_id)) {
+      continue;
+    }
     // marker creation
     let placeMarker = new google.maps.Marker({
       position: place.geometry.location,
@@ -361,7 +365,9 @@ function populatePlaces(placeArray) {
       icon: PIN_PATH,
     });
 
+
     const htmlContent = getLocationCardHtml(place);
+    // Check to see if it is a saved place, if so make the star pressed
     if(savedPlacesSet.has(place.place_id) === true) {
        let iconId = 'icon' + place.name
        $(this).addClass('press');
