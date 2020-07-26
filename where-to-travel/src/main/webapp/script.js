@@ -372,10 +372,7 @@ function populatePlaces(placeArray) {
     const htmlContent = getLocationCardHtml(place);
     // Check to see if it is a saved place, if so make the star pressed
     if(savedPlacesSet.has(place.place_id) === true) {
-       let iconId = 'icon' + place.name
-       $(this).addClass('press');
-       console.log(iconId)
-      console.log('The id is in the set');
+       $('.icon').addClass('press');
     }
 
     // For the material bootstrap library, the preferred method of dom interaction is jquery,
@@ -385,7 +382,7 @@ function populatePlaces(placeArray) {
         toggleFocusOff();
         selectLocationMarker(place.name);
         $(this).addClass('active-card');
-       focusedCard = this;
+        focusedCard = this;
       }
     });
     $('#' + SCROLL_ID).append(cardElement);
@@ -424,7 +421,7 @@ function populatePlaces(placeArray) {
        // Add users saved places to the real time database in Firebase when star is pressed
       const database = firebase.database();
       var uID = firebase.auth().currentUser.uid;
-      var ref = database.ref('users/' + uID + '/' + 'places' + '/' + name);
+      var ref = database.ref('users/' + uID + '/places/' + name);
       var data = {
         name: name,
         timeAsString: time,
@@ -435,7 +432,7 @@ function populatePlaces(placeArray) {
       savedPlacesSet.add(placeId);
     } else if (firebase.auth().currentUser && (!$(this).hasClass('press'))) {
        // Delete user saved places when the star is not pressed
-      var ref = firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/' + 'places' + '/' + name);
+      var ref = firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/places/' + name);
       ref.remove();
       savedPlacesSet.delete(placeId);
     }
@@ -462,7 +459,7 @@ function addGeometry(name, place_id) {
         lat: place.geometry.location.lat(),
         lng: place.geometry.location.lng()
        }
-       var ref = firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/' + 'places' + '/' + name + '/' + 'geometry' + '/' + 'location' + '/');
+       var ref = firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/places/' + name + '/geometry/location/');
        ref.set(data);
     }
     else {
@@ -475,7 +472,7 @@ function addGeometry(name, place_id) {
  * Calls the database and displays all saved places.
  */
 function savedPlaces() {
-  const placesSnapshot = firebase.database().ref('users/'+ firebase.auth().currentUser.uid + '/' + 'places').once('value', function(placesSnapshot){
+  const placesSnapshot = firebase.database().ref('users/'+ firebase.auth().currentUser.uid + '/places').once('value', function(placesSnapshot){
     var placeArray = [];
     placesSnapshot.forEach((placesSnapshot) => {
       let place = placesSnapshot.val();
