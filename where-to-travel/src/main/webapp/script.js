@@ -69,7 +69,7 @@ let placesService;
 // Keeps track of most recent search request
 let globalNonce;
 
-// Keep a list of all Saved  and displayed places
+// Keep a list of all Saved and displayed places
 var savedPlacesSet = new Set();
 var displayedPlacesSet = new Set();
 
