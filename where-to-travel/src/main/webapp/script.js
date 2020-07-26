@@ -1,3 +1,9 @@
+/**
+ * A collection of functions for Where To app. This file includes most JS,
+ * including DOM interaction and API calls.
+ */
+'use strict';
+
 // This is map stylings for the GMap api
 const MAP_STYLES = [
   {
@@ -48,9 +54,13 @@ const PIN_PATH = 'icons/pin.svg';
 const SELECTED_PIN_PATH = 'icons/selectedPin.svg';
 const HOME_PIN_PATH = 'icons/home.svg';
 
+const INFO_HTML_PATH = 'info.txt';
+const NO_PLACES_HTML_PATH = 'noPlaces.txt';
+
 let map;
 let user = false;
 let home = null;
+let placeType = 'Tourist Attractions';
 
 let focusedCard;
 let focusedPin;
@@ -84,6 +94,18 @@ script.async = true;
 
 document.head.appendChild(script);
 
+$('.multi-select-pill').click(function () {
+  let pillText = $(this).text();
+  if(pillText === placeType) {
+    placeType = 'Tourist Attractions';
+    $(this).toggleClass('selected');
+  } else {
+    placeType = pillText;
+    $(event.target).parent().children('.multi-select-pill').removeClass('selected');
+    $(this).toggleClass('selected');
+  }
+});
+
 /** Initializes map window, runs on load. */
 function initialize() {
   const submit = document.getElementById(SUBMIT_ID);
@@ -97,7 +119,8 @@ function initialize() {
     styles: MAP_STYLES,
   };
   map = new google.maps.Map(document.getElementById('map'), mapOptions);
-  
+
+  showModal(INFO_HTML_PATH);
   // Add autocomplete capabality for address input
   const addressInput = document.getElementById('addressInput');
   let autocomplete = new google.maps.places.Autocomplete(addressInput);
@@ -107,18 +130,19 @@ function initialize() {
   geocoder = new google.maps.Geocoder();
   placesService = new google.maps.places.PlacesService(map);
   
-  showInfoModal();
+  showModal(INFO_HTML_PATH);
 }
 
 /**
- * Populates and opens modal with html content from info.txt that provides
- * description of website to user
+ * Opens the modal, then populates it with the html at the specified filepath.
+ * @param htmlFilePath the path to the html to populate the modal with as text
  */
-function showInfoModal() {
-  fetch('info.txt')
+function showModal(htmlFilePath) {
+  fetch(htmlFilePath)
     .then(response => response.text())
     .then(content => openModal(content));
 }
+
 
 firebase.auth().onAuthStateChanged(function(user) {
   $('#' + DASH_ID).empty();
@@ -169,7 +193,6 @@ function getHomeLocation(useAddress) {
     openModal(messageContent);
   });
 }
-
 
 /** Opens modal telling user that location is being found if geolocation is running */
 function openLocationModal() {
@@ -355,7 +378,11 @@ function submitDataListener(event) {
  * @param {array} placeArray Array of Google Maps Place Objects
  */
 function populatePlaces(placeArray) {
-  for(place of placeArray) {
+  // if place array is empty, show the no places info
+  if(!placeArray) {
+    showModal(NO_PLACES_HTML_PATH);
+  }
+  for(let place of placeArray) {
     if (savedPlacesSet.has(place.place_id)) {
       continue;
     } else if (displayedPlacesSet.has(place.place_id)) {
@@ -383,7 +410,7 @@ function populatePlaces(placeArray) {
     let cardElement = $(htmlContent).click(function(event) {
       if(event.target.nodeName != 'SPAN') {
         toggleFocusOff();
-        selectLocationMarker(place.name);
+        selectLocationMarker($(this).attr('placeName'));
         $(this).addClass('active-card');
        focusedCard = this;
       }
@@ -500,7 +527,7 @@ function getLocationCardHtml(place) {
   const place_id = place.place_id;
     
   const iconId = 'icon' + name;
-  return innerHtml = '' +
+  const innerHtml = '' +
     `<div class="card location-card" placeName="${name}" style="margin-right: 0;">
       <div class="card-body">
         <h5 class="card-title">${name}
@@ -515,6 +542,8 @@ function getLocationCardHtml(place) {
         <div savedPlaceId="${place_id}" style="visibility: hidden">
         </div>
     </div>`;
+
+    return innerHtml;
 }
 
 
@@ -524,10 +553,10 @@ function getLocationCardHtml(place) {
  * @returns the HTML for login as a string
  */
 function getLoginHtml() {
-  return `<img onclick="showInfoModal()" class="btn btn-icon" src="icons/help.svg">
-          <a class="btn btn-outline-primary" onclick="showLogin()">Login</a>
+  return `<img onclick="showModal(${INFO_HTML_PATH})" class="btn btn-icon" src="icons/help.svg">
+          <a class="btn btn-outline-primary btn-color" onclick="showLogin()">Login</a>
           <span id="nav-text">or</span>
-          <a class="btn btn-outline-primary" onclick="showSignUp()">Sign up</a>`;
+          <a class="btn btn-outline-primary btn-color" onclick="showSignUp()">Sign up</a>`;
 }
 
 /**
@@ -537,8 +566,9 @@ function getLoginHtml() {
  * @returns the HTML for user dashboard as a string 
  */
 function getUserDashHtml(user) {
-  return `<img onclick="showInfoModal()" class="btn btn-icon" src="icons/help.svg">
-          <a class="btn btn-outline-primary" style="color: #049688;" id="logout">Logout</a>`;
+  return `<img onclick="showInfoModal(showModal(${INFO_HTML_PATH}))" class="btn btn-icon" src="icons/help.svg">
+          <a class="btn btn-outline-primary btn-color" style="color: #049688;" id="logout">Logout</a>`;
+
 }
 
 /**
@@ -546,7 +576,7 @@ function getUserDashHtml(user) {
  * @param {string} title the name of the place whose marker to focus
 */
 function selectLocationMarker(title) {
-  for (marker of markers) {
+  for (let marker of markers) {
     if (marker.getTitle() == title) {
       focusedPin = marker;
       marker.setIcon(SELECTED_PIN_PATH);
@@ -560,7 +590,7 @@ function selectLocationMarker(title) {
  */
 function selectLocationCard(title) {
   scrollWindow = document.getElementById(SCROLL_ID);
-  for (locationCard of scrollWindow.childNodes) {
+  for (let locationCard of scrollWindow.childNodes) {
     if (locationCard.hasChildNodes() && locationCard.getAttribute("placeName") == title) {
       locationCard.classList.add("active-card");
       focusedCard = locationCard;
@@ -603,7 +633,7 @@ function clearPlaces() {
     parent.firstChild.remove();
   }
   parent.hidden = true;
-  for (marker of markers) {
+  for (let marker of markers) {
     marker.setMap(null);
   }
   markers = [];
@@ -648,11 +678,10 @@ function clearPlaces() {
       [-initSpread, -initSpread] // Southwest
     ];
 
-
     while (attempts < ATTEMPTS_THRESHOLD && places.length < PLACES_THRESHOLD) {
       let new_directions = [];
 
-      for (direction of directions) {
+      for (let direction of directions) {
         let latSpread = direction[0];
         let lngSpread = direction[1];
 
@@ -725,13 +754,13 @@ function getPlacesFromDirection(lat, lng) {
     const boundBox = new google.maps.LatLngBounds(sw, ne);
 
     const request = {
-      query: 'Tourist Attractions',
+      query: placeType,
       bounds: boundBox,
     };
 
     function callback(results, status) {
       if (status == google.maps.places.PlacesServiceStatus.OK) {
-        for (result of results) {
+        for (let result of results) {
           if (result.business_status == 'OPERATIONAL') {
             place_candidates.push(result);
           }
@@ -785,7 +814,7 @@ function addAcceptablePlaces(time, places, acceptablePlacesInfo) {
     let destinations = [];
 
     // Iterate through places to get all latitudes and longitudes of destinations
-    for (place of places) {
+    for (let place of places) {
       let lat = place.geometry.location.lat();
       let lng = place.geometry.location.lng();
       let destination = new google.maps.LatLng(lat, lng);
@@ -989,7 +1018,7 @@ function getOpeningHours(opening_hours) {
     if ((index + 1) % 7 != dayIndex) {
       html += `<p class="no-break">${shortenedWeekdayText(weekday_text, index)}</p>`;
     } else {
-      html += `<p>${shortenedWeekdayText(weekday_text, index)}</p>`
+      html += `<p>${shortenedWeekdayText(weekday_text, index)}</p>`;
     }
   }
 

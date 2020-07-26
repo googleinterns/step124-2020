@@ -1,0 +1,2 @@
+<h2>No places were found for your query.</h2>
+<p>Maybe try resetting your home location, or searching with a shorter travel time</p>
