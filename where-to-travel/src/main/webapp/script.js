@@ -329,6 +329,7 @@ function submitDataListener(event) {
   else {
     $('#dw-s2').data('bmd.drawer').hide();
     clearPlaces();
+    displayedPlacesSet.clear();
     const hours = document.getElementById(HOURS_ID).value;
     const minutes = document.getElementById(MINUTES_ID).value;
 
