@@ -69,6 +69,9 @@ let placesService;
 // Keeps track of most recent search request
 let globalNonce;
 
+// Keep a list of all Saved places
+let savedPlaceId = new Set();
+
 // Add gmap js library to head of page
 const script = document.createElement('script');
 script.src =
@@ -397,11 +400,13 @@ function populatePlaces(placeArray) {
 
   // Handle favoriting a place
   $('.icon').click(function() {
+    const name = $(this).parent().parent().parent().attr('placeName');
+    const placeId = $(this).parent().next().next().next().attr('savedPlaceId');
+    //if the id is in the hash table $(this).classList.add('press);
+    
     $(this).toggleClass('press');
     if (firebase.auth().currentUser && $(this).hasClass('press')) {
-      const name = $(this).parent().parent().parent().attr('placeName');
       const time = $(this).parent().next().next().text();
-      const placeId = $(this).parent().next().next().next().attr('savedPlaceId');
        // Add users saved places to the real time database in Firebase when star is pressed
       const database = firebase.database();
       var uID = firebase.auth().currentUser.uid;
@@ -413,11 +418,12 @@ function populatePlaces(placeArray) {
       }
       ref.set(data);
       addGeometry(name, placeId);
+      savedPlaceId.add(placeId);
     } else if (firebase.auth().currentUser && (!$(this).hasClass('press'))) {
-      const name = $(this).parent().parent().parent().attr('placeName');
        // Delete user saved places when the star is not pressed
       var ref = firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/' + 'places' + '/' + name);
       ref.remove();
+      savedPlaceId.delete(placeId);
     }
   });
 }
@@ -428,7 +434,6 @@ function populatePlaces(placeArray) {
  * @param {String} place_id The place ID
  */
 function addGeometry(name, place_id) { 
-  console.log('addGeometry() was called');
   let request = {
     placeId: place_id,
     fields: [
@@ -443,7 +448,7 @@ function addGeometry(name, place_id) {
         lat: place.geometry.location.lat(),
         lng: place.geometry.location.lng()
        }
-       var ref = firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/' + 'places' + '/' + name + '/' + 'geometry');
+       var ref = firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/' + 'places' + '/' + name + '/' + 'geometry' + '/' + 'location' + '/');
        ref.set(data);
     }
     else {
