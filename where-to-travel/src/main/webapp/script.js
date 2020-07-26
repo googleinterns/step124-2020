@@ -356,8 +356,10 @@ function submitDataListener(event) {
  */
 function populatePlaces(placeArray) {
   for(place of placeArray) {
-    if (savedPlacesSet.has(place.place_id) || displayedPlacesSet.has(place.place_id)) {
+    if (savedPlacesSet.has(place.place_id)) {
       continue;
+    } else if (displayedPlacesSet.has(place.place_id)) {
+      //TODO: You need to press the star
     }
     // marker creation
     let placeMarker = new google.maps.Marker({
@@ -366,7 +368,6 @@ function populatePlaces(placeArray) {
       title: place.name,
       icon: PIN_PATH,
     });
-
 
     const htmlContent = getLocationCardHtml(place);
     // Check to see if it is a saved place, if so make the star pressed
