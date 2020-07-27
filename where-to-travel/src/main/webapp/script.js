@@ -67,7 +67,6 @@ const NO_PLACES_HTML_PATH = 'noPlaces.txt';
 let map;
 let user = false;
 let home = null;
-let placeType = 'Tourist Attractions';
 
 let focusedCard;
 let focusedPin;
