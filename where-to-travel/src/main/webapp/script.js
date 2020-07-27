@@ -278,10 +278,10 @@ function toggleFocusOff() {
  */
 function submitDataListener(event) {
   if (home == null) {
-    const content = '<p> No home location found. Please set a home location and try again.</p>';
+    const content = '<p>No home location found. Please set a home location and try again.</p>';
     openModal(content);
   } else if ($('#' + FEEDBACK_ID).children().length >= 1) {
-    const content = '<p> Please enter valid search parameters</p>';
+    const content = '<p>Please enter valid search parameters</p>';
     openModal(content);
   } else {
     $('#dw-s2').data('bmd.drawer').hide();
