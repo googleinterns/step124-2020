@@ -151,7 +151,9 @@ firebase.auth().onAuthStateChanged(function(user) {
  *
  */
 function getIconPath(placeTypes) {
-
+  if(placeTypes.includes(ZOO_TYPE_STR)) {
+    // return zoo icon path
+  } else if () {}
 }
 
 /**
