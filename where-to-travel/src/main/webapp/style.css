@@ -55,9 +55,12 @@ body {
   font-size: 1.5em;
 }
 
-.info-header {
-  color: #049688;
-  text-align: left;
+.feedback {
+  color: #D70D00;
+}
+
+#feedback-target {
+  text-align: center;
 }
 
 .fg-mixin {
@@ -72,6 +75,11 @@ html {
 h5 {
   margin-left: auto;
   margin-right: auto;
+}
+
+.info-header {
+  color: #049688;
+  text-align: left;
 }
 
 .icon {
@@ -108,6 +116,25 @@ h5 {
   z-index: 1;
 }
 
+.multi-select-pill {
+  background-color: white;
+  border: 1px solid #049688;
+  border-radius: 25px;
+  color: #049688;
+  cursor: pointer;
+  display: inline-block;
+  font-size: 24px;
+  margin: 5px;
+  padding: 5px 10px 5px 10px;
+  transition: box-shadow .2s cubic-bezier(.4,0,1,1),background-color .2s cubic-bezier(.4,0,.2,1),color .2s cubic-bezier(.4,0,.2,1)
+}
+
+.multi-select-pill:hover {
+  background-color: #049688;
+  border: 1px solid white;
+  color: white;
+}
+
 #nav-text {
   margin-right: 10px;
   margin-left: 10px;
@@ -131,9 +158,14 @@ h5 {
 
 #search-btn-container {
   display: inline-block;
-  margin-top: 0;
+  margin-top: 5px;
   margin-right: auto;
   margin-left: auto;
+}
+
+.selected {
+  background-color: #049688;
+  color: white;
 }
 
 .stars {
@@ -160,4 +192,44 @@ h5 {
 
 .text-color {
   color: #1E3C19;
+}
+
+@media screen and (max-width: 398px) {
+  #drawer-toggle {
+    color: #049688;
+    font-size: 1em;
+  }
+  
+  .navbar {
+    font-size: 1em;
+  }
+
+  .btn-icon {
+    margin: 0 3px 0 0;
+    padding: 0;
+  }
+
+  #nav-text {
+    margin-left: 4px;
+    margin-right: 4px;
+  }
+
+  .btn-small-padding {
+    padding: 5px 10px 5px 10px
+  }
+
+  .card-scroller {
+    max-width: 55%;
+    padding: 0;
+  }
+}
+
+/*
+ Give a little more screen space back for screens with width 398-500px
+*/
+@media screen and (max-width: 500px) {
+  .card-scroller {
+    max-width: 45%;
+    padding: 0;
+  }
 }
