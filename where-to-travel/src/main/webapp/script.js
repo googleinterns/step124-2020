@@ -419,7 +419,7 @@ function populatePlaces(placeArray) {
       $('#' + SCROLL_ID).append(cardElement);
 
      // Check to see if it is a saved place, if so make the star pressed 
-      if(savedPlacesSet.has(place.place_id) === true) {
+      if(savedPlacesSet.has(place.place_id)) {
         cardElement.find('.icon').addClass('press');
       }
       // Add events to focus card and pin
