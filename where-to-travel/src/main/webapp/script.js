@@ -383,12 +383,15 @@ function populatePlaces(placeArray) {
     showModal(NO_PLACES_HTML_PATH);
   }
   for(let place of placeArray) {
-    // if (savedPlacesSet.has(place.place_id)) {
-    //   continue;
-    // } else if (displayedPlacesSet.has(place.place_id)) {
-    //   //TODO: You need to press the star
-    // }
-    // else {
+      console.log(place);
+    if (savedPlacesSet.has(place.place_id) && document.getElementById(place.place_id)) {
+      continue;
+    } else if (displayedPlacesSet.has(place.place_id)) {
+      let savedIcon = document.getElementById('icon' + place.name);
+      savedIcon.addClass('press');
+      continue; 
+    }
+    else {
     // marker creation
     let placeMarker = new google.maps.Marker({
       position: place.geometry.location,
@@ -437,7 +440,7 @@ function populatePlaces(placeArray) {
 
     markers.push(placeMarker);
   }
- // }
+  }
 
   document.getElementById(SCROLL_ID).hidden = false;
   // Handle favoriting a place
@@ -627,6 +630,7 @@ function getSortedPlaces(places) {
 
 /** Clears all markers on map except for home marker. */
 function clearPlaces() {
+  displayedPlacesSet.clear();
   const parent = document.getElementById(SCROLL_ID);
   while (parent.firstChild) {
     parent.firstChild.remove();
