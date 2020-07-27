@@ -537,9 +537,8 @@ function getLoginHtml() {
  * @returns the HTML for user dashboard as a string 
  */
 function getUserDashHtml(user) {
-  return `<img onclick="showInfoModal(showModal('${INFO_HTML_PATH}'))" class="btn btn-icon" src="icons/help.svg">
+  return `<img onclick="showModal('${INFO_HTML_PATH}')" class="btn btn-icon" src="icons/help.svg">
           <a class="btn btn-outline-primary btn-color" style="color: #049688;" id="logout">Logout</a>`;
-
 }
 
 /**
