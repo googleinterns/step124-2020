@@ -561,7 +561,7 @@ function selectLocationMarker(title) {
  * @param {string} title the name of the place whose card to focus
  */
 function selectLocationCard(title) {
-  scrollWindow = document.getElementById(SCROLL_ID);
+  const scrollWindow = document.getElementById(SCROLL_ID);
   for (let locationCard of scrollWindow.childNodes) {
     if (locationCard.hasChildNodes() && locationCard.getAttribute("placeName") == title) {
       locationCard.classList.add("active-card");
