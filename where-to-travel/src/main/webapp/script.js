@@ -383,11 +383,12 @@ function populatePlaces(placeArray) {
     showModal(NO_PLACES_HTML_PATH);
   }
   for(let place of placeArray) {
-    if (savedPlacesSet.has(place.place_id)) {
-      continue;
-    } else if (displayedPlacesSet.has(place.place_id)) {
-      //TODO: You need to press the star
-    }
+    // if (savedPlacesSet.has(place.place_id)) {
+    //   continue;
+    // } else if (displayedPlacesSet.has(place.place_id)) {
+    //   //TODO: You need to press the star
+    // }
+    // else {
     // marker creation
     let placeMarker = new google.maps.Marker({
       position: place.geometry.location,
@@ -436,6 +437,7 @@ function populatePlaces(placeArray) {
 
     markers.push(placeMarker);
   }
+ // }
 
   document.getElementById(SCROLL_ID).hidden = false;
   // Handle favoriting a place
@@ -507,7 +509,7 @@ function savedPlaces() {
       savedPlacesSet.add(place.place_id);
     });
     populatePlaces(placeArray);
-    console.log(savedPlacesSet);
+    // console.log(savedPlacesSet);
   });
 }
 
