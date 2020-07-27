@@ -524,7 +524,7 @@ function getLocationCardHtml(place) {
  * @returns the HTML for login as a string
  */
 function getLoginHtml() {
-  return `<img onclick="showModal(${INFO_HTML_PATH})" class="btn btn-icon" src="icons/help.svg">
+  return `<img onclick="showModal('${INFO_HTML_PATH}')" class="btn btn-icon" src="icons/help.svg">
           <a class="btn btn-outline-primary btn-color" onclick="showLogin()">Login</a>
           <span id="nav-text">or</span>
           <a class="btn btn-outline-primary btn-color" onclick="showSignUp()">Sign up</a>`;
@@ -537,7 +537,7 @@ function getLoginHtml() {
  * @returns the HTML for user dashboard as a string 
  */
 function getUserDashHtml(user) {
-  return `<img onclick="showInfoModal(showModal(${INFO_HTML_PATH}))" class="btn btn-icon" src="icons/help.svg">
+  return `<img onclick="showInfoModal(showModal('${INFO_HTML_PATH}'))" class="btn btn-icon" src="icons/help.svg">
           <a class="btn btn-outline-primary btn-color" style="color: #049688;" id="logout">Logout</a>`;
 
 }
