@@ -48,11 +48,18 @@ const SUBMIT_ID = 'submit';
 const HOURS_ID = 'hrs';
 const MINUTES_ID = 'mnts';
 const SCROLL_ID = 'scroller';
+
+const FEEDBACK_ID = 'feedback-target';
+const HOURS_MAX_SEARCH = 20;
+const MINUTE_MAX_SEARCH = 59;
+
 const DASH_ID = 'dash';
 const LOGOUT_ID = 'logout';
+
 const PIN_PATH = 'icons/pin.svg';
 const SELECTED_PIN_PATH = 'icons/selectedPin.svg';
 const HOME_PIN_PATH = 'icons/home.svg';
+const INT_REGEX_MATCHER = /^\d+$/;
 
 const INFO_HTML_PATH = 'info.txt';
 const NO_PLACES_HTML_PATH = 'noPlaces.txt';
@@ -106,6 +113,7 @@ $('.multi-select-pill').click(function () {
 function initialize() {
   const submit = document.getElementById(SUBMIT_ID);
   submit.addEventListener('click', submitDataListener);
+  attachSearchValidation();
 
   const mapOptions = {
     center: {lat: 36.150813, lng: -40.352239}, // Middle of the North Atlantic Ocean
@@ -116,17 +124,45 @@ function initialize() {
   };
   map = new google.maps.Map(document.getElementById('map'), mapOptions);
 
-  showModal(INFO_HTML_PATH);
-  // Add autocomplete capabality for address input
+    // Add autocomplete capabality for address input
   const addressInput = document.getElementById('addressInput');
   let autocomplete = new google.maps.places.Autocomplete(addressInput);
     
   // Initialize API service objects
   distanceMatrixService = new google.maps.DistanceMatrixService();
   geocoder = new google.maps.Geocoder();
-  placesService = new google.maps.places.PlacesService(map);
-  
-  showModal(INFO_HTML_PATH);
+  placesService = new google.maps.places.PlacesService(map);  
+}
+
+
+/**
+ * Attaches listeners to the focusout event for search inputs.
+ */
+function attachSearchValidation() {
+  addListenerToSearchInput(document.getElementById(HOURS_ID), 'hours', HOURS_MAX_SEARCH);
+  addListenerToSearchInput(document.getElementById(MINUTES_ID), 'minutes', MINUTE_MAX_SEARCH);
+}
+
+/**
+ * Adds an on focusout event to a dom element, which adds a formatted HTML tip to the DOM.
+ *
+ * @param element the dom element to add listener to
+ * @param type a string of the type of time input this element takes ('minute' or 'hour')
+ * @param max the maximum value of this input element
+ */
+function addListenerToSearchInput(element, type, max) {
+  element.addEventListener('focusout', function (event) {
+    $('#' + type + '-feedback').remove();
+    // if value is empty, set to 0, otherwise, parse the value
+    const stringInput = event.target.value;
+
+    const intValue = (stringInput === '') ? 0 : parseInt(stringInput);
+    if (!INT_REGEX_MATCHER.test(stringInput) || intValue < 0 || intValue > max) {
+      $('#' + FEEDBACK_ID).append('<p id="' + type + '-feedback" class="feedback">Please input a valid ' + type + ' whole number between 0 and ' + max + '</p>');
+    } else {
+      $('#' + type + '-feedback').remove();
+    }
+  });
 }
 
 /**
@@ -340,10 +376,12 @@ function toggleFocusOff() {
  */
 function submitDataListener(event) {
   if (home == null) {
-    const content = '<p> No home location found. Please set a home location and try again.</p>';
+    const content = '<p>No home location found. Please set a home location and try again.</p>';
     openModal(content);
-  }
-  else {
+  } else if ($('#' + FEEDBACK_ID).children().length >= 1) {
+    const content = '<p>Please enter valid search parameters</p>';
+    openModal(content);
+  } else {
     $('#dw-s2').data('bmd.drawer').hide();
     clearPlaces();
     const hours = document.getElementById(HOURS_ID).value;
