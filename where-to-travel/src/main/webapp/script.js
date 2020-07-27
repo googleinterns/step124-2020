@@ -50,6 +50,15 @@ const MINUTES_ID = 'mnts';
 const SCROLL_ID = 'scroller';
 const DASH_ID = 'dash';
 const LOGOUT_ID = 'logout';
+
+const DEPARMENT_STORE_TYPE_STR = 'department_store';
+const MALL_STORE_TYPE_STR = 'shopping_mall';
+const MUSEUM_TYPE_STR = 'museum';
+const PARK_TYPE_STR = 'park';
+const TOURIST_ATTRACTION_TYPE_STR = 'tourist_attraction';
+const STORE_TYPE_STR = 'store';
+const ZOO_TYPE_STR = 'zoo';
+
 const PIN_PATH = 'icons/pin.svg';
 const SELECTED_PIN_PATH = 'icons/selectedPin.svg';
 const HOME_PIN_PATH = 'icons/home.svg';
@@ -129,6 +138,22 @@ function initialize() {
   showModal(INFO_HTML_PATH);
 }
 
+firebase.auth().onAuthStateChanged(function(user) {
+  $('#' + DASH_ID).empty();
+  if (user) {
+    addUserDash();
+  } else {
+    addLoginButtons();
+  }
+});
+
+/**
+ *
+ */
+function getIconPath(placeTypes) {
+
+}
+
 /**
  * Opens the modal, then populates it with the html at the specified filepath.
  * @param htmlFilePath the path to the html to populate the modal with as text
@@ -138,16 +163,6 @@ function showModal(htmlFilePath) {
     .then(response => response.text())
     .then(content => openModal(content));
 }
-
-
-firebase.auth().onAuthStateChanged(function(user) {
-  $('#' + DASH_ID).empty();
-  if (user) {
-    addUserDash();
-  } else {
-    addLoginButtons();
-  }
-});
 
 /**
  * Obtains user's location from either browser or an inputted address and sets home location. If error
@@ -376,6 +391,7 @@ function populatePlaces(placeArray) {
     showModal(NO_PLACES_HTML_PATH);
   }
   for(let place of placeArray) {
+    console.log(place.types);
     // marker creation
     let placeMarker = new google.maps.Marker({
       position: place.geometry.location,
@@ -777,6 +793,7 @@ function addAcceptablePlaces(time, places, acceptablePlacesInfo) {
             if (destination_time <= time + TIME_THRESHOLD && destination_time >= time - TIME_THRESHOLD) {
               acceptablePlacesInfo.places.push({
                 name: places[j].name,
+                types: places[j].types,
                 geometry: places[j].geometry,
                 place_id: places[j].place_id,
                 timeInSeconds: destination_time,
