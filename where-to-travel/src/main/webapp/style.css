@@ -1,9 +1,17 @@
-.active {
+.active-card {
   box-shadow: 6px 12px 9px #888888;
   outline: 5px solid #FF5C0A;
   margin-bottom: 10px;
   margin-top: 10px;
   z-index: 500;
+}
+
+.bmd-drawer-f-l>.bmd-layout-drawer {
+  height: 100%;
+  top: 0;
+  left: 0;
+  transform: translateX(-360px);
+  width: 360px;
 }
 
 body {
@@ -18,6 +26,10 @@ body {
   margin-right: 15px
 }
 
+.btn-color {
+  color: #049688;
+}
+
 .card-scroller {
   background-color: rgba(0, 0, 0, 0);
   height: 100%;
@@ -25,7 +37,7 @@ body {
   margin: 0;
   margin-top: 5px;
   max-width: 30%;
-  min-width: 15%;
+  min-width: 17%;
   overflow: scroll;
   padding: 5px;
   position: absolute;
@@ -60,11 +72,11 @@ html {
   height: 100%;
 }
 
+
 .info-header {
   color: #049688;
   text-align: left;
 }
-
 
 .icon {
   background:#fff;
@@ -89,10 +101,34 @@ html {
   margin: 10px;
 }
 
+.no-break {
+  margin: 0;
+  padding: 0; 
+}
+
 #map {
   height: 100%;
   width: 100%;
   z-index: 1;
+}
+
+.multi-select-pill {
+  background-color: white;
+  border: 1px solid #049688;
+  border-radius: 25px;
+  color: #049688;
+  cursor: pointer;
+  display: inline-block;
+  font-size: 24px;
+  margin: 5px;
+  padding: 5px 10px 5px 10px;
+  transition: box-shadow .2s cubic-bezier(.4,0,1,1),background-color .2s cubic-bezier(.4,0,.2,1),color .2s cubic-bezier(.4,0,.2,1)
+}
+
+.multi-select-pill:hover {
+  background-color: #049688;
+  border: 1px solid white;
+  color: white;
 }
 
 #nav-text {
@@ -113,11 +149,78 @@ html {
 
 #search-btn-container {
   display: inline-block;
-  margin-top: 10px;
+  margin-top: 5px;
   margin-right: auto;
   margin-left: auto;
 }
 
+.selected {
+  background-color: #049688;
+  color: white;
+}
+
+.stars {
+  background: url("https://s3-us-west-2.amazonaws.com/s.cdpn.io/2605/star-rating-sprite.png") repeat-x;
+  font-size: 0;
+  height: 21px;
+  line-height: 0;
+  overflow: hidden;
+  text-indent: -999em;
+  width: 110px; 
+}
+
+.stars-rating {
+    background: url("https://s3-us-west-2.amazonaws.com/s.cdpn.io/2605/star-rating-sprite.png") repeat-x;
+    background-position: 0 100%;
+    float: left;
+    height: 21px;
+    display:block;
+}  
+
+.text-center {
+  text-align: center;
+}
+
 .text-color {
   color: #1E3C19;
+}
+
+@media screen and (max-width: 398px) {
+  #drawer-toggle {
+    color: #049688;
+    font-size: 1em;
+  }
+  
+  .navbar {
+    font-size: 1em;
+  }
+
+  .btn-icon {
+    margin: 0 3px 0 0;
+    padding: 0;
+  }
+
+  #nav-text {
+    margin-left: 4px;
+    margin-right: 4px;
+  }
+
+  .btn-small-padding {
+    padding: 5px 10px 5px 10px
+  }
+
+  .card-scroller {
+    max-width: 55%;
+    padding: 0;
+  }
+}
+
+/*
+ Give a little more screen space back for screens with width 398-500px
+*/
+@media screen and (max-width: 500px) {
+  .card-scroller {
+    max-width: 45%;
+    padding: 0;
+  }
 }
