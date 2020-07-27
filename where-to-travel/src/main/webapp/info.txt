@@ -3,7 +3,7 @@
 <h3 class="info-header">Using Where To</h3>
 <p>1. Under <em>Home Location&nbsp;</em>there are two options for setting your starting location: &nbsp<em>Use My Location &nbsp</em>and&nbsp;<em>Use Address</em>. To use the first option, location permissions will need to be enabled for your browser.</p>
 <p>2. Enter your desired travel time in hours and minutes under&nbsp;<em>Travel Time</em></p>
-<p>3. Under <em>Search Tags&nbsp;</em> you can select the type of attractions you would like to visit. 
+<p>3. Under <em>Destination Type&nbsp;</em> you can select the type of attractions you would like to visit. 
 <p>4. Click&nbsp;<em>Search&nbsp;</em>to get your results! You can view each attraction by clicking the pins on the map and viewing the infocards.</p>
 <h3 class="info-header">Saving Attractions</h3>
 <p> After making a search, you can save any of the resulting attractions to view them again at a later time. To save an attraction, click the star icon on the corresponding infocard. </p>
