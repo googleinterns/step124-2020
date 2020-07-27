@@ -384,8 +384,12 @@ function populatePlaces(placeArray) {
   }
   for(let place of placeArray) {
       console.log(place);
+    // If the saved places are being displayed and your search returns one of the saved places, 
+    // there is nothing to do so coninue.
     if (savedPlacesSet.has(place.place_id) && document.getElementById(place.place_id)) {
       continue;
+    // If you request to display the saved places while you currently have search results being displayed,
+    // check to see if any of the saved places are already displayed, if so press the star and continue.
     } else if (displayedPlacesSet.has(place.place_id)) {
       let savedIcon = document.getElementById('icon' + place.name);
       savedIcon.addClass('press');
