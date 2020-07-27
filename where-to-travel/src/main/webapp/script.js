@@ -511,7 +511,6 @@ function savedPlaces() {
       savedPlacesSet.add(place.place_id);
     });
     populatePlaces(placeArray);
-    // console.log(savedPlacesSet);
   });
 }
 
