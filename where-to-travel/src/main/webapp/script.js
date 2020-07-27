@@ -392,54 +392,53 @@ function populatePlaces(placeArray) {
       continue; 
     }
     else {
-    // marker creation
-    let placeMarker = new google.maps.Marker({
-      position: place.geometry.location,
-      map: map,
-      title: place.name,
-      icon: PIN_PATH,
-    });
+      // marker creation
+      let placeMarker = new google.maps.Marker({
+        position: place.geometry.location,
+        map: map,
+        title: place.name,
+        icon: PIN_PATH,
+      });
 
-    const htmlContent = getLocationCardHtml(place);
-    // Check to see if it is a saved place, if so make the star pressed
-    // TODO make sure all the stars are pressed
+      const htmlContent = getLocationCardHtml(place);
+    
+      // For the material bootstrap library, the preferred method of dom interaction is jquery,
+      // especially for adding elements.
+      let cardElement = $(htmlContent).click(function(event) {
+        if(event.target.nodeName != 'SPAN') {
+          toggleFocusOff();
+          selectLocationMarker($(this).attr('placeName'));
+          $(this).addClass('active-card');
+          focusedCard = this;
+        }
+      });
+      $('#' + SCROLL_ID).append(cardElement);
 
-    // For the material bootstrap library, the preferred method of dom interaction is jquery,
-    // especially for adding elements.
-    let cardElement = $(htmlContent).click(function(event) {
-      if(event.target.nodeName != 'SPAN') {
+     // Check to see if it is a saved place, if so make the star pressed 
+      if(savedPlacesSet.has(place.place_id) === true) {
+        cardElement.find('.icon').addClass('press');
+      }
+      // Add events to focus card and pin
+      placeMarker.addListener('click', function () {
         toggleFocusOff();
-        selectLocationMarker($(this).attr('placeName'));
-        $(this).addClass('active-card');
-        focusedCard = this;
-      }
-    });
-    $('#' + SCROLL_ID).append(cardElement);
+        focusedPin = placeMarker;
+        selectLocationCard(placeMarker.getTitle());
+        placeMarker.setIcon(SELECTED_PIN_PATH);
+        focusedCard.scrollIntoView({behavior: 'smooth', block: 'center'});
+      });
 
-    if(savedPlacesSet.has(place.place_id) === true) {
-      cardElement.find('.icon').addClass('press');
+      placeMarker.addListener('mouseover', function () {
+        placeMarker.setIcon(SELECTED_PIN_PATH);
+      });
+
+      placeMarker.addListener('mouseout', function () {
+        if (placeMarker != focusedPin) {
+          placeMarker.setIcon(PIN_PATH);
+        }
+      });
+
+      markers.push(placeMarker);
     }
-    // Add events to focus card and pin
-    placeMarker.addListener('click', function () {
-      toggleFocusOff();
-      focusedPin = placeMarker;
-      selectLocationCard(placeMarker.getTitle());
-      placeMarker.setIcon(SELECTED_PIN_PATH);
-      focusedCard.scrollIntoView({behavior: 'smooth', block: 'center'});
-    });
-
-    placeMarker.addListener('mouseover', function () {
-      placeMarker.setIcon(SELECTED_PIN_PATH);
-    });
-
-    placeMarker.addListener('mouseout', function () {
-      if (placeMarker != focusedPin) {
-        placeMarker.setIcon(PIN_PATH);
-      }
-    });
-
-    markers.push(placeMarker);
-  }
   }
 
   document.getElementById(SCROLL_ID).hidden = false;
