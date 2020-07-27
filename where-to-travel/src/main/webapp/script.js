@@ -79,7 +79,7 @@ let placesService;
 // Keeps track of most recent search request
 let globalNonce;
 
-// Keep a list of all Saved and displayed places
+// Keep a set of all saved and displayed places
 var savedPlacesSet = new Set();
 var displayedPlacesSet = new Set();
 
@@ -398,6 +398,7 @@ function populatePlaces(placeArray) {
 
     const htmlContent = getLocationCardHtml(place);
     // Check to see if it is a saved place, if so make the star pressed
+    // TODO make sure all the stars are pressed
     if(savedPlacesSet.has(place.place_id) === true) {
        $('.icon').addClass('press');
     }
@@ -441,7 +442,6 @@ function populatePlaces(placeArray) {
   $('.icon').click(function() {
     const name = $(this).parent().parent().parent().attr('placeName');
     const placeId = $(this).parent().next().next().next().attr('savedPlaceId');
-    // Have the star be pressed if the place is saved
     $(this).toggleClass('press');
     if (firebase.auth().currentUser && $(this).hasClass('press')) {
       const time = $(this).parent().next().next().text();
@@ -458,7 +458,7 @@ function populatePlaces(placeArray) {
       addGeometry(name, placeId);
       savedPlacesSet.add(placeId);
     } else if (firebase.auth().currentUser && (!$(this).hasClass('press'))) {
-       // Delete user saved places when the star is not pressed
+       // Delete user saved places when the star is not pressed/unpressed
       var ref = firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/places/' + name);
       ref.remove();
       savedPlacesSet.delete(placeId);
@@ -496,7 +496,7 @@ function addGeometry(name, place_id) {
 }
 
 /**
- * Calls the database and displays all saved places.
+ * Call the database and displays all saved places.
  */
 function savedPlaces() {
   const placesSnapshot = firebase.database().ref('users/'+ firebase.auth().currentUser.uid + '/places').once('value', function(placesSnapshot){
