@@ -400,9 +400,6 @@ function populatePlaces(placeArray) {
     const htmlContent = getLocationCardHtml(place);
     // Check to see if it is a saved place, if so make the star pressed
     // TODO make sure all the stars are pressed
-    if(savedPlacesSet.has(place.place_id) === true) {
-       $('.icon').addClass('press');
-    }
 
     // For the material bootstrap library, the preferred method of dom interaction is jquery,
     // especially for adding elements.
@@ -416,6 +413,9 @@ function populatePlaces(placeArray) {
     });
     $('#' + SCROLL_ID).append(cardElement);
 
+    if(savedPlacesSet.has(place.place_id) === true) {
+      cardElement.find('.icon').addClass('press');
+    }
     // Add events to focus card and pin
     placeMarker.addListener('click', function () {
       toggleFocusOff();
