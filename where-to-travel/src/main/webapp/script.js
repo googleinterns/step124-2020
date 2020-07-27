@@ -515,7 +515,6 @@ function savedPlaces() {
   });
 }
 
-
 /**
  * Helper function that returns the an HTML string representing a place card
  * that can be added to the DOM.
