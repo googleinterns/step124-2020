@@ -406,10 +406,6 @@ function populatePlaces(placeArray) {
       });
 
       const htmlContent = getLocationCardHtml(place);
-    //    $("[placeName="+ place.name +"]").data('place_id',place_id);
-    //    $("[placeName="+ place.name + "]").data('timeInSeconds', timeInSeconds);
-    //    $("[placeName="+ place.name + "]").data('lat', lat);
-    //    $("[placeName="+ place.name + "]").data('lng', lng);
     
       // For the material bootstrap library, the preferred method of dom interaction is jquery,
       // especially for adding elements.
