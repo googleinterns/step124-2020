@@ -35,7 +35,6 @@ const MAP_STYLES = [
 // End map stylings
 
 // Thresholds for termination of search algorithm
-
 const PLACES_THRESHOLD = 30;
 const ATTEMPTS_THRESHOLD = 10;
 const DIRECTION_THRESHOLD = 5;
@@ -61,17 +60,28 @@ const SELECTED_PIN_PATH = 'icons/selectedPin.svg';
 const HOME_PIN_PATH = 'icons/home.svg';
 const INT_REGEX_MATCHER = /^\d+$/;
 
+// Text files that contain modal content
 const INFO_HTML_PATH = 'info.txt';
 const NO_PLACES_HTML_PATH = 'noPlaces.txt';
 
+// The map display object
 let map;
+// Current user
 let user = false;
+// Current home location
 let home = null;
+// The place type selected by the multi-select pills
+let placeType = 'Tourist Attractions';
+// Whether the saved places should be displayed or not
+let displaySavedPlaces = false;
 
+// The current pin and card that are selected by the user
 let focusedCard;
 let focusedPin;
 
+// The home marker
 let homeMarker = null;
+// All other displayed markers
 let markers = [];
 
 // Flag indicating if geolocation is running
@@ -117,7 +127,9 @@ $('.multi-select-pill').click(function () {
   }
 });
 
-/** Initializes map window, runs on load. */
+/** 
+ * Initializes map window, runs on load.
+ */
 function initialize() {
   const submit = document.getElementById(SUBMIT_ID);
   submit.addEventListener('click', submitDataListener);
@@ -183,7 +195,7 @@ function showModal(htmlFilePath) {
     .then(content => openModal(content));
 }
 
-
+// When auth changes, display the proper dashboard
 firebase.auth().onAuthStateChanged(function(user) {
   $('#' + DASH_ID).empty();
   if (user) {
@@ -356,7 +368,16 @@ function addLoginButtons() {
  */
 function addUserDash() {
   const dashElement = $(getUserDashHtml(user));
+  // reverse the boolean control on click
   $(dashElement[2]).click(function () {
+    displaySavedPlaces = !displaySavedPlaces;
+    if (displaySavedPlaces) {
+      //TODO: fire event @emma
+    }
+  });
+
+  // Logout user if they click the logout button
+  $(dashElement[3]).click(function () {
     firebase.auth().signOut().catch(function(error) {
       console.log('Error occurred while sigining user out ' + error);
     });
@@ -364,9 +385,11 @@ function addUserDash() {
   $('#' + DASH_ID).append(dashElement);
 }
 
-/** Toggle the focused pin/card off */
+/**
+ * Toggle the focused pin/card off
+ */
 function toggleFocusOff() {
-  if(focusedCard != null) {
+  if (focusedCard != null) {
     focusedCard.classList.remove('active-card');
   }
 
@@ -603,7 +626,12 @@ function getLoginHtml() {
  * @returns the HTML for user dashboard as a string 
  */
 function getUserDashHtml(user) {
-  return `<img onclick="showModal('${INFO_HTML_PATH}')" class="btn btn-icon" src="icons/help.svg">
+  return `<img onclick="showModal(${INFO_HTML_PATH})" class="btn btn-icon" src="icons/help.svg">
+          Display Saved:
+          <label class="switch btn">
+            <input type="checkbox">
+            <span class="slider round"></span>
+          </label>
           <a class="btn btn-outline-primary btn-color" style="color: #049688;" id="logout">Logout</a>`;
 }
 
