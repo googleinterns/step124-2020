@@ -58,6 +58,7 @@ const LOGOUT_ID = 'logout';
 const PIN_PATH = 'icons/pin.svg';
 const SELECTED_PIN_PATH = 'icons/selectedPin.svg';
 const HOME_PIN_PATH = 'icons/home.svg';
+
 const INT_REGEX_MATCHER = /^\d+$/;
 
 // Text files that contain modal content
@@ -370,10 +371,13 @@ function addUserDash() {
   $(dashElement[2]).click(function () {
     displaySavedPlaces = !displaySavedPlaces;
     if (displaySavedPlaces) {
-      savedPlaces();
-      //TODO: fire event @emma
+      $(SCROLL_ID).children().each(function() {
+        if(!savedPlacesSet.has(this.attr('placeId'))) {
+          this.hide();
+        }
+      });
     } else {
-      // clear saved places
+      $(SCROLL_ID).children().show();
     }
   });
 
@@ -588,13 +592,14 @@ function getLocationCardHtml(place) {
        data-lat="${lat}"
        data-lng="${lng}"
        class="card location-card" 
+       placeId="${place_id}" 
        placeName="${name}" 
        style="margin-right: 0;">
       <div class="card-body">
         <h5 class="card-title">${name}
-        <span class="icon" id="${iconId}">
-          &#9733
-        <span>
+          <span class="icon" id="${iconId}">
+            &#9733
+          </span>
         </h5>
         <div id=${place_id}>
           <a onclick="populateMorePlaceInfo('${place_id}')" class="btn btn-primary active">More Information</a>
