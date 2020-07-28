@@ -370,7 +370,7 @@ function addUserDash() {
   $(dashElement[2]).click(function () {
     displaySavedPlaces = !displaySavedPlaces;
     if (displaySavedPlaces) {
-      //TODO: fire event @emma
+      savedPlaces();
     }
   });
 
