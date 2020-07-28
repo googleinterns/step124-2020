@@ -371,6 +371,9 @@ function addUserDash() {
     displaySavedPlaces = !displaySavedPlaces;
     if (displaySavedPlaces) {
       savedPlaces();
+      //TODO: fire event @emma
+    } else {
+      // clear saved places
     }
   });
 
