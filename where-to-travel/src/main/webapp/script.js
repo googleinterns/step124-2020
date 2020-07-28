@@ -581,7 +581,7 @@ function getLocationCardHtml(place) {
   const iconId = 'icon' + name;
   const innerHtml = '' +
     `<div id="${name}"
-       data-timeInSecond="${timeInSeconds}" 
+       data-timeInSeconds="${timeInSeconds}" 
        data-lat="${lat}"
        data-lng="${lng}"
        class="card location-card" 
