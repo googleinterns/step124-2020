@@ -77,16 +77,15 @@ $('#signUp-modal').on('hidden.bs.modal', function(){
  
 /** Signs up user using Firebase API **/
 function signUp() {
-  const promise = firebase.auth().createUserWithEmailAndPassword(emailSignUp.value, passwordSignUp.value);
-  promise.then(_ => {      
-    // Add user information to the real time database in Firebase
-    let ref = firebase.database().ref('users');
-    let data = {
-      name: nameSignUp.value,
-      email: emailSignUp.value,    
-      uID: firebase.auth().currentUser.uid
-    };
-    ref.push(data)
+  const promise = firebase().auth.createUserWithEmailAndPassword(emailSignUp.value, passwordSignUp.value);
+    promise.then(_ => {
+      let ref = firebase.database().ref('users/' + firebase.auth().currentUser.uid);
+      let data = {
+        name: nameSignUp.value,
+        email: emailSignUp.value,    
+        uID: firebase.auth().currentUser.uid
+      };
+    ref.set(data)
       .then(_ => $('#signUp-modal').modal('hide'))
       .catch(e => {console.log(e.message); alert(e.message);});
   }).catch(e => {console.log(e.message); alert(e.message);});

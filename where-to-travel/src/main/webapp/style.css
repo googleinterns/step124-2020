@@ -10,7 +10,7 @@
   height: 100%;
   top: 0;
   left: 0;
-  transform: translateX(-360px);
+  transform: translateX(-0px);
   width: 360px;
 }
 
@@ -55,9 +55,12 @@ body {
   font-size: 1.5em;
 }
 
-.info-header {
-  color: #049688;
-  text-align: left;
+.feedback {
+  color: #D70D00;
+}
+
+#feedback-target {
+  text-align: center;
 }
 
 .fg-mixin {
@@ -67,6 +70,16 @@ body {
 
 html {
   height: 100%;
+}
+
+h5 {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.info-header {
+  color: #049688;
+  text-align: left;
 }
 
 .icon {
@@ -125,6 +138,11 @@ html {
 #nav-text {
   margin-right: 10px;
   margin-left: 10px;
+}
+
+:not(.bmd-drawer-out).bmd-drawer-in.bmd-drawer-f-l>.bmd-layout-content {
+  background-color: whitesmoke;
+  margin-left: 360px;
 }
 
 .over-card {

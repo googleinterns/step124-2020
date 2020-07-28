@@ -48,11 +48,18 @@ const SUBMIT_ID = 'submit';
 const HOURS_ID = 'hrs';
 const MINUTES_ID = 'mnts';
 const SCROLL_ID = 'scroller';
+
+const FEEDBACK_ID = 'feedback-target';
+const HOURS_MAX_SEARCH = 20;
+const MINUTE_MAX_SEARCH = 59;
+
 const DASH_ID = 'dash';
 const LOGOUT_ID = 'logout';
+
 const PIN_PATH = 'icons/pin.svg';
 const SELECTED_PIN_PATH = 'icons/selectedPin.svg';
 const HOME_PIN_PATH = 'icons/home.svg';
+const INT_REGEX_MATCHER = /^\d+$/;
 
 const INFO_HTML_PATH = 'info.txt';
 const NO_PLACES_HTML_PATH = 'noPlaces.txt';
@@ -60,7 +67,6 @@ const NO_PLACES_HTML_PATH = 'noPlaces.txt';
 let map;
 let user = false;
 let home = null;
-let placeType = 'Tourist Attractions';
 
 let focusedCard;
 let focusedPin;
@@ -79,9 +85,14 @@ let placesService;
 // Keeps track of most recent search request
 let globalNonce;
 
+
 // Keep a set of all saved and displayed places
 var savedPlacesSet = new Set();
 var displayedPlacesSet = new Set();
+
+// Query for Place Search
+let placeType = 'Tourist Attractions';
+
 
 // Add gmap js library to head of page
 const script = document.createElement('script');
@@ -110,6 +121,7 @@ $('.multi-select-pill').click(function () {
 function initialize() {
   const submit = document.getElementById(SUBMIT_ID);
   submit.addEventListener('click', submitDataListener);
+  attachSearchValidation();
 
   const mapOptions = {
     center: {lat: 36.150813, lng: -40.352239}, // Middle of the North Atlantic Ocean
@@ -120,17 +132,45 @@ function initialize() {
   };
   map = new google.maps.Map(document.getElementById('map'), mapOptions);
 
-  showModal(INFO_HTML_PATH);
-  // Add autocomplete capabality for address input
+    // Add autocomplete capabality for address input
   const addressInput = document.getElementById('addressInput');
   let autocomplete = new google.maps.places.Autocomplete(addressInput);
     
   // Initialize API service objects
   distanceMatrixService = new google.maps.DistanceMatrixService();
   geocoder = new google.maps.Geocoder();
-  placesService = new google.maps.places.PlacesService(map);
-  
-  showModal(INFO_HTML_PATH);
+  placesService = new google.maps.places.PlacesService(map);  
+}
+
+
+/**
+ * Attaches listeners to the focusout event for search inputs.
+ */
+function attachSearchValidation() {
+  addListenerToSearchInput(document.getElementById(HOURS_ID), 'hours', HOURS_MAX_SEARCH);
+  addListenerToSearchInput(document.getElementById(MINUTES_ID), 'minutes', MINUTE_MAX_SEARCH);
+}
+
+/**
+ * Adds an on focusout event to a dom element, which adds a formatted HTML tip to the DOM.
+ *
+ * @param element the dom element to add listener to
+ * @param type a string of the type of time input this element takes ('minute' or 'hour')
+ * @param max the maximum value of this input element
+ */
+function addListenerToSearchInput(element, type, max) {
+  element.addEventListener('focusout', function (event) {
+    $('#' + type + '-feedback').remove();
+    // if value is empty, set to 0, otherwise, parse the value
+    const stringInput = event.target.value;
+
+    const intValue = (stringInput === '') ? 0 : parseInt(stringInput);
+    if (!INT_REGEX_MATCHER.test(stringInput) || intValue < 0 || intValue > max) {
+      $('#' + FEEDBACK_ID).append('<p id="' + type + '-feedback" class="feedback">Please input a valid ' + type + ' whole number between 0 and ' + max + '</p>');
+    } else {
+      $('#' + type + '-feedback').remove();
+    }
+  });
 }
 
 /**
@@ -346,11 +386,12 @@ function toggleFocusOff() {
  */
 function submitDataListener(event) {
   if (home == null) {
-    const content = '<p> No home location found. Please set a home location and try again.</p>';
+    const content = '<p>No home location found. Please set a home location and try again.</p>';
     openModal(content);
-  }
-  else {
-    $('#dw-s2').data('bmd.drawer').hide();
+  } else if ($('#' + FEEDBACK_ID).children().length >= 1) {
+    const content = '<p>Please enter valid search parameters</p>';
+    openModal(content);
+  } else {
     clearPlaces();
     displayedPlacesSet.clear();
     const hours = document.getElementById(HOURS_ID).value;
@@ -423,14 +464,18 @@ function populatePlaces(placeArray) {
       if(savedPlacesSet.has(place.place_id)) {
         cardElement.find('.icon').addClass('press');
       }
-      // Add events to focus card and pin
-      placeMarker.addListener('click', function () {
-        toggleFocusOff();
-        focusedPin = placeMarker;
-        selectLocationCard(placeMarker.getTitle());
-        placeMarker.setIcon(SELECTED_PIN_PATH);
-        focusedCard.scrollIntoView({behavior: 'smooth', block: 'center'});
-      });
+    });
+
+    $('#' + SCROLL_ID).append(cardElement);
+
+    // Add events to focus card and pin
+    placeMarker.addListener('click', function () {
+      toggleFocusOff();
+      focusedPin = placeMarker;
+      selectLocationCard(placeMarker.getTitle());
+      placeMarker.setIcon(SELECTED_PIN_PATH);
+      focusedCard.scrollIntoView({behavior: 'smooth', block: 'center'});
+    });
 
       placeMarker.addListener('mouseover', function () {
         placeMarker.setIcon(SELECTED_PIN_PATH);
@@ -545,7 +590,7 @@ function getLocationCardHtml(place) {
  * @returns the HTML for login as a string
  */
 function getLoginHtml() {
-  return `<img onclick="showModal(${INFO_HTML_PATH})" class="btn btn-icon" src="icons/help.svg">
+  return `<img onclick="showModal('${INFO_HTML_PATH}')" class="btn btn-icon" src="icons/help.svg">
           <a class="btn btn-outline-primary btn-color" onclick="showLogin()">Login</a>
           <span id="nav-text">or</span>
           <a class="btn btn-outline-primary btn-color" onclick="showSignUp()">Sign up</a>`;
@@ -558,9 +603,8 @@ function getLoginHtml() {
  * @returns the HTML for user dashboard as a string 
  */
 function getUserDashHtml(user) {
-  return `<img onclick="showInfoModal(showModal(${INFO_HTML_PATH}))" class="btn btn-icon" src="icons/help.svg">
+  return `<img onclick="showModal('${INFO_HTML_PATH}')" class="btn btn-icon" src="icons/help.svg">
           <a class="btn btn-outline-primary btn-color" style="color: #049688;" id="logout">Logout</a>`;
-
 }
 
 /**
@@ -572,6 +616,7 @@ function selectLocationMarker(title) {
     if (marker.getTitle() == title) {
       focusedPin = marker;
       marker.setIcon(SELECTED_PIN_PATH);
+      break;
     }
   }
 }
@@ -581,7 +626,7 @@ function selectLocationMarker(title) {
  * @param {string} title the name of the place whose card to focus
  */
 function selectLocationCard(title) {
-  scrollWindow = document.getElementById(SCROLL_ID);
+  const scrollWindow = document.getElementById(SCROLL_ID);
   for (let locationCard of scrollWindow.childNodes) {
     if (locationCard.hasChildNodes() && locationCard.getAttribute("placeName") == title) {
       locationCard.classList.add("active-card");
@@ -640,7 +685,7 @@ function clearPlaces() {
  * @param {Object} time Travel time requested by user in seconds
  * @return {Array} Array of objects containing information about places within the requested time
  */
- function getPlacesFromTime(time) {
+function getPlacesFromTime(time) {
   return new Promise(async function(resolve, reject){    
     const localNonce = globalNonce = new Object(); 
     // First try one bounding box around user's location
@@ -654,7 +699,7 @@ function clearPlaces() {
 
     let places = filterResults.places;
 
-    // Initial distance from the user's location for the bounding boxes
+     // Initial distance from the user's location for the bounding boxes
     const initSpread = Math.max(1, Math.ceil(time/7200));
     let attempts = 0;
 
@@ -779,18 +824,18 @@ function getPlacesFromDirection(lat, lng) {
  * @return {Object} Contains average time of all places and an array of places objects that are within time
  */
 async function filterByTime(time, listPlaces) {
-    let filterInfo = {total_time: 0, total_places: 0, places: []};
+  let filterInfo = {total_time: 0, total_places: 0, places: []};
 
-    for (let i = 0; i < listPlaces.length; i += 25) {
-      filterInfo = await addAcceptablePlaces(time, listPlaces.slice(i, i + 25), filterInfo);
-    }
+  for (let i = 0; i < listPlaces.length; i += 25) {
+    filterInfo = await addAcceptablePlaces(time, listPlaces.slice(i, i + 25), filterInfo);
+  }
 
-    let avg_time = 0;
-    if (filterInfo.total_places != 0) {
-      avg_time = filterInfo.total_time/filterInfo.total_places;
-    }
+  let avg_time = 0;
+  if (filterInfo.total_places != 0) {
+    avg_time = filterInfo.total_time/filterInfo.total_places;
+  }
 
-    return {avg_time: avg_time, places: filterInfo.places};
+  return {avg_time: avg_time, places: filterInfo.places};
 }
 
 /**

@@ -11,71 +11,46 @@
     <script src="secrets.json"></script>
     <meta name="viewport" content="width=640, initial-scale=0.5, user-scalable=no" />
   </head>
-  <body onload="initialize();">
-    <div class="bmd-layout-container bmd-drawer-f-l bmd-drawer-overlay">
+
+  <body onload="initialize();">      
+
+    <div class="bmd-layout-canvas">
+      
       <header class="bmd-layout-header">
-        <div class="navbar navbar-dark bg-faded">
-          <button class="navbar-toggler" type="button" data-toggle="drawer" data-target="#dw-s2">
-            <span class="sr-only">Toggle drawer</span>
-            <span id="drawer-toggle" class="btn">
-              &#9776;
-            </span>
-          </button>
+        <div class="navbar bg-faded">
+          <div class="text-center" style="width:330px">
+            <a class="navbar-brand text-center text-color" href="#"> <img src="icons/pin.svg" width="16" height="32"> Where to?</a>
+          </div>
+
+          <span class="navbar-text">
+            Planning a road trip? Enter a home location and travel time to find interesting attractions!
+          </span>    
           <a class="btn btn-outline-primary" onclick="savedPlaces()">Saved</a>
           <a class="btn btn-outline-primary" onclick="clearPlaces()">Remove</a>
-          <ul class="nav navbar-nav">
+
           <ul class="nav navbar-nav">
             <li class="nav-item">
-              <div id="dash">
-              </div>
+              <div id="dash"></div>
             </li>
           </ul>
         </div>
       </header>
-      <div id="dw-s2" class="bmd-layout-drawer bg-faded">
-        <header>
-          <a class="navbar-brand">Search Settings</a>
-        </header>
-        <div id="accordion">
-          <div class="card">
-            <div class="card-header text-center" id="headingOne">
-              <h1 class="mb-0">
-                <button class="btn btn-link collapsed text-color" data-toggle="collapse" data-target="#collapseOne"
-                    aria-expanded="false" aria-controls="collapseOne">
-                  Travel Time
-                </button>
-              </h1>
-              </div>
-                <div id="collapseOne" class="collapse" aria-labelledby="headingOne" data-parent="#accordion">
-                <div class="card-body">
-                  <form class="form-inline form-mixin">
-                    <div class="form-group fg-mixin">
-                        <label for="hours" class="bmd-label-floating text-color">HH</label>
-                        <input id="hrs" style="width: 100%; margin-right:0px;" type="text" class="form-control">
-                    </div>
-                    <div id="colon" class="form-group bmd-label-static">
-                        :
-                    </div>
-                    <div class="form-group fg-mixin">
-                        <label for="minutes" class="bmd-label-floating text-color">MM</label>
-                        <input id="mnts" style="width: 100%; margin-right:0px;" type="text" class="form-control">
-                    </div>
-                  </form>
-                </div>
-              </div>
-            </div>  
-            
+   
+      <div class="bmd-layout-container bmd-drawer-f-l">
+        <div id="dw-s2" class="bmd-layout-drawer bg-faded">
+
+          <div id="accordion">
             <div class="card">
-              <div class="card-header text-center" id="headingTwo">
+              <div class="card-header text-center" id="headingOne">
                 <h1 class="mb-0">
-                  <button class="btn btn-link collapsed text-color" data-toggle="collapse" data-target="#collapseTwo"
-                        aria-expanded="false" aria-controls="collapseTwo">
+                  <button class="btn btn-link text-color" data-toggle="collapse" data-target="#collapseOne"
+                        aria-expanded="true" aria-controls="collapseOne">
                     Home Location
                   </button>
                 </h1>
               </div>
-              <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordion">
-                <div class="card-header text-color">
+              <div id="collapseOne" class="collapse show" aria-labelledby="headingOne">
+                <div class="card-header bg-light text-color">
                   <div class="form-group">
                     <input type="text" class="form-control text-center" placeholder="Enter an address" id="addressInput">
                   </div>
@@ -85,19 +60,47 @@
                   </div>
                 </div>
               </div>
-            </div>
+            </div>  
 
+            <div class="card">
+              <div class="card-header text-center" id="headingTwo">
+              <h1 class="mb-0">
+                <button class="btn btn-link text-color" data-toggle="collapse" data-target="#collapseTwo"
+                    aria-expanded="true" aria-controls="collapseTwo">
+                  Travel Time
+                </button>
+              </h1>
+              </div>
+              <div id="collapseTwo" class="collapse show" aria-labelledby="headingTwo">
+                <div class="card-body bg-light">
+                  <form class="form-inline form-mixin">
+                    <div class="form-group fg-mixin">
+                      <label for="hours" class="bmd-label-floating text-color">HH</label>
+                      <input id="hrs" style="width: 100%; margin-right:0px;" type="text" class="form-control">
+                    </div>
+                    <div id="colon" class="form-group bmd-label-static">
+                      :
+                    </div>
+                    <div class="form-group fg-mixin">
+                      <label for="minutes" class="bmd-label-floating text-color">MM</label>
+                      <input id="mnts" style="width: 100%; margin-right:0px;" type="text" class="form-control">
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>  
+            
             <div class="card">
               <div class="card-header text-center" id="headingThree">
                 <h1 class="mb-0">
-                  <button class="btn btn-link collapsed text-color" data-toggle="collapse" data-target="#collapseThree"
-                        aria-expanded="false" aria-controls="collapseThree">
-                    Search Tags
+                  <button class="btn btn-link text-color" data-toggle="collapse" data-target="#collapseThree"
+                        aria-expanded="true" aria-controls="collapseThree">
+                    Destination Type
                   </button>
                 </h1>
               </div>
-              <div id="collapseThree" class="collapse" aria-labelledby="headingThree" data-parent="#accordion">
-                <div class="card-header text-color">
+              <div id="collapseThree" class="collapse show" aria-labelledby="headingThree">
+                <div class="card-header bg-light text-color">
                   <div class="multi-select-container">
                     <div class="multi-select-pill">Tourism</div>
                     <div class="multi-select-pill">Hiking</div>
@@ -107,22 +110,25 @@
                   </div>
                 </div>
               </div>
-            </div>  
-
+            </div> 
+            
           </div>
 
           <span id="search-btn-container">
             <button type="button" id="submit" class="btn btn-primary search-btn">Search</button>
+            <button type="button" onclick="clearPlaces()" class="btn btn-primary search-btn">Clear</button>
           </span>
-
+          
+          <div id="feedback-target"></div>
         </div>
+     
 
-        <main class="bmd-layout-content">
-          <div hidden class="card-scroller" id="scroller"></div>
-          <div id="map"></div>
+        <main class="bmd-layout-content content">
+          <div hidden class="card-scroller" id="scroller" style="margin-left: 360px"></div>
+          <div id="map" style="margin-left: 360px"></div>
         </main>
 
-        </div>
+      </div>
     </div>
 
     <div class="modal fade" id="content-modal" tabindex="-1" role="dialog" aria-hidden="true">
