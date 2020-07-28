@@ -468,23 +468,18 @@ function populatePlaces(placeArray) {
         place_id: placeId,
       }
       ref.set(data);
-    
       let card = document.getElementById(name)
       let lat = card.dataset.lat
       let lng =card.dataset.lng
-      console.log(lat);
-      console.log(lng);
-
-       var ref = firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/places/' + name + '/geometry/location/');
-       var data = {
+      var ref = firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/places/' + name + '/geometry/location/');
+      var data = {
         lat: lat,
         lng: lng
-       }
-       ref.set(data);
-      //addGeometry(name, placeId);
+      }
+      ref.set(data);
       savedPlacesSet.add(name);
     } else if (firebase.auth().currentUser && (!$(this).hasClass('press'))) {
-       // Delete user saved places when the star is not pressed/unpressed
+      // Delete user saved places when the star is not pressed/unpressed
       var ref = firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/places/' + name);
       ref.remove();
       savedPlacesSet.delete(placeId);
