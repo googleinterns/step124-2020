@@ -487,7 +487,6 @@ function populatePlaces(placeArray) {
       if(savedPlacesSet.has(place.place_id)) {
         cardElement.find('.icon').addClass('press');
       }
-    }
 
     $('#' + SCROLL_ID).append(cardElement);
 
@@ -550,6 +549,7 @@ function populatePlaces(placeArray) {
       savedPlacesSet.delete(placeId);
     }
   });
+}
  
 /**
  * Call the database and displays all saved places.
