@@ -451,6 +451,7 @@ function populatePlaces(placeArray) {
   $('.icon').click(function() {
     const name = $(this).parent().parent().parent().attr('placeName');
     const placeId = $(this).parent().next().next().next().attr('savedPlaceId');
+    let card = document.getElementById(name);
     $(this).toggleClass('press');
     if (firebase.auth().currentUser && $(this).hasClass('press')) {
       const time = $(this).parent().next().next().text();
@@ -461,12 +462,12 @@ function populatePlaces(placeArray) {
       var data = {
         name: name,
         timeAsString: time,
+        timeInSeconds:card.dataset.timeInSeconds,
         place_id: placeId,
       }
       ref.set(data);
-      let card = document.getElementById(name)
-      let lat = card.dataset.lat
-      let lng =card.dataset.lng
+      let lat = card.dataset.lat;
+      let lng =card.dataset.lng;
       var ref = firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/places/' + name + '/geometry/location/');
       var data = {
         lat: lat,
