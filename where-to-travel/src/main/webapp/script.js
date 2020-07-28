@@ -468,7 +468,7 @@ function populatePlaces(placeArray) {
       });
 
       const htmlContent = getLocationCardHtml(place);
-    
+
       // For the material bootstrap library, the preferred method of dom interaction is jquery,
       // especially for adding elements.
       let cardElement = $(htmlContent).click(function(event) {
@@ -485,7 +485,7 @@ function populatePlaces(placeArray) {
       if(savedPlacesSet.has(place.place_id)) {
         cardElement.find('.icon').addClass('press');
       }
-    });
+    }
 
     $('#' + SCROLL_ID).append(cardElement);
 
@@ -548,7 +548,6 @@ function populatePlaces(placeArray) {
       savedPlacesSet.delete(placeId);
     }
   });
-}
  
 /**
  * Call the database and displays all saved places.
