@@ -79,7 +79,7 @@ $('#signUp-modal').on('hidden.bs.modal', function(){
 function signUp() {
   const promise = firebase().auth.createUserWithEmailAndPassword(emailSignUp.value, passwordSignUp.value);
     promise.then(_ => {
-      let ref = firebase.database().ref('users/' + firebase.auth().currentUser.uid );
+      let ref = firebase.database().ref('users/' + firebase.auth().currentUser.uid);
       let data = {
         name: nameSignUp.value,
         email: emailSignUp.value,    
@@ -88,5 +88,5 @@ function signUp() {
     ref.set(data)
       .then(_ => $('#signUp-modal').modal('hide'))
       .catch(e => {console.log(e.message); alert(e.message);});
-  }).catch(e => console.log(e.message), alert(e.message));
+  }).catch(e => {console.log(e.message); alert(e.message);});
 }
