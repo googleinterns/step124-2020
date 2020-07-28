@@ -142,8 +142,8 @@ function initialize() {
     styles: MAP_STYLES,
   };
   map = new google.maps.Map(document.getElementById('map'), mapOptions);
-
-    // Add autocomplete capabality for address input
+  map.addListener('click', toggleFocusOff);
+  // Add autocomplete capabality for address input
   const addressInput = document.getElementById('addressInput');
   let autocomplete = new google.maps.places.Autocomplete(addressInput);
     
@@ -351,7 +351,6 @@ function openModal(content) {
   modalBody.innerHTML = content;
 
   $('#content-modal').modal('show');
-  map.addListener('click', toggleFocusOff);
 }
 
 /**
@@ -393,6 +392,7 @@ function addUserDash() {
  * Toggle the focused pin/card off
  */
 function toggleFocusOff() {
+  console.log("helooooo");
   if (focusedCard != null) {
     focusedCard.classList.remove('active-card');
   }
