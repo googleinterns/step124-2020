@@ -382,6 +382,7 @@ function populatePlaces(placeArray) {
   if(!placeArray) {
     showModal(NO_PLACES_HTML_PATH);
   }
+
   for(let place of placeArray) {
       console.log(place);
     // If the saved places are being displayed and your search returns one of the saved places, 
@@ -405,6 +406,10 @@ function populatePlaces(placeArray) {
       });
 
       const htmlContent = getLocationCardHtml(place);
+    //    $("[placeName="+ place.name +"]").data('place_id',place_id);
+    //    $("[placeName="+ place.name + "]").data('timeInSeconds', timeInSeconds);
+    //    $("[placeName="+ place.name + "]").data('lat', lat);
+    //    $("[placeName="+ place.name + "]").data('lng', lng);
     
       // For the material bootstrap library, the preferred method of dom interaction is jquery,
       // especially for adding elements.
@@ -463,8 +468,21 @@ function populatePlaces(placeArray) {
         place_id: placeId,
       }
       ref.set(data);
-      addGeometry(name, placeId);
-      savedPlacesSet.add(placeId);
+    
+      let card = document.getElementById(name)
+      let lat = card.dataset.lat
+      let lng =card.dataset.lng
+      console.log(lat);
+      console.log(lng);
+
+       var ref = firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/places/' + name + '/geometry/location/');
+       var data = {
+        lat: lat,
+        lng: lng
+       }
+       ref.set(data);
+      //addGeometry(name, placeId);
+      savedPlacesSet.add(name);
     } else if (firebase.auth().currentUser && (!$(this).hasClass('press'))) {
        // Delete user saved places when the star is not pressed/unpressed
       var ref = firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/places/' + name);
@@ -473,36 +491,7 @@ function populatePlaces(placeArray) {
     }
   });
 }
-
-/**
- * Helper function that adds the lat/lng to the place in the database under geometry.
- * @param {String} name The name of the place
- * @param {String} place_id The place ID
- */
-function addGeometry(name, place_id) { 
-  let request = {
-    placeId: place_id,
-    fields: [
-      'geometry'
-    ]
-  }
-
-  placesService.getDetails(request, callback);
-  function callback(place, status) {
-    if (status == google.maps.places.PlacesServiceStatus.OK) {
-      var data = {
-        lat: place.geometry.location.lat(),
-        lng: place.geometry.location.lng()
-       }
-       var ref = firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/places/' + name + '/geometry/location/');
-       ref.set(data);
-    }
-    else {
-      console.log(status)
-    }
-  }
-}
-
+ 
 /**
  * Call the database and displays all saved places.
  */
@@ -527,11 +516,20 @@ function savedPlaces() {
 function getLocationCardHtml(place) {
   const name = place.name;
   const timeStr = place.timeAsString;
+  const timeInSeconds = place.timeInSeconds;
   const place_id = place.place_id;
+  const lat = place.geometry.location.lat();
+  const lng = place.geometry.location.lng();
     
   const iconId = 'icon' + name;
   const innerHtml = '' +
-    `<div class="card location-card" placeName="${name}" style="margin-right: 0;">
+    `<div id="${name}"
+       data-timeInSecond="${timeInSeconds}" 
+       data-lat="${lat}"
+       data-lng="${lng}"
+       class="card location-card" 
+       placeName="${name}" 
+       style="margin-right: 0;">
       <div class="card-body">
         <h5 class="card-title">${name}
         <span class="icon" id="${iconId}">
@@ -545,7 +543,6 @@ function getLocationCardHtml(place) {
         <div savedPlaceId="${place_id}" style="visibility: hidden">
         </div>
     </div>`;
-
     return innerHtml;
 }
 
