@@ -196,8 +196,10 @@ function showModal(htmlFilePath) {
 
 // When auth changes, display the proper dashboard
 firebase.auth().onAuthStateChanged(function(user) {
+  console.log("here");
   $('#' + DASH_ID).empty();
   if (user) {
+    console.log("here");
     addUserDash();
     // When a user logs out, clear the saved plases set
     savedPlacesSet.clear();
@@ -368,16 +370,16 @@ function addLoginButtons() {
 function addUserDash() {
   const dashElement = $(getUserDashHtml(user));
   // reverse the boolean control on click
-  $(dashElement[2]).click(function () {
-    displaySavedPlaces = !displaySavedPlaces;
-    if (displaySavedPlaces) {
-      $(SCROLL_ID).children().each(function() {
-        if(!savedPlacesSet.has(this.attr('placeId'))) {
-          this.hide();
+  $(dashElement[2]).change(function () {
+    if (this.childNodes[1].checked) {
+      $('#' + SCROLL_ID).children().each(function() {
+        console.log($(this).attr('placeId'));
+        if(!savedPlacesSet.has($(this).attr('placeId'))) {
+          $(this).hide();
         }
       });
     } else {
-      $(SCROLL_ID).children().show();
+      $('#' + SCROLL_ID).children().show();
     }
   });
 
@@ -546,7 +548,8 @@ function populatePlaces(placeArray) {
         lng: lng
       }
       ref.set(data);
-      savedPlacesSet.add(name);
+      savedPlacesSet.add(placeId);
+      console.log(savedPlacesSet);
     } else if (firebase.auth().currentUser && (!$(this).hasClass('press'))) {
       // Delete user saved places when the star is not pressed/unpressed
       var ref = firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/places/' + name);
