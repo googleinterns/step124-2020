@@ -534,12 +534,12 @@ function populatePlaces(placeArray) {
       var data = {
         name: name,
         timeAsString: time,
-        timeInSeconds:card.dataset.timeInSeconds,
+        timeInSeconds: card.getAttribute('data-timeInSeconds'),
         place_id: placeId,
       }
       ref.set(data);
       let lat = card.dataset.lat;
-      let lng =card.dataset.lng;
+      let lng = card.dataset.lng;
       var ref = firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/places/' + name + '/geometry/location/');
       var data = {
         lat: lat,
