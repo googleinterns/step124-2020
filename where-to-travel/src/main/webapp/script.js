@@ -70,8 +70,6 @@ let map;
 let user = false;
 // Current home location
 let home = null;
-// The place type selected by the multi-select pills
-let placeType = 'Tourist Attractions';
 // Whether the saved places should be displayed or not
 let displaySavedPlaces = false;
 
