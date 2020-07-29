@@ -399,7 +399,6 @@ function addUserDash() {
  * Toggle the focused pin/card off
  */
 function toggleFocusOff() {
-  console.log("helooooo");
   if (focusedCard != null) {
     focusedCard.classList.remove('active-card');
   }
