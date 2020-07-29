@@ -378,9 +378,8 @@ function addUserDash() {
       $('#' + SCROLL_ID).children().show();
     }
   });
-
   // Logout user if they click the logout button
-  $(dashElement[3]).click(function () {
+  $(dashElement[4]).click(function () {
     firebase.auth().signOut().catch(function(error) {
       console.log('Error occurred while sigining user out ' + error);
     });
