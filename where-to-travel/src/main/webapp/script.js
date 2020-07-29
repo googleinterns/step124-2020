@@ -540,7 +540,7 @@ function populatePlaces(placeArray) {
       ref.set(data);
       let lat = card.dataset.lat;
       let lng = card.dataset.lng;
-      var ref = firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/places/' + name + '/geometry/location/');
+      var ref = ref + '/geometry/location/';
       var data = {
         lat: lat,
         lng: lng
