@@ -50,11 +50,6 @@ body {
   padding-top: 10%;
 }
 
-#drawer-toggle {
-  color: #049688;
-  font-size: 1.5em;
-}
-
 .feedback {
   color: #D70D00;
 }
@@ -66,6 +61,10 @@ body {
 .fg-mixin {
   margin: auto;
   width: 20%
+}
+
+.font-size-large {
+  font-size: 1.3rem;
 }
 
 html {
@@ -132,7 +131,7 @@ input:checked + .slider:before {
   color: #049688;
   cursor: pointer;
   display: inline-block;
-  font-size: 24px;
+  font-size: 1rem;
   margin: 5px;
   padding: 5px 10px 5px 10px;
   transition: box-shadow .2s cubic-bezier(.4,0,1,1),background-color .2s cubic-bezier(.4,0,.2,1),color .2s cubic-bezier(.4,0,.2,1)
