@@ -559,7 +559,7 @@ function populatePlaces(placeArray) {
 /**
  * Call the database and displays all saved places.
  */
-function savedPlaces() {
+function displaySavedPlaces() {
   const placesSnapshot = firebase.database().ref('users/'+ firebase.auth().currentUser.uid + '/places').once('value', function(placesSnapshot){
     var placeArray = [];
     placesSnapshot.forEach((placesSnapshot) => {
