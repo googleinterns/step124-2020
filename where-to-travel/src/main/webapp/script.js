@@ -67,7 +67,7 @@ const ICON_PATHS = {
     park: 'icons/pins/park.svg',
     shopping: 'icons/pins/shopping.svg',
     tourism: 'icons/pins/tourism.svg',
-    zoo: 'icons/pins/.svg'
+    zoo: 'icons/pins/zoo.svg'
   },
   selectedIcons: {
     default: 'icons/selected/default.svg',
@@ -76,7 +76,7 @@ const ICON_PATHS = {
     park: 'icons/selected/park.svg',
     shopping: 'icons/selected/shopping.svg',
     tourism: 'icons/selected/tourism.svg',
-    zoo: 'icons/selected/.svg'
+    zoo: 'icons/selected/zoo.svg'
   }
 };
 
@@ -375,7 +375,10 @@ function toggleFocusOff() {
   }
 
   if (focusedPin != null) {
-    focusedPin.setIcon(PIN_PATH);
+    let iconPath = focusedPin.getIcon();
+    let iconName = iconPath.split('/')[2].split('.')[0];
+
+    focusedPin.setIcon(ICON_PATHS.defaultIcons[iconName]);
   }
   focusedCard = null;
   focusedPin = null;
