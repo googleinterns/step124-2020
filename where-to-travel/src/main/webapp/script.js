@@ -364,7 +364,6 @@ function addLoginButtons() {
  */
 function addUserDash() {
   const dashElement = $(getUserDashHtml(user));
-  // reverse the boolean control on click
   $(dashElement[2]).change(function () {
     if (this.childNodes[1].checked) {
       // populate saved places
