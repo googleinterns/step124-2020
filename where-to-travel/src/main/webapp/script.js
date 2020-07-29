@@ -369,6 +369,8 @@ function addUserDash() {
   // reverse the boolean control on click
   $(dashElement[2]).change(function () {
     if (this.childNodes[1].checked) {
+      // populate saved places
+      savedPlaces();
       $('#' + SCROLL_ID).children().each(function() {
         if(!savedPlacesSet.has($(this).attr('placeId'))) {
           $(this).hide();
