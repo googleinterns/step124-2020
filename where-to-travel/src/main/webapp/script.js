@@ -598,7 +598,7 @@ function getLocationCardHtml(place) {
       <div class="card-body">
         <h5 class="card-title">${name}
           <span class="icon" id="${iconId}">
-            &#9733
+            &#9733;
           </span>
         </h5>
         <div id=${place_id}>
