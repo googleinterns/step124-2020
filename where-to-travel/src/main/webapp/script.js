@@ -538,9 +538,11 @@ function populatePlaces(placeArray) {
         place_id: placeId,
       }
       ref.set(data);
+      // Store the lat/lng of each place in the database under geometry/location 
+      // to be the same as the place object created form the search.
       let lat = card.dataset.lat;
       let lng = card.dataset.lng;
-      var ref = firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/places/' + name + '/geometry/location/');
+      var ref = ref + '/geometry/location/';
       var data = {
         lat: lat,
         lng: lng
