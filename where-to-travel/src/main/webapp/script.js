@@ -464,15 +464,14 @@ function populatePlaces(placeArray) {
       let savedIcon = document.getElementById('icon' + place.name);
       savedIcon.addClass('press');
       continue; 
-    }
-    else {
+    } else {
       // marker creation
       let placeMarker = new google.maps.Marker({
         position: place.geometry.location,
         map: map,
         title: place.name,
         icon: PIN_PATH,
-      });
+    });
 
       const htmlContent = getLocationCardHtml(place);
 
