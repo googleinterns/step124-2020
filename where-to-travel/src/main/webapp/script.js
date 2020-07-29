@@ -71,8 +71,6 @@ let map;
 let user = false;
 // Current home location
 let home = null;
-// Whether the saved places should be displayed or not
-let displaySavedPlaces = false;
 
 // The current pin and card that are selected by the user
 let focusedCard;
