@@ -378,8 +378,13 @@ function addUserDash() {
       });
     } else {
       $('#' + SCROLL_ID).children().show();
-    }
-  });
+      // If the card is a saved place but not in the search results, then hide
+      $('#' + SCROLL_ID).children().each(function() {
+      if(!savedPlacesSet.has($(this).attr('placeId')) && !(displayedPlacesSet.has($(this).attr('placeId'))) ) {
+        $(this).hide();
+      }
+    });
+  };
   // Logout user if they click the logout button
   $(dashElement[4]).click(function () {
     firebase.auth().signOut().catch(function(error) {
