@@ -72,7 +72,7 @@ function showSignUp() {
 
 /** Clear all input to form once modal is closed */
 $('#signUp-modal').on('hidden.bs.modal', function(){
-    $(this).find('form')[0].reset();
+  $(this).find('form')[0].reset();
 });
  
 /** Signs up user using Firebase API **/

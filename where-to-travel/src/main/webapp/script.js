@@ -35,7 +35,6 @@ const MAP_STYLES = [
 // End map stylings
 
 // Thresholds for termination of search algorithm
-
 const PLACES_THRESHOLD = 30;
 const ATTEMPTS_THRESHOLD = 10;
 const DIRECTION_THRESHOLD = 5;
@@ -59,19 +58,27 @@ const LOGOUT_ID = 'logout';
 const PIN_PATH = 'icons/pin.svg';
 const SELECTED_PIN_PATH = 'icons/selectedPin.svg';
 const HOME_PIN_PATH = 'icons/home.svg';
+
 const INT_REGEX_MATCHER = /^\d+$/;
 
+// Text files that contain modal content
 const INFO_HTML_PATH = 'info.txt';
 const NO_PLACES_HTML_PATH = 'noPlaces.txt';
 
+// The map display object
 let map;
+// Current user
 let user = false;
+// Current home location
 let home = null;
 
+// The current pin and card that are selected by the user
 let focusedCard;
 let focusedPin;
 
+// The home marker
 let homeMarker = null;
+// All other displayed markers
 let markers = [];
 
 // Flag indicating if geolocation is running
@@ -85,8 +92,14 @@ let placesService;
 // Keeps track of most recent search request
 let globalNonce;
 
+
+// Keep a set of all saved and displayed places
+var savedPlacesSet = new Set();
+var displayedPlacesSet = new Set();
+
 // Query for Place Search
 let placeType = 'Tourist Attractions';
+
 
 // Add gmap js library to head of page
 const script = document.createElement('script');
@@ -111,7 +124,9 @@ $('.multi-select-pill').click(function () {
   }
 });
 
-/** Initializes map window, runs on load. */
+/** 
+ * Initializes map window, runs on load.
+ */
 function initialize() {
   const submit = document.getElementById(SUBMIT_ID);
   submit.addEventListener('click', submitDataListener);
@@ -125,8 +140,8 @@ function initialize() {
     styles: MAP_STYLES,
   };
   map = new google.maps.Map(document.getElementById('map'), mapOptions);
-
-    // Add autocomplete capabality for address input
+  map.addListener('click', toggleFocusOff);
+  // Add autocomplete capabality for address input
   const addressInput = document.getElementById('addressInput');
   let autocomplete = new google.maps.places.Autocomplete(addressInput);
     
@@ -177,7 +192,7 @@ function showModal(htmlFilePath) {
     .then(content => openModal(content));
 }
 
-
+// When auth changes, display the proper dashboard
 firebase.auth().onAuthStateChanged(function(user) {
   $('#' + DASH_ID).empty();
   if (user) {
@@ -332,7 +347,6 @@ function openModal(content) {
   modalBody.innerHTML = content;
 
   $('#content-modal').modal('show');
-  map.addListener('click', toggleFocusOff);
 }
 
 /**
@@ -348,17 +362,41 @@ function addLoginButtons() {
  */
 function addUserDash() {
   const dashElement = $(getUserDashHtml(user));
-  $(dashElement[2]).click(function () {
+  $(dashElement[2]).change(function () {
+    if (this.childNodes[1].checked) {
+      // populate saved places
+      savedPlaces();
+      $('#' + SCROLL_ID).children().each(function() {
+        if(!savedPlacesSet.has($(this).attr('placeId'))) {
+          $(this).hide();
+        }
+      });
+    } else {
+      $('#' + SCROLL_ID).children().show();
+      // If the card is a saved place but not in the search results, then hide
+      $('#' + SCROLL_ID).children().each(function() {
+        if(!savedPlacesSet.has($(this).attr('placeId')) && !(displayedPlacesSet.has($(this).attr('placeId'))) ) {
+          $(this).hide();
+        }
+      });
+    }
+  });
+  // Logout user if they click the logout button
+  $(dashElement[4]).click(function () {
     firebase.auth().signOut().catch(function(error) {
       console.log('Error occurred while sigining user out ' + error);
     });
+    // When a user logs out, clear the saved plases set
+    savedPlacesSet.clear();
   });
   $('#' + DASH_ID).append(dashElement);
 }
 
-/** Toggle the focused pin/card off */
+/**
+ * Toggle the focused pin/card off
+ */
 function toggleFocusOff() {
-  if(focusedCard != null) {
+  if (focusedCard != null) {
     focusedCard.classList.remove('active-card');
   }
 
@@ -385,6 +423,7 @@ function submitDataListener(event) {
     openModal(content);
   } else {
     clearPlaces();
+    displayedPlacesSet.clear();
     const hours = document.getElementById(HOURS_ID).value;
     const minutes = document.getElementById(MINUTES_ID).value;
 
@@ -414,77 +453,123 @@ function populatePlaces(placeArray) {
   if(!placeArray) {
     showModal(NO_PLACES_HTML_PATH);
   }
+
   for(let place of placeArray) {
-    // marker creation
-    let placeMarker = new google.maps.Marker({
-      position: place.geometry.location,
-      map: map,
-      title: place.name,
-      icon: PIN_PATH,
-    });
+    // If the saved places are being displayed and your search returns one of the saved places, 
+    // there is nothing to do so coninue.
+    if (savedPlacesSet.has(place.place_id) && document.getElementById(place.place_id)) {
+      continue;
+    // If you request to display the saved places while you currently have search results being displayed,
+    // check to see if any of the saved places are already displayed, if so press the star and continue.
+    } else if (displayedPlacesSet.has(place.place_id)) {
+      let savedIcon = document.getElementById('icon' + place.name);
+      savedIcon.addClass('press');
+      continue; 
+    } else {
+      // marker creation
+      let placeMarker = new google.maps.Marker({
+        position: place.geometry.location,
+        map: map,
+        title: place.name,
+        icon: PIN_PATH,
+      });
 
-    const htmlContent = getLocationCardHtml(place);
+      const htmlContent = getLocationCardHtml(place);
 
-    // For the material bootstrap library, the preferred method of dom interaction is jquery,
-    // especially for adding elements.
-    let cardElement = $(htmlContent).click(function(event) {
-      if(event.target.nodeName != 'SPAN') {
+      // For the material bootstrap library, the preferred method of dom interaction is jquery,
+      // especially for adding elements.
+      let cardElement = $(htmlContent).click(function(event) {
+        if(event.target.nodeName != 'SPAN') {
+          toggleFocusOff();
+          selectLocationMarker($(this).attr('placeName'));
+          $(this).addClass('active-card');
+          focusedCard = this;
+        }
+      });
+      $('#' + SCROLL_ID).append(cardElement);
+
+     // Check to see if it is a saved place, if so make the star pressed 
+      if(savedPlacesSet.has(place.place_id)) {
+        cardElement.find('.icon').addClass('press');
+      }
+
+      $('#' + SCROLL_ID).append(cardElement);
+
+      // Add events to focus card and pin
+      placeMarker.addListener('click', function () {
         toggleFocusOff();
-        selectLocationMarker($(this).attr('placeName'));
-        $(this).addClass('active-card');
-       focusedCard = this;
-      }
-    });
+        focusedPin = placeMarker;
+        selectLocationCard(placeMarker.getTitle());
+        placeMarker.setIcon(SELECTED_PIN_PATH);
+        focusedCard.scrollIntoView({behavior: 'smooth', block: 'center'});
+      });
 
-    $('#' + SCROLL_ID).append(cardElement);
+      placeMarker.addListener('mouseover', function () {
+        placeMarker.setIcon(SELECTED_PIN_PATH);
+      });
 
-    // Add events to focus card and pin
-    placeMarker.addListener('click', function () {
-      toggleFocusOff();
-      focusedPin = placeMarker;
-      selectLocationCard(placeMarker.getTitle());
-      placeMarker.setIcon(SELECTED_PIN_PATH);
-      focusedCard.scrollIntoView({behavior: 'smooth', block: 'center'});
-    });
+      placeMarker.addListener('mouseout', function () {
+        if (placeMarker != focusedPin) {
+          placeMarker.setIcon(PIN_PATH);
+        }
+      });
 
-    placeMarker.addListener('mouseover', function () {
-      placeMarker.setIcon(SELECTED_PIN_PATH);
-    });
-
-    placeMarker.addListener('mouseout', function () {
-      if (placeMarker != focusedPin) {
-        placeMarker.setIcon(PIN_PATH);
-      }
-    });
-
-    markers.push(placeMarker);
+      markers.push(placeMarker);
+    }
   }
 
   document.getElementById(SCROLL_ID).hidden = false;
-
   // Handle favoriting a place
   $('.icon').click(function() {
+    const name = $(this).parent().parent().parent().attr('placeName');
+    const placeId = $(this).parent().next().next().next().attr('savedPlaceId');
+    let card = document.getElementById(name);
     $(this).toggleClass('press');
     if (firebase.auth().currentUser && $(this).hasClass('press')) {
-      const name = $(this).parent().parent().parent().attr('placeName');
-      const link = $(this).parent().next().attr('href');
       const time = $(this).parent().next().next().text();
        // Add users saved places to the real time database in Firebase when star is pressed
       const database = firebase.database();
       var uID = firebase.auth().currentUser.uid;
-      var ref = database.ref('users/' + uID + '/' + 'places' + '/' + name);
+      var ref = database.ref('users/' + uID + '/places/' + name);
       var data = {
         name: name,
-        link: link,
-        time: time,
+        timeAsString: time,
+        timeInSeconds: card.getAttribute('data-timeInSeconds'),
+        place_id: placeId,
       }
       ref.set(data);
+      // Store the lat/lng of each place in the database under geometry/location 
+      // to be the same as the place object created form the search.
+      let lat = card.dataset.lat;
+      let lng = card.dataset.lng;
+      var ref = ref + '/geometry/location/';
+      var data = {
+        lat: lat,
+        lng: lng
+      }
+      ref.set(data);
+      savedPlacesSet.add(placeId);
     } else if (firebase.auth().currentUser && (!$(this).hasClass('press'))) {
-      const name = $(this).parent().parent().parent().attr('placeName');
-       // Delete user saved places when the star is not pressed
-      var ref = firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/' + 'places' + '/' + name);
+      // Delete user saved places when the star is not pressed/unpressed
+      var ref = firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/places/' + name);
       ref.remove();
+      savedPlacesSet.delete(placeId);
     }
+  });
+}
+ 
+/**
+ * Call the database and displays all saved places.
+ */
+function displaySavedPlaces() {
+  const placesSnapshot = firebase.database().ref('users/'+ firebase.auth().currentUser.uid + '/places').once('value', function(placesSnapshot){
+    var placeArray = [];
+    placesSnapshot.forEach((placesSnapshot) => {
+      let place = placesSnapshot.val();
+      placeArray.push(place);
+      savedPlacesSet.add(place.place_id);
+    });
+    populatePlaces(placeArray);
   });
 }
 
@@ -497,26 +582,37 @@ function populatePlaces(placeArray) {
 function getLocationCardHtml(place) {
   const name = place.name;
   const timeStr = place.timeAsString;
+  const timeInSeconds = place.timeInSeconds;
   const place_id = place.place_id;
+  const lat = place.geometry.location.lat();
+  const lng = place.geometry.location.lng();
     
   const iconId = 'icon' + name;
   const innerHtml = '' +
-    `<div class="card location-card" placeName="${name}" style="margin-right: 0;">
+    `<div id="${name}"
+       data-timeInSeconds="${timeInSeconds}" 
+       data-lat="${lat}"
+       data-lng="${lng}"
+       class="card location-card" 
+       placeId="${place_id}" 
+       placeName="${name}" 
+       style="margin-right: 0;">
       <div class="card-body">
         <h5 class="card-title">${name}
-        <span class="icon" id="${iconId}">
-          &#9733
-        <span>
+          <span class="icon" id="${iconId}">
+            &#9733;
+          </span>
         </h5>
         <div id=${place_id}>
           <a onclick="populateMorePlaceInfo('${place_id}')" class="btn btn-primary active">More Information</a>
         </div>
         <h6>${timeStr}</h6>
-      </div>
+        <div savedPlaceId="${place_id}" style="visibility: hidden">
+        </div>
     </div>`;
-
     return innerHtml;
 }
+
 
 /**
  * A helper function that returns the HTML for login.
@@ -537,7 +633,12 @@ function getLoginHtml() {
  * @returns the HTML for user dashboard as a string 
  */
 function getUserDashHtml(user) {
-  return `<img onclick="showModal('${INFO_HTML_PATH}')" class="btn btn-icon" src="icons/help.svg">
+  return `<img onclick="showModal(${INFO_HTML_PATH})" class="btn btn-icon" src="icons/help.svg">
+          Display Saved:
+          <label class="switch btn">
+            <input type="checkbox">
+            <span class="slider round"></span>
+          </label>
           <a class="btn btn-outline-primary btn-color" style="color: #049688;" id="logout">Logout</a>`;
 }
 
@@ -599,6 +700,7 @@ function getSortedPlaces(places) {
 
 /** Clears all markers on map except for home marker. */
 function clearPlaces() {
+  displayedPlacesSet.clear();
   const parent = document.getElementById(SCROLL_ID);
   while (parent.firstChild) {
     parent.firstChild.remove();
