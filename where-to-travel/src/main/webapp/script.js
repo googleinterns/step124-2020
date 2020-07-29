@@ -396,11 +396,11 @@ function addUserDash() {
  * Toggle the focused pin/card off
  */
 function toggleFocusOff() {
-  if (focusedCard != null) {
+  if(focusedCard != null) {
     focusedCard.classList.remove('active-card');
   }
 
-  if (focusedPin != null) {
+  if(focusedPin != null) {
     focusedPin.setIcon(PIN_PATH);
   }
   focusedCard = null;
