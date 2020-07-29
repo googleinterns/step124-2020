@@ -375,11 +375,12 @@ function addUserDash() {
       $('#' + SCROLL_ID).children().show();
       // If the card is a saved place but not in the search results, then hide
       $('#' + SCROLL_ID).children().each(function() {
-      if(!savedPlacesSet.has($(this).attr('placeId')) && !(displayedPlacesSet.has($(this).attr('placeId'))) ) {
-        $(this).hide();
-      }
-    });
-  };
+        if(!savedPlacesSet.has($(this).attr('placeId')) && !(displayedPlacesSet.has($(this).attr('placeId'))) ) {
+          $(this).hide();
+        }
+      });
+    }
+  });
   // Logout user if they click the logout button
   $(dashElement[4]).click(function () {
     firebase.auth().signOut().catch(function(error) {
@@ -471,7 +472,7 @@ function populatePlaces(placeArray) {
         map: map,
         title: place.name,
         icon: PIN_PATH,
-    });
+      });
 
       const htmlContent = getLocationCardHtml(place);
 
@@ -492,16 +493,16 @@ function populatePlaces(placeArray) {
         cardElement.find('.icon').addClass('press');
       }
 
-    $('#' + SCROLL_ID).append(cardElement);
+      $('#' + SCROLL_ID).append(cardElement);
 
-    // Add events to focus card and pin
-    placeMarker.addListener('click', function () {
-      toggleFocusOff();
-      focusedPin = placeMarker;
-      selectLocationCard(placeMarker.getTitle());
-      placeMarker.setIcon(SELECTED_PIN_PATH);
-      focusedCard.scrollIntoView({behavior: 'smooth', block: 'center'});
-    });
+      // Add events to focus card and pin
+      placeMarker.addListener('click', function () {
+        toggleFocusOff();
+        focusedPin = placeMarker;
+        selectLocationCard(placeMarker.getTitle());
+        placeMarker.setIcon(SELECTED_PIN_PATH);
+        focusedCard.scrollIntoView({behavior: 'smooth', block: 'center'});
+      });
 
       placeMarker.addListener('mouseover', function () {
         placeMarker.setIcon(SELECTED_PIN_PATH);
