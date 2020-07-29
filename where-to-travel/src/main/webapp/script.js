@@ -197,8 +197,6 @@ firebase.auth().onAuthStateChanged(function(user) {
   $('#' + DASH_ID).empty();
   if (user) {
     addUserDash();
-    // When a user logs out, clear the saved plases set
-    savedPlacesSet.clear();
   } else {
     addLoginButtons();
   }
@@ -387,6 +385,8 @@ function addUserDash() {
     firebase.auth().signOut().catch(function(error) {
       console.log('Error occurred while sigining user out ' + error);
     });
+    // When a user logs out, clear the saved plases set
+    savedPlacesSet.clear();
   });
   $('#' + DASH_ID).append(dashElement);
 }
