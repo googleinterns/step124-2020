@@ -538,6 +538,7 @@ function populatePlaces(placeArray) {
         place_id: placeId,
       }
       ref.set(data);
+      // Store the lat/lng of each place in the database under geometry/location
       let lat = card.dataset.lat;
       let lng = card.dataset.lng;
       var ref = ref + '/geometry/location/';
