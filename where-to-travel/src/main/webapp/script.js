@@ -545,6 +545,8 @@ function populatePlaces(placeArray, saved) {
   }
 
   document.getElementById(SCROLL_ID).hidden = false;
+
+  $('.icon').unbind('click');
   // Handle favoriting a place
   $('.icon').click(function() {
     const name = $(this).parent().parent().parent().attr('placeName');
@@ -587,9 +589,7 @@ function populatePlaces(placeArray, saved) {
         removePlace(placeId);
       } else if (displaySaved) {
         hidePlace(placeId);
-      }
-
-     
+      } 
     }
   });
 }
