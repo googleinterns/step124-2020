@@ -546,7 +546,7 @@ function populatePlaces(placeArray) {
       // to be the same as the place object created form the search.
       let lat = card.dataset.lat;
       let lng = card.dataset.lng;
-      var ref = ref + '/geometry/location/';
+      var ref = firebase.database().ref('users/' + uID + '/places/' + name + '/geometry/location/');
       var data = {
         lat: lat,
         lng: lng
@@ -555,7 +555,7 @@ function populatePlaces(placeArray) {
       savedPlacesSet.add(placeId);
     } else if (firebase.auth().currentUser && (!$(this).hasClass('press'))) {
       // Delete user saved places when the star is not pressed/unpressed
-      var ref = firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/places/' + name);
+      var ref = firebase.database().ref('users/' + uID + '/places/' + name);
       ref.remove();
       savedPlacesSet.delete(placeId);
     }
