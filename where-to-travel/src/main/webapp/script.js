@@ -118,8 +118,12 @@ $('.multi-select-pill').click(function () {
     placeType = 'Tourist Attractions';
     $(this).toggleClass('selected');
   } else {
-    placeType = pillText;
-    $(event.target).parent().children('.multi-select-pill').removeClass('selected');
+    if (pillText == 'Tourism') {
+      placeType = 'Tourist Attractions';
+    }  else {
+      placeType = pillText;
+    }
+     $(event.target).parent().children('.multi-select-pill').removeClass('selected');
     $(this).toggleClass('selected');
   }
 });
@@ -365,7 +369,7 @@ function addUserDash() {
   $(dashElement[2]).change(function () {
     if (this.childNodes[1].checked) {
       // populate saved places
-      savedPlaces();
+      displaySavedPlaces();
       $('#' + SCROLL_ID).children().each(function() {
         if(!savedPlacesSet.has($(this).attr('placeId'))) {
           $(this).hide();
