@@ -539,10 +539,10 @@ function getLocationCardHtml(place) {
  * @returns the HTML for login as a string
  */
 function getLoginHtml() {
-  return `<img onclick="showModal(${INFO_HTML_PATH})" class="btn btn-icon" src="icons/help.svg">
-          <a class="btn btn-outline-primary btn-color" onclick="showLogin()">Login</a>
+  return `<img onclick="showModal('${INFO_HTML_PATH}')" class="btn btn-icon" src="icons/help.svg">
+          <a class="btn btn-outline-primary btn-color" onclick="showLogin() style="color: #049688">Login</a>
           <span id="nav-text">or</span>
-          <a class="btn btn-outline-primary btn-color" onclick="showSignUp()">Sign up</a>`;
+          <a class="btn btn-outline-primary btn-color" onclick="showSignUp()" style="color: #049688">Sign up</a>`;
 }
 
 /**
