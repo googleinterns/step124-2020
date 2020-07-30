@@ -474,11 +474,11 @@ function addUserDash() {
  * Toggle the focused pin/card off
  */
 function toggleFocusOff() {
-  if (focusedCard != null) {
+  if (focusedCard) {
     focusedCard.classList.remove('active-card');
   }
 
-  if (focusedPin != null) {
+  if (focusedPin) {
     let iconPath = focusedPin.getIcon();
     let iconName = iconPath.split('/')[2].split('.')[0];
 
@@ -565,7 +565,7 @@ function populatePlaces(placeArray, saved) {
       let cardElement = $(htmlContent).click(function(event) {
         if(event.target.nodeName != 'SPAN') {
           toggleFocusOff();
-          selectLocationMarker($(this).attr('placeName'));
+          selectLocationMarker($(this).attr('placeName'), selectedPin);
           $(this).addClass('active-card');
           focusedCard = this;
         }
@@ -795,12 +795,13 @@ function getUserDashHtml(user) {
 /**
  * Given a title, selects the corresponding marker by focussing it
  * @param {string} title the name of the place whose marker to focus
+ * @param {string} pin_path Path to selected pin for marker
 */
-function selectLocationMarker(title) {
+function selectLocationMarker(title, pin_path) {
   for (let marker of markers) {
     if (marker.getTitle() == title) {
       focusedPin = marker;
-      marker.setIcon(SELECTED_PIN_PATH);
+      marker.setIcon(pin_path);
       break;
     }
   }
