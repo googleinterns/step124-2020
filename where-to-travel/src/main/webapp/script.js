@@ -82,8 +82,7 @@ const ICON_PATHS = {
     zoo: 'icons/selected/zoo.svg'
   }
 };
-const PIN_PATH = 'icons/pin.svg';
-const SELECTED_PIN_PATH = 'icons/selectedPin.svg';
+
 const HOME_PIN_PATH = 'icons/home.svg';
 
 const INT_REGEX_MATCHER = /^\d+$/;
