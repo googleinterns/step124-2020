@@ -54,7 +54,34 @@ const MINUTE_MAX_SEARCH = 59;
 
 const DASH_ID = 'dash';
 const LOGOUT_ID = 'logout';
+const DEPARMENT_STORE_TYPE_STR = 'department_store';
+const MALL_STORE_TYPE_STR = 'shopping_mall';
+const MUSEUM_TYPE_STR = 'museum';
+const PARK_TYPE_STR = 'park';
+const TOURIST_ATTRACTION_TYPE_STR = 'tourist_attraction';
+const STORE_TYPE_STR = 'store';
+const ZOO_TYPE_STR = 'zoo';
 
+const ICON_PATHS = {
+ defaultIcons: {
+    default: 'icons/pins/default.svg',
+    favorite: 'icons/pins/favorite.svg',
+    museum: 'icons/pins/museum.svg',
+    park: 'icons/pins/park.svg',
+    shopping: 'icons/pins/shopping.svg',
+    tourism: 'icons/pins/tourism.svg',
+    zoo: 'icons/pins/zoo.svg'
+  },
+  selectedIcons: {
+    default: 'icons/selected/default.svg',
+    favorite: 'icons/selected/favorite.svg',
+    museum: 'icons/selected/museum.svg',
+    park: 'icons/selected/park.svg',
+    shopping: 'icons/selected/shopping.svg',
+    tourism: 'icons/selected/tourism.svg',
+    zoo: 'icons/selected/zoo.svg'
+  }
+};
 const PIN_PATH = 'icons/pin.svg';
 const SELECTED_PIN_PATH = 'icons/selectedPin.svg';
 const HOME_PIN_PATH = 'icons/home.svg';
@@ -153,6 +180,39 @@ function initialize() {
   // Initialize API service objects
   distanceMatrixService = new google.maps.DistanceMatrixService();
   geocoder = new google.maps.Geocoder();
+  placesService = new google.maps.places.PlacesService(map);
+}
+
+firebase.auth().onAuthStateChanged(function(user) {
+  $('#' + DASH_ID).empty();
+  if (user) {
+    addUserDash();
+  } else {
+    addLoginButtons();
+  }
+});
+
+/**
+ * Returns the icon paths (default and selected) for a place based on its types array.
+ * 
+ * @param placeTypes an array of types for a place
+ * @return an array with two elements, the first being the default icon path, and 
+ *         the second being the selected icon path
+ */
+function getIconPaths(placeTypes) {
+  if(placeTypes.includes(ZOO_TYPE_STR)) {
+    return [ICON_PATHS.defaultIcons.zoo, ICON_PATHS.selectedIcons.zoo];
+  } else if(placeTypes.includes(MUSEUM_TYPE_STR)) {
+    return [ICON_PATHS.defaultIcons.museum, ICON_PATHS.selectedIcons.museum];
+  } else if(placeTypes.includes(PARK_TYPE_STR)) {
+    return [ICON_PATHS.defaultIcons.park, ICON_PATHS.selectedIcons.park];
+  } else if(placeTypes.includes(MALL_STORE_TYPE_STR) || 
+              placeTypes.includes(DEPARMENT_STORE_TYPE_STR) || 
+              placeTypes.includes(STORE_TYPE_STR)) {
+    return [ICON_PATHS.defaultIcons.shopping, ICON_PATHS.selectedIcons.shopping];
+  } else { // all other types, use the tourism icon
+    return [ICON_PATHS.defaultIcons.tourism, ICON_PATHS.selectedIcons.tourism];
+  }
   placesService = new google.maps.places.PlacesService(map);  
 }
 
@@ -420,7 +480,10 @@ function toggleFocusOff() {
   }
 
   if (focusedPin != null) {
-    focusedPin.setIcon(PIN_PATH);
+    let iconPath = focusedPin.getIcon();
+    let iconName = iconPath.split('/')[2].split('.')[0];
+
+    focusedPin.setIcon(ICON_PATHS.defaultIcons[iconName]);
   }
   focusedCard = null;
   focusedPin = null;
@@ -475,6 +538,48 @@ function populatePlaces(placeArray, saved) {
   }
 
   for(let place of placeArray) {
+    let paths = getIconPaths(place.types);
+    let defaultPin = paths[0];
+    let selectedPin = paths[1];
+    // marker creation
+    let placeMarker = new google.maps.Marker({
+      position: place.geometry.location,
+      map: map,
+      title: place.name,
+      icon: defaultPin,
+    });
+
+    const htmlContent = getLocationCardHtml(place);
+    // For the material bootstrap library, the preferred method of dom interaction is jquery,
+    // especially for adding elements.
+    let cardElement = $(htmlContent).click(function(event) {
+      if(event.target.nodeName != 'SPAN') {
+        toggleFocusOff();
+        selectLocationMarker($(this).attr('placeName'));
+        $(this).addClass('active-card');
+       focusedCard = this;
+      }
+    });
+    $('#' + SCROLL_ID).append(cardElement);
+
+    // Add events to focus card and pin
+    placeMarker.addListener('click', function () {
+      toggleFocusOff();
+      focusedPin = placeMarker;
+      selectLocationCard(placeMarker.getTitle());
+      placeMarker.setIcon(selectedPin);
+      focusedCard.scrollIntoView({behavior: 'smooth', block: 'center'});
+    });
+
+    placeMarker.addListener('mouseover', function () {
+      placeMarker.setIcon(selectedPin);
+    });
+
+    placeMarker.addListener('mouseout', function () {
+      if (placeMarker != focusedPin) {
+        placeMarker.setIcon(defaultPin);
+      }
+    });
     // If the saved places are being displayed and your search returns one of the saved places, 
     // there is nothing to do so coninue.
     if (savedPlacesSet.has(place.place_id) && document.getElementById(place.place_id)) {
@@ -711,9 +816,9 @@ function getLocationCardHtml(place) {
  */
 function getLoginHtml() {
   return `<img onclick="showModal('${INFO_HTML_PATH}')" class="btn btn-icon" src="icons/help.svg">
-          <a class="btn btn-outline-primary btn-color" onclick="showLogin()">Login</a>
+          <a class="btn btn-outline-primary btn-color" onclick="showLogin() style="color: #049688">Login</a>
           <span id="nav-text">or</span>
-          <a class="btn btn-outline-primary btn-color" onclick="showSignUp()">Sign up</a>`;
+          <a class="btn btn-outline-primary btn-color" onclick="showSignUp()" style="color: #049688">Sign up</a>`;
 }
 
 /**
@@ -1009,6 +1114,7 @@ function addAcceptablePlaces(time, places, acceptablePlacesInfo) {
             if (destination_time <= time + TIME_THRESHOLD && destination_time >= time - TIME_THRESHOLD) {
               acceptablePlacesInfo.places.push({
                 name: places[j].name,
+                types: places[j].types,
                 geometry: places[j].geometry,
                 place_id: places[j].place_id,
                 timeInSeconds: destination_time,
