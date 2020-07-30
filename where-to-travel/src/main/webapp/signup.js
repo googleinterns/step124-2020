@@ -12,6 +12,8 @@ const passwordConfirmation = document.getElementById('passwordConfirmation');
 const signUpForm = document.getElementById('signUpForm');
 const name = document.getElementById('nameSignUp');
 
+const signUpSubmit = document.getElementById('signUpSubmit');
+
 // On window load, attach all validation functions to input elements.
 window.addEventListener('load', function() {
   function validatePassword(){
@@ -29,27 +31,25 @@ window.addEventListener('load', function() {
   addFocusOutEvent(passwordSignUp);
   addFocusOutEvent(passwordConfirmation);
 
-  // Fetch all the forms we want to apply custom Bootstrap validation styles to
-  const forms = document.getElementsByClassName('needs-validation');
-  // Loop over them and prevent submission
-  const validation = Array.prototype.filter.call(forms, function(form) {
-    form.addEventListener('submit', function(event) {
-      if (form.checkValidity() === false) {
-        event.preventDefault();
-        event.stopPropagation();
-      }
-      form.classList.add('was-validated');
-    }, false);
-  }); 
-}, false);
+  signUpSubmit.addEventListener('click', () => {
+    let validated = true;
 
+    const fields = [nameSignUp, emailSignUp, passwordSignUp, passwordConfirmation]
 
-$(document).ready(function() {
-  $(document).on('submit', '#signUpForm', function() {
-    signUp();
-    return false;
+    // Loop over them and check if they are all valid
+    for (let field of fields) {
+      if (!field.checkValidity()) {
+        validated = false;
+        break;
+      }         
+    }
+
+    if (validated) {
+      signUp();
+    }
+    
   });
-});
+}, false);
 
 /**
  * Attaches a listener to the focusout event for an input element.
@@ -72,21 +72,20 @@ function showSignUp() {
 
 /** Clear all input to form once modal is closed */
 $('#signUp-modal').on('hidden.bs.modal', function(){
-    $(this).find('form')[0].reset();
+  $(this).find('form')[0].reset();
 });
  
 /** Signs up user using Firebase API **/
 function signUp() {
   const promise = firebase.auth().createUserWithEmailAndPassword(emailSignUp.value, passwordSignUp.value);
-  promise.then(_ => {      
-    // Add user information to the real time database in Firebase
-    let ref = firebase.database().ref('users');
-    let data = {
-      name: nameSignUp.value,
-      email: emailSignUp.value,    
-      uID: firebase.auth().currentUser.uid
-    };
-    ref.push(data)
+    promise.then(_ => {
+      let ref = firebase.database().ref('users/' + firebase.auth().currentUser.uid);
+      let data = {
+        name: nameSignUp.value,
+        email: emailSignUp.value,    
+        uID: firebase.auth().currentUser.uid
+      };
+    ref.set(data)
       .then(_ => $('#signUp-modal').modal('hide'))
       .catch(e => {console.log(e.message); alert(e.message);});
   }).catch(e => {console.log(e.message); alert(e.message);});

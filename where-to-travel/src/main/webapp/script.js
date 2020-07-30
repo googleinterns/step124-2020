@@ -35,7 +35,6 @@ const MAP_STYLES = [
 // End map stylings
 
 // Thresholds for termination of search algorithm
-
 const PLACES_THRESHOLD = 30;
 const ATTEMPTS_THRESHOLD = 10;
 const DIRECTION_THRESHOLD = 5;
@@ -48,9 +47,13 @@ const SUBMIT_ID = 'submit';
 const HOURS_ID = 'hrs';
 const MINUTES_ID = 'mnts';
 const SCROLL_ID = 'scroller';
+
+const FEEDBACK_ID = 'feedback-target';
+const HOURS_MAX_SEARCH = 20;
+const MINUTE_MAX_SEARCH = 59;
+
 const DASH_ID = 'dash';
 const LOGOUT_ID = 'logout';
-
 const DEPARMENT_STORE_TYPE_STR = 'department_store';
 const MALL_STORE_TYPE_STR = 'shopping_mall';
 const MUSEUM_TYPE_STR = 'museum';
@@ -79,23 +82,30 @@ const ICON_PATHS = {
     zoo: 'icons/selected/zoo.svg'
   }
 };
-
 const PIN_PATH = 'icons/pin.svg';
 const SELECTED_PIN_PATH = 'icons/selectedPin.svg';
 const HOME_PIN_PATH = 'icons/home.svg';
 
+const INT_REGEX_MATCHER = /^\d+$/;
+
+// Text files that contain modal content
 const INFO_HTML_PATH = 'info.txt';
 const NO_PLACES_HTML_PATH = 'noPlaces.txt';
 
+// The map display object
 let map;
+// Current user
 let user = false;
+// Current home location
 let home = null;
-let placeType = 'Tourist Attractions';
 
+// The current pin and card that are selected by the user
 let focusedCard;
 let focusedPin;
 
+// The home marker
 let homeMarker = null;
+// All other displayed markers
 let markers = [];
 
 // Flag indicating if geolocation is running
@@ -108,6 +118,16 @@ let placesService;
 
 // Keeps track of most recent search request
 let globalNonce;
+
+
+// Keep a set of all saved and displayed places
+let savedPlacesSet = new Set();
+let displayedPlacesSet = new Set();
+
+// Query for Place Search
+let placeType = 'Tourist Attractions';
+
+let displaySaved = false;
 
 // Add gmap js library to head of page
 const script = document.createElement('script');
@@ -126,16 +146,23 @@ $('.multi-select-pill').click(function () {
     placeType = 'Tourist Attractions';
     $(this).toggleClass('selected');
   } else {
-    placeType = pillText;
-    $(event.target).parent().children('.multi-select-pill').removeClass('selected');
+    if (pillText == 'Tourism') {
+      placeType = 'Tourist Attractions';
+    }  else {
+      placeType = pillText;
+    }
+     $(event.target).parent().children('.multi-select-pill').removeClass('selected');
     $(this).toggleClass('selected');
   }
 });
 
-/** Initializes map window, runs on load. */
+/** 
+ * Initializes map window, runs on load.
+ */
 function initialize() {
   const submit = document.getElementById(SUBMIT_ID);
   submit.addEventListener('click', submitDataListener);
+  attachSearchValidation();
 
   const mapOptions = {
     center: {lat: 36.150813, lng: -40.352239}, // Middle of the North Atlantic Ocean
@@ -145,8 +172,7 @@ function initialize() {
     styles: MAP_STYLES,
   };
   map = new google.maps.Map(document.getElementById('map'), mapOptions);
-
-  showModal(INFO_HTML_PATH);
+  map.addListener('click', toggleFocusOff);
   // Add autocomplete capabality for address input
   const addressInput = document.getElementById('addressInput');
   let autocomplete = new google.maps.places.Autocomplete(addressInput);
@@ -187,6 +213,38 @@ function getIconPaths(placeTypes) {
   } else { // all other types, use the tourism icon
     return [ICON_PATHS.defaultIcons.tourism, ICON_PATHS.selectedIcons.tourism];
   }
+  placesService = new google.maps.places.PlacesService(map);  
+}
+
+
+/**
+ * Attaches listeners to the focusout event for search inputs.
+ */
+function attachSearchValidation() {
+  addListenerToSearchInput(document.getElementById(HOURS_ID), 'hours', HOURS_MAX_SEARCH);
+  addListenerToSearchInput(document.getElementById(MINUTES_ID), 'minutes', MINUTE_MAX_SEARCH);
+}
+
+/**
+ * Adds an on focusout event to a dom element, which adds a formatted HTML tip to the DOM.
+ *
+ * @param element the dom element to add listener to
+ * @param type a string of the type of time input this element takes ('minute' or 'hour')
+ * @param max the maximum value of this input element
+ */
+function addListenerToSearchInput(element, type, max) {
+  element.addEventListener('focusout', function (event) {
+    $('#' + type + '-feedback').remove();
+    // if value is empty, set to 0, otherwise, parse the value
+    const stringInput = event.target.value;
+
+    const intValue = (stringInput === '') ? 0 : parseInt(stringInput);
+    if (!INT_REGEX_MATCHER.test(stringInput) || intValue < 0 || intValue > max) {
+      $('#' + FEEDBACK_ID).append('<p id="' + type + '-feedback" class="feedback">Please input a valid ' + type + ' whole number between 0 and ' + max + '</p>');
+    } else {
+      $('#' + type + '-feedback').remove();
+    }
+  });
 }
 
 /**
@@ -198,6 +256,16 @@ function showModal(htmlFilePath) {
     .then(response => response.text())
     .then(content => openModal(content));
 }
+
+// When auth changes, display the proper dashboard
+firebase.auth().onAuthStateChanged(function(user) {
+  $('#' + DASH_ID).empty();
+  if (user) {
+    addUserDash();
+  } else {
+    addLoginButtons();
+  }
+});
 
 /**
  * Obtains user's location from either browser or an inputted address and sets home location. If error
@@ -344,7 +412,6 @@ function openModal(content) {
   modalBody.innerHTML = content;
 
   $('#content-modal').modal('show');
-  map.addListener('click', toggleFocusOff);
 }
 
 /**
@@ -360,17 +427,55 @@ function addLoginButtons() {
  */
 function addUserDash() {
   const dashElement = $(getUserDashHtml(user));
-  $(dashElement[2]).click(function () {
+  $(dashElement[2]).change(function () {
+    if (this.childNodes[1].checked) {
+      displaySaved = true;
+
+      // populate saved places
+      displaySavedPlaces();
+      $('#' + SCROLL_ID).children().each(function() {
+        if(!savedPlacesSet.has($(this).attr('placeId'))) {
+          $(this).hide();
+        }
+      });
+
+      for (let marker of markers) {
+        if(!savedPlacesSet.has(marker.id)) {
+          marker.setMap(null);
+        }
+      }
+    } else {
+      displaySaved = false;
+
+      $('#' + SCROLL_ID).children().show();
+      // If the card is a saved place but not in the search results, then hide
+      $('#' + SCROLL_ID).children().each(function() {
+        if(savedPlacesSet.has($(this).attr('placeId')) && !(displayedPlacesSet.has($(this).attr('placeId'))) ) {
+          removePlace($(this).attr('placeId'));
+        }
+      });
+
+      for (let marker of markers) {
+        marker.setMap(map);
+      }
+    }
+  });
+  // Logout user if they click the logout button
+  $(dashElement[4]).click(function () {
     firebase.auth().signOut().catch(function(error) {
-      console.log('Error occurred while sigining user out ' + error);
+      console.log('Error occurred while signing user out ' + error);
     });
+    // When a user logs out, clear the saved plases set
+    savedPlacesSet.clear();
   });
   $('#' + DASH_ID).append(dashElement);
 }
 
-/** Toggle the focused pin/card off */
+/**
+ * Toggle the focused pin/card off
+ */
 function toggleFocusOff() {
-  if(focusedCard != null) {
+  if (focusedCard != null) {
     focusedCard.classList.remove('active-card');
   }
 
@@ -393,12 +498,14 @@ function toggleFocusOff() {
  */
 function submitDataListener(event) {
   if (home == null) {
-    const content = '<p> No home location found. Please set a home location and try again.</p>';
+    const content = '<p>No home location found. Please set a home location and try again.</p>';
     openModal(content);
-  }
-  else {
-    $('#dw-s2').data('bmd.drawer').hide();
+  } else if ($('#' + FEEDBACK_ID).children().length >= 1) {
+    const content = '<p>Please enter valid search parameters</p>';
+    openModal(content);
+  } else {
     clearPlaces();
+   
     const hours = document.getElementById(HOURS_ID).value;
     const minutes = document.getElementById(MINUTES_ID).value;
 
@@ -412,7 +519,7 @@ function submitDataListener(event) {
       // Hide modal that shows loading status
       $('#loading-modal').modal('hide');
       const sortedPlaces = getSortedPlaces(places);
-      populatePlaces(sortedPlaces);
+      populatePlaces(sortedPlaces, false);
     }).catch(message => console.log(message));
   }
 }
@@ -422,12 +529,14 @@ function submitDataListener(event) {
  * cards to the location card scroller in the DOM.
  *
  * @param {array} placeArray Array of Google Maps Place Objects
+ * @param {boolean} saved Flag indicating if places are from user saving
  */
-function populatePlaces(placeArray) {
+function populatePlaces(placeArray, saved) {
   // if place array is empty, show the no places info
   if(!placeArray) {
     showModal(NO_PLACES_HTML_PATH);
   }
+
   for(let place of placeArray) {
     let paths = getIconPaths(place.types);
     let defaultPin = paths[0];
@@ -471,35 +580,179 @@ function populatePlaces(placeArray) {
         placeMarker.setIcon(defaultPin);
       }
     });
+    // If the saved places are being displayed and your search returns one of the saved places, 
+    // there is nothing to do so coninue.
+    if (savedPlacesSet.has(place.place_id) && document.getElementById(place.place_id)) {
+      continue;
+    // If you request to display the saved places while you currently have search results being displayed,
+    // check to see if any of the saved places are already displayed, if so press the star and continue.
+    } else if (displayedPlacesSet.has(place.place_id)) {
+      let savedIcon = document.getElementById('icon' + place.name);
+      savedIcon.addClass('press');
+      continue; 
+    } else {
+      // marker creation
+      let placeMarker = new google.maps.Marker({
+        position: place.geometry.location,
+        map: map,
+        title: place.name,
+        icon: PIN_PATH,
+        id: place.place_id
+      });
 
-    markers.push(placeMarker);
+      const htmlContent = getLocationCardHtml(place);
+
+      // For the material bootstrap library, the preferred method of dom interaction is jquery,
+      // especially for adding elements.
+      let cardElement = $(htmlContent).click(function(event) {
+        if(event.target.nodeName != 'SPAN') {
+          toggleFocusOff();
+          selectLocationMarker($(this).attr('placeName'));
+          $(this).addClass('active-card');
+          focusedCard = this;
+        }
+      });
+      $('#' + SCROLL_ID).append(cardElement);
+
+     // Check to see if it is a saved place, if so make the star pressed 
+      if(savedPlacesSet.has(place.place_id)) {
+        cardElement.find('.icon').addClass('press');
+      }
+
+      $('#' + SCROLL_ID).append(cardElement);
+
+      // Add events to focus card and pin
+      placeMarker.addListener('click', function () {
+        toggleFocusOff();
+        focusedPin = placeMarker;
+        selectLocationCard(placeMarker.getTitle());
+        placeMarker.setIcon(SELECTED_PIN_PATH);
+        focusedCard.scrollIntoView({behavior: 'smooth', block: 'center'});
+      });
+
+      placeMarker.addListener('mouseover', function () {
+        placeMarker.setIcon(SELECTED_PIN_PATH);
+      });
+
+      placeMarker.addListener('mouseout', function () {
+        if (placeMarker != focusedPin) {
+          placeMarker.setIcon(PIN_PATH);
+        }
+      });
+
+      if (!saved) {
+        displayedPlacesSet.add(place.place_id);
+      }
+      
+      markers.push(placeMarker);
+    
+    }
   }
 
   document.getElementById(SCROLL_ID).hidden = false;
 
+  $('.icon').unbind('click');
   // Handle favoriting a place
   $('.icon').click(function() {
+    const name = $(this).parent().parent().parent().attr('placeName');
+    const placeId = $(this).parent().next().next().next().attr('savedPlaceId');
+    let card = document.getElementById(name);
     $(this).toggleClass('press');
     if (firebase.auth().currentUser && $(this).hasClass('press')) {
-      const name = $(this).parent().parent().parent().attr('placeName');
-      const link = $(this).parent().next().attr('href');
       const time = $(this).parent().next().next().text();
        // Add users saved places to the real time database in Firebase when star is pressed
       const database = firebase.database();
-      var uID = firebase.auth().currentUser.uid;
-      var ref = database.ref('users/' + uID + '/' + 'places' + '/' + name);
-      var data = {
+      const uID = firebase.auth().currentUser.uid;
+      const baseRefString = 'users/' + uID + '/places/' + name;
+      let ref = database.ref(baseRefString);
+      let data = {
         name: name,
-        link: link,
-        time: time,
+        timeAsString: time,
+        timeInSeconds: card.getAttribute('data-timeInSeconds'),
+        place_id: placeId,
       }
       ref.set(data);
+      // Store the lat/lng of each place in the database under geometry/location 
+      // to be the same as the place object created form the search.
+
+      let lat = parseFloat(card.dataset.lat);
+      let lng = parseFloat(card.dataset.lng);
+      ref = database.ref(baseRefString + '/geometry/location/');
+      data = {
+        lat: lat,
+        lng: lng
+      }
+      ref.set(data);
+      savedPlacesSet.add(placeId);
     } else if (firebase.auth().currentUser && (!$(this).hasClass('press'))) {
-      const name = $(this).parent().parent().parent().attr('placeName');
-       // Delete user saved places when the star is not pressed
-      var ref = firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/' + 'places' + '/' + name);
+      // Delete user saved places when the star is not pressed/unpressed
+      let ref = firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/places/' + name);
       ref.remove();
+      savedPlacesSet.delete(placeId);
+
+      if (!displayedPlacesSet.has(placeId)) {
+        removePlace(placeId);
+      } else if (displaySaved) {
+        hidePlace(placeId);
+      } 
     }
+  });
+}
+
+/**
+ * Removes html content for infocard corresponding to place_id 
+ * @param {String} placeId Textual identifier for place
+ */
+function removePlace(placeId) {
+  $('#' + SCROLL_ID).children().each(function() {
+    if(($(this).attr('placeId')) === placeId) {
+      $(this).remove();
+    }
+  });
+
+  let new_markers = []
+  for (let marker of markers) {
+    if (marker.id === placeId) {
+      marker.setMap(null);
+    } else {
+      new_markers.push(marker);
+    }
+  }
+
+  markers = new_markers;
+}
+
+/**
+ * Hides html content for infocard corresponding to place_id 
+ * @param {String} placeId Textual identifier for place
+ */
+function hidePlace(placeId) {
+  $('#' + SCROLL_ID).children().each(function() {
+    if(($(this).attr('placeId')) === placeId) {
+      $(this).hide();
+    }
+  });
+
+  for (let marker of markers) {
+    if (marker.id === placeId) {
+      marker.setMap(null);
+    }
+  }
+}
+ 
+/**
+ * Call the database and displays all saved places.
+ */
+function displaySavedPlaces() {
+  const placesSnapshot = firebase.database().ref('users/'+ firebase.auth().currentUser.uid + '/places').once('value', function(placesSnapshot){
+    var placeArray = [];
+    placesSnapshot.forEach((placesSnapshot) => {
+      let place = placesSnapshot.val();
+      placeArray.push(place);
+      savedPlacesSet.add(place.place_id);
+    });
+
+    populatePlaces(placeArray, true);
   });
 }
 
@@ -512,26 +765,49 @@ function populatePlaces(placeArray) {
 function getLocationCardHtml(place) {
   const name = place.name;
   const timeStr = place.timeAsString;
+  const timeInSeconds = place.timeInSeconds;
   const place_id = place.place_id;
-    
+
+  let lat;
+  if (typeof(place.geometry.location.lat) === 'number') {
+    lat = place.geometry.location.lat;
+  } else {
+    lat = place.geometry.location.lat();
+  }
+
+  let lng;
+  if (typeof(place.geometry.location.lng) === 'number') {
+    lng = place.geometry.location.lng;
+  } else {
+    lng = place.geometry.location.lng();
+  } 
+
   const iconId = 'icon' + name;
   const innerHtml = '' +
-    `<div class="card location-card" placeName="${name}" style="margin-right: 0;">
+    `<div id="${name}"
+       data-timeInSeconds="${timeInSeconds}" 
+       data-lat="${lat}"
+       data-lng="${lng}"
+       class="card location-card" 
+       placeId="${place_id}" 
+       placeName="${name}" 
+       style="margin-right: 0;">
       <div class="card-body">
         <h5 class="card-title">${name}
-        <span class="icon" id="${iconId}">
-          &#9733
-        <span>
+          <span class="icon" id="${iconId}">
+            &#9733;
+          </span>
         </h5>
         <div id=${place_id}>
           <a onclick="populateMorePlaceInfo('${place_id}')" class="btn btn-primary active">More Information</a>
         </div>
         <h6>${timeStr}</h6>
-      </div>
+        <div savedPlaceId="${place_id}" style="visibility: hidden">
+        </div>
     </div>`;
-
     return innerHtml;
 }
+
 
 /**
  * A helper function that returns the HTML for login.
@@ -552,9 +828,13 @@ function getLoginHtml() {
  * @returns the HTML for user dashboard as a string 
  */
 function getUserDashHtml(user) {
-  return `<img onclick="showInfoModal(showModal(${INFO_HTML_PATH}))" class="btn btn-icon" src="icons/help.svg">
+  return `<img onclick="showModal(${INFO_HTML_PATH})" class="btn btn-icon" src="icons/help.svg">
+          Display Saved:
+          <label class="switch btn">
+            <input type="checkbox">
+            <span class="slider round"></span>
+          </label>
           <a class="btn btn-outline-primary btn-color" style="color: #049688;" id="logout">Logout</a>`;
-
 }
 
 /**
@@ -566,6 +846,7 @@ function selectLocationMarker(title) {
     if (marker.getTitle() == title) {
       focusedPin = marker;
       marker.setIcon(SELECTED_PIN_PATH);
+      break;
     }
   }
 }
@@ -575,7 +856,7 @@ function selectLocationMarker(title) {
  * @param {string} title the name of the place whose card to focus
  */
 function selectLocationCard(title) {
-  let scrollWindow = document.getElementById(SCROLL_ID);
+  const scrollWindow = document.getElementById(SCROLL_ID);
   for (let locationCard of scrollWindow.childNodes) {
     if (locationCard.hasChildNodes() && locationCard.getAttribute("placeName") == title) {
       locationCard.classList.add("active-card");
@@ -614,6 +895,7 @@ function getSortedPlaces(places) {
 
 /** Clears all markers on map except for home marker. */
 function clearPlaces() {
+  displayedPlacesSet.clear();
   const parent = document.getElementById(SCROLL_ID);
   while (parent.firstChild) {
     parent.firstChild.remove();
@@ -633,7 +915,7 @@ function clearPlaces() {
  * @param {Object} time Travel time requested by user in seconds
  * @return {Array} Array of objects containing information about places within the requested time
  */
- function getPlacesFromTime(time) {
+function getPlacesFromTime(time) {
   return new Promise(async function(resolve, reject){    
     const localNonce = globalNonce = new Object(); 
     // First try one bounding box around user's location
@@ -647,7 +929,7 @@ function clearPlaces() {
 
     let places = filterResults.places;
 
-    // Initial distance from the user's location for the bounding boxes
+     // Initial distance from the user's location for the bounding boxes
     const initSpread = Math.max(1, Math.ceil(time/7200));
     let attempts = 0;
 
@@ -772,18 +1054,18 @@ function getPlacesFromDirection(lat, lng) {
  * @return {Object} Contains average time of all places and an array of places objects that are within time
  */
 async function filterByTime(time, listPlaces) {
-    let filterInfo = {total_time: 0, total_places: 0, places: []};
+  let filterInfo = {total_time: 0, total_places: 0, places: []};
 
-    for (let i = 0; i < listPlaces.length; i += 25) {
-      filterInfo = await addAcceptablePlaces(time, listPlaces.slice(i, i + 25), filterInfo);
-    }
+  for (let i = 0; i < listPlaces.length; i += 25) {
+    filterInfo = await addAcceptablePlaces(time, listPlaces.slice(i, i + 25), filterInfo);
+  }
 
-    let avg_time = 0;
-    if (filterInfo.total_places != 0) {
-      avg_time = filterInfo.total_time/filterInfo.total_places;
-    }
+  let avg_time = 0;
+  if (filterInfo.total_places != 0) {
+    avg_time = filterInfo.total_time/filterInfo.total_places;
+  }
 
-    return {avg_time: avg_time, places: filterInfo.places};
+  return {avg_time: avg_time, places: filterInfo.places};
 }
 
 /**
