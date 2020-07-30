@@ -213,7 +213,6 @@ function getIconPaths(placeTypes) {
   } else { // all other types, use the tourism icon
     return [ICON_PATHS.defaultIcons.tourism, ICON_PATHS.selectedIcons.tourism];
   }
-  placesService = new google.maps.places.PlacesService(map);  
 }
 
 
@@ -538,48 +537,6 @@ function populatePlaces(placeArray, saved) {
   }
 
   for(let place of placeArray) {
-    let paths = getIconPaths(place.types);
-    let defaultPin = paths[0];
-    let selectedPin = paths[1];
-    // marker creation
-    let placeMarker = new google.maps.Marker({
-      position: place.geometry.location,
-      map: map,
-      title: place.name,
-      icon: defaultPin,
-    });
-
-    const htmlContent = getLocationCardHtml(place);
-    // For the material bootstrap library, the preferred method of dom interaction is jquery,
-    // especially for adding elements.
-    let cardElement = $(htmlContent).click(function(event) {
-      if(event.target.nodeName != 'SPAN') {
-        toggleFocusOff();
-        selectLocationMarker($(this).attr('placeName'));
-        $(this).addClass('active-card');
-       focusedCard = this;
-      }
-    });
-    $('#' + SCROLL_ID).append(cardElement);
-
-    // Add events to focus card and pin
-    placeMarker.addListener('click', function () {
-      toggleFocusOff();
-      focusedPin = placeMarker;
-      selectLocationCard(placeMarker.getTitle());
-      placeMarker.setIcon(selectedPin);
-      focusedCard.scrollIntoView({behavior: 'smooth', block: 'center'});
-    });
-
-    placeMarker.addListener('mouseover', function () {
-      placeMarker.setIcon(selectedPin);
-    });
-
-    placeMarker.addListener('mouseout', function () {
-      if (placeMarker != focusedPin) {
-        placeMarker.setIcon(defaultPin);
-      }
-    });
     // If the saved places are being displayed and your search returns one of the saved places, 
     // there is nothing to do so coninue.
     if (savedPlacesSet.has(place.place_id) && document.getElementById(place.place_id)) {
@@ -591,19 +548,20 @@ function populatePlaces(placeArray, saved) {
       savedIcon.addClass('press');
       continue; 
     } else {
+      let paths = getIconPaths(place.types);
+      let defaultPin = paths[0];
+      let selectedPin = paths[1];
       // marker creation
       let placeMarker = new google.maps.Marker({
         position: place.geometry.location,
         map: map,
         title: place.name,
-        icon: PIN_PATH,
+        icon: defaultPin,
         id: place.place_id
       });
 
       const htmlContent = getLocationCardHtml(place);
 
-      // For the material bootstrap library, the preferred method of dom interaction is jquery,
-      // especially for adding elements.
       let cardElement = $(htmlContent).click(function(event) {
         if(event.target.nodeName != 'SPAN') {
           toggleFocusOff();
@@ -612,13 +570,7 @@ function populatePlaces(placeArray, saved) {
           focusedCard = this;
         }
       });
-      $('#' + SCROLL_ID).append(cardElement);
-
-     // Check to see if it is a saved place, if so make the star pressed 
-      if(savedPlacesSet.has(place.place_id)) {
-        cardElement.find('.icon').addClass('press');
-      }
-
+      
       $('#' + SCROLL_ID).append(cardElement);
 
       // Add events to focus card and pin
@@ -626,17 +578,17 @@ function populatePlaces(placeArray, saved) {
         toggleFocusOff();
         focusedPin = placeMarker;
         selectLocationCard(placeMarker.getTitle());
-        placeMarker.setIcon(SELECTED_PIN_PATH);
+        placeMarker.setIcon(selectedPin);
         focusedCard.scrollIntoView({behavior: 'smooth', block: 'center'});
       });
 
       placeMarker.addListener('mouseover', function () {
-        placeMarker.setIcon(SELECTED_PIN_PATH);
+        placeMarker.setIcon(selectedPin);
       });
 
       placeMarker.addListener('mouseout', function () {
         if (placeMarker != focusedPin) {
-          placeMarker.setIcon(PIN_PATH);
+          placeMarker.setIcon(defaultPin);
         }
       });
 
@@ -645,7 +597,6 @@ function populatePlaces(placeArray, saved) {
       }
       
       markers.push(placeMarker);
-    
     }
   }
 
@@ -657,6 +608,7 @@ function populatePlaces(placeArray, saved) {
     const name = $(this).parent().parent().parent().attr('placeName');
     const placeId = $(this).parent().next().next().next().attr('savedPlaceId');
     let card = document.getElementById(name);
+
     $(this).toggleClass('press');
     if (firebase.auth().currentUser && $(this).hasClass('press')) {
       const time = $(this).parent().next().next().text();
@@ -669,7 +621,8 @@ function populatePlaces(placeArray, saved) {
         name: name,
         timeAsString: time,
         timeInSeconds: card.getAttribute('data-timeInSeconds'),
-        place_id: placeId,
+        types: card.getAttribute('data-types'),
+        place_id: placeId
       }
       ref.set(data);
       // Store the lat/lng of each place in the database under geometry/location 
@@ -767,6 +720,7 @@ function getLocationCardHtml(place) {
   const timeStr = place.timeAsString;
   const timeInSeconds = place.timeInSeconds;
   const place_id = place.place_id;
+  const types = place.types
 
   let lat;
   if (typeof(place.geometry.location.lat) === 'number') {
@@ -788,6 +742,7 @@ function getLocationCardHtml(place) {
        data-timeInSeconds="${timeInSeconds}" 
        data-lat="${lat}"
        data-lng="${lng}"
+       data-types="[${types}]"
        class="card location-card" 
        placeId="${place_id}" 
        placeName="${name}" 
