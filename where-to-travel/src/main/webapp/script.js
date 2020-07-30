@@ -662,20 +662,10 @@ function getLocationCardHtml(place) {
   const timeStr = place.timeAsString;
   const timeInSeconds = place.timeInSeconds;
   const place_id = place.place_id;
+  console.log(place.geometry.location);
+  let lat = place.geometry.location.lat;
 
-  let lat;
-  if (typeof(place.geometry.location.lat) === 'number') {
-    lat = place.geometry.location.lat;
-  } else {
-    lat = place.geometry.location.lat();
-  }
-
-  let lng;
-  if (typeof(place.geometry.location.lng) === 'number') {
-    lng = place.geometry.location.lng;
-  } else {
-    lng = place.geometry.location.lng();
-  } 
+  let lng = place.geometry.location.lng;
 
   const iconId = 'icon' + name;
   const innerHtml = '' +
