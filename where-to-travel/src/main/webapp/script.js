@@ -94,8 +94,8 @@ let globalNonce;
 
 
 // Keep a set of all saved and displayed places
-var savedPlacesSet = new Set();
-var displayedPlacesSet = new Set();
+let savedPlacesSet = new Set();
+let displayedPlacesSet = new Set();
 
 // Query for Place Search
 let placeType = 'Tourist Attractions';
@@ -379,8 +379,8 @@ function addUserDash() {
       $('#' + SCROLL_ID).children().show();
       // If the card is a saved place but not in the search results, then hide
       $('#' + SCROLL_ID).children().each(function() {
-        if(!savedPlacesSet.has($(this).attr('placeId')) && !(displayedPlacesSet.has($(this).attr('placeId'))) ) {
-          $(this).hide();
+        if(savedPlacesSet.has($(this).attr('placeId')) && !(displayedPlacesSet.has($(this).attr('placeId'))) ) {
+          $(this).remove();
         }
       });
     }
@@ -388,7 +388,7 @@ function addUserDash() {
   // Logout user if they click the logout button
   $(dashElement[4]).click(function () {
     firebase.auth().signOut().catch(function(error) {
-      console.log('Error occurred while sigining user out ' + error);
+      console.log('Error occurred while signing user out ' + error);
     });
     // When a user logs out, clear the saved plases set
     savedPlacesSet.clear();
@@ -427,7 +427,7 @@ function submitDataListener(event) {
     openModal(content);
   } else {
     clearPlaces();
-    displayedPlacesSet.clear();
+   
     const hours = document.getElementById(HOURS_ID).value;
     const minutes = document.getElementById(MINUTES_ID).value;
 
@@ -441,7 +441,7 @@ function submitDataListener(event) {
       // Hide modal that shows loading status
       $('#loading-modal').modal('hide');
       const sortedPlaces = getSortedPlaces(places);
-      populatePlaces(sortedPlaces);
+      populatePlaces(sortedPlaces, false);
     }).catch(message => console.log(message));
   }
 }
@@ -451,8 +451,9 @@ function submitDataListener(event) {
  * cards to the location card scroller in the DOM.
  *
  * @param {array} placeArray Array of Google Maps Place Objects
+ * @param {boolean} saved Flag indicating if places are from user saving
  */
-function populatePlaces(placeArray) {
+function populatePlaces(placeArray, saved) {
   // if place array is empty, show the no places info
   if(!placeArray) {
     showModal(NO_PLACES_HTML_PATH);
@@ -519,6 +520,10 @@ function populatePlaces(placeArray) {
       });
 
       markers.push(placeMarker);
+
+      if (!saved) {
+        displayedPlacesSet.add(place.place_id);
+      }
     }
   }
 
@@ -530,12 +535,14 @@ function populatePlaces(placeArray) {
     let card = document.getElementById(name);
     $(this).toggleClass('press');
     if (firebase.auth().currentUser && $(this).hasClass('press')) {
+      console.log('clicked icon');
       const time = $(this).parent().next().next().text();
        // Add users saved places to the real time database in Firebase when star is pressed
       const database = firebase.database();
-      var uID = firebase.auth().currentUser.uid;
-      var ref = database.ref('users/' + uID + '/places/' + name);
-      var data = {
+      const uID = firebase.auth().currentUser.uid;
+      const baseRefString = 'users/' + uID + '/places/' + name;
+      let ref = database.ref(baseRefString);
+      let data = {
         name: name,
         timeAsString: time,
         timeInSeconds: card.getAttribute('data-timeInSeconds'),
@@ -544,18 +551,19 @@ function populatePlaces(placeArray) {
       ref.set(data);
       // Store the lat/lng of each place in the database under geometry/location 
       // to be the same as the place object created form the search.
-      let lat = card.dataset.lat;
-      let lng = card.dataset.lng;
-      var ref = ref + '/geometry/location/';
-      var data = {
+      let lat = parseFloat(card.dataset.lat);
+      let lng = parseFloat(card.dataset.lng);
+      ref = database.ref(baseRefString + '/geometry/location/');
+      data = {
         lat: lat,
         lng: lng
       }
       ref.set(data);
       savedPlacesSet.add(placeId);
     } else if (firebase.auth().currentUser && (!$(this).hasClass('press'))) {
+      console.log('clicked icon');
       // Delete user saved places when the star is not pressed/unpressed
-      var ref = firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/places/' + name);
+      let ref = firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/places/' + name);
       ref.remove();
       savedPlacesSet.delete(placeId);
     }
@@ -573,7 +581,9 @@ function displaySavedPlaces() {
       placeArray.push(place);
       savedPlacesSet.add(place.place_id);
     });
-    populatePlaces(placeArray);
+
+    console.log(placeArray);
+    populatePlaces(placeArray, true);
   });
 }
 
@@ -588,9 +598,21 @@ function getLocationCardHtml(place) {
   const timeStr = place.timeAsString;
   const timeInSeconds = place.timeInSeconds;
   const place_id = place.place_id;
-  const lat = place.geometry.location.lat();
-  const lng = place.geometry.location.lng();
-    
+
+  let lat;
+  if (typeof(place.geometry.location.lat) === 'number') {
+    lat = place.geometry.location.lat;
+  } else {
+    lat = place.geometry.location.lat();
+  }
+
+  let lng;
+  if (typeof(place.geometry.location.lng) === 'number') {
+    lng = place.geometry.location.lng;
+  } else {
+    lng = place.geometry.location.lng();
+  } 
+
   const iconId = 'icon' + name;
   const innerHtml = '' +
     `<div id="${name}"
