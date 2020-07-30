@@ -719,7 +719,7 @@ function getLocationCardHtml(place) {
   const timeStr = place.timeAsString;
   const timeInSeconds = place.timeInSeconds;
   const place_id = place.place_id;
-  const types = place.types
+  const types = place.types;
 
   let lat;
   if (typeof(place.geometry.location.lat) === 'number') {
