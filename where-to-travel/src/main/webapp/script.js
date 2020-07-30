@@ -551,6 +551,7 @@ function populatePlaces(placeArray, saved) {
       ref.set(data);
       // Store the lat/lng of each place in the database under geometry/location 
       // to be the same as the place object created form the search.
+
       let lat = parseFloat(card.dataset.lat);
       let lng = parseFloat(card.dataset.lng);
       ref = database.ref(baseRefString + '/geometry/location/');
