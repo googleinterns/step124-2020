@@ -123,11 +123,12 @@ let globalNonce;
 // Keep a set of all saved and displayed places
 let savedPlacesSet = new Set();
 let displayedPlacesSet = new Set();
+let displaySaved = false;
 
 // Query for Place Search
 let placeType = 'Tourist Attractions';
 
-let displaySaved = false;
+
 
 // Add gmap js library to head of page
 const script = document.createElement('script');
@@ -151,7 +152,7 @@ $('.multi-select-pill').click(function () {
     }  else {
       placeType = pillText;
     }
-     $(event.target).parent().children('.multi-select-pill').removeClass('selected');
+    $(event.target).parent().children('.multi-select-pill').removeClass('selected');
     $(this).toggleClass('selected');
   }
 });
@@ -173,7 +174,8 @@ function initialize() {
   };
   map = new google.maps.Map(document.getElementById('map'), mapOptions);
   map.addListener('click', toggleFocusOff);
-  // Add autocomplete capabality for address input
+
+  // Add autocomplete capability for address input
   const addressInput = document.getElementById('addressInput');
   let autocomplete = new google.maps.places.Autocomplete(addressInput);
     
@@ -893,7 +895,7 @@ function getSortedPlaces(places) {
     return places;
 }
 
-/** Clears all markers on map except for home marker. */
+/** Clears all markers on map except for home marker. Clears all infocards. */
 function clearPlaces() {
   displayedPlacesSet.clear();
   const parent = document.getElementById(SCROLL_ID);
@@ -905,6 +907,28 @@ function clearPlaces() {
     marker.setMap(null);
   }
   markers = [];
+}
+
+/** Clears all markers, infocards, search input, and resets map */
+function clearSearch() {
+    clearPlaces();
+    
+    // Remove home marker
+    if (homeMarker) {
+      homeMarker.setMap(null);
+      homeMarker = null;
+    }
+    home = null;
+
+    // Reset map
+    map.setCenter({lat: 36.150813, lng: -40.352239});
+    map.setZoom(4);
+    
+    // Remove search input
+    document.getElementById('addressInput').value = '';
+    document.getElementById(HOURS_ID).value = '';
+    document.getElementById(MINUTES_ID).value = '';
+    $('.multi-select-pill').removeClass('selected');
 }
 
 /**
