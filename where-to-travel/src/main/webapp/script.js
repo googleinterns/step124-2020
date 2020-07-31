@@ -1200,7 +1200,7 @@ function getRightCardHTML(place) {
 }
 
 /**
- * Places links for directions and website (if available) in HTML buttons and add HTML button  
+ * Places links for directions and website (if available) in HTML buttons and adds HTML button  
  * to hide information in infocard for bottom of infocard corresponding to place.
  * 
  * @param {Object} place Contains (if available) link to website for place
@@ -1208,17 +1208,20 @@ function getRightCardHTML(place) {
  * @return {string} HTML content that formats passed in information for bottom of infocard
  */
 function getBottomCardHTML(place, place_id) {
-    // Link to Google Maps directions from home location to place 
-    const directionsLink = 'https://www.google.com/maps/dir/' +
-      home.lat + ',' + home.lng + '/' +
-      place.geometry.location.lat() + ',' + place.geometry.location.lng();
+    let bottomHTML = '';
 
-    // Always add button for directions
-    let bottomHTML = 
-      `<a target="_blank" class="btn btn-primary active" href=${directionsLink}>
-         Directions
-       </a>
-       &nbsp`;
+    if (home && !displaySaved) {
+      // Link to Google Maps directions from home location to place 
+      const directionsLink = 'https://www.google.com/maps/dir/' +
+        home.lat + ',' + home.lng + '/' +
+        place.geometry.location.lat() + ',' + place.geometry.location.lng();
+
+      bottomHTML += 
+        `<a target="_blank" class="btn btn-primary active" href=${directionsLink}>
+          Directions
+        </a>
+        &nbsp`;
+    }
 
     // If there is a listed website, add a button for it
     if (place.website) {
