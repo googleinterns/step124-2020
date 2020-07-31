@@ -189,9 +189,18 @@ firebase.auth().onAuthStateChanged(function(user) {
     savedPlacesSet.forEach(place_id => {
       if(!displayedPlacesSet.has(place_id)) {
         removePlace(place_id);
+      } else {
+        unpressPlaceIcon(place_id);
       }
     });
     savedPlacesSet.clear();
+
+    displaySaved = false;
+    $('#' + SCROLL_ID).children().show();
+    for (let marker of markers) {
+      marker.setMap(map);
+    }
+
     addLoginButtons();
   }
 });
@@ -659,6 +668,17 @@ function pressPlaceIcon(placeId) {
 }
 
 /**
+ * Unpresses star icon on infocard corresponding to placeId 
+ * @param {String} placeId Textual identifier for place
+ */
+function unpressPlaceIcon(placeId) {
+  const savedIcon = document.getElementById(placeId + '-icon');
+  if (savedIcon.classList.contains('press')) {
+    savedIcon.classList.remove('press');
+  }
+}
+
+/**
  * Removes html content for infocard corresponding to place_id 
  * @param {String} placeId Textual identifier for place
  */
@@ -704,7 +724,7 @@ function hidePlace(placeId) {
  */
 function displaySavedPlaces() {
   const placesSnapshot = firebase.database().ref('users/'+ firebase.auth().currentUser.uid + '/places').once('value', function(placesSnapshot){
-    var placeArray = [];
+    let placeArray = [];
     placesSnapshot.forEach((placesSnapshot) => {
       let place = placesSnapshot.val();
       placeArray.push(place);
