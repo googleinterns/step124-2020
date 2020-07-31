@@ -82,8 +82,7 @@ const ICON_PATHS = {
     zoo: 'icons/selected/zoo.svg'
   }
 };
-const PIN_PATH = 'icons/pin.svg';
-const SELECTED_PIN_PATH = 'icons/selectedPin.svg';
+
 const HOME_PIN_PATH = 'icons/home.svg';
 
 const INT_REGEX_MATCHER = /^\d+$/;
@@ -215,7 +214,6 @@ function getIconPaths(placeTypes) {
   } else { // all other types, use the tourism icon
     return [ICON_PATHS.defaultIcons.tourism, ICON_PATHS.selectedIcons.tourism];
   }
-  placesService = new google.maps.places.PlacesService(map);  
 }
 
 
@@ -477,11 +475,11 @@ function addUserDash() {
  * Toggle the focused pin/card off
  */
 function toggleFocusOff() {
-  if (focusedCard != null) {
+  if (focusedCard) {
     focusedCard.classList.remove('active-card');
   }
 
-  if (focusedPin != null) {
+  if (focusedPin) {
     let iconPath = focusedPin.getIcon();
     let iconName = iconPath.split('/')[2].split('.')[0];
 
@@ -540,48 +538,6 @@ function populatePlaces(placeArray, saved) {
   }
 
   for(let place of placeArray) {
-    let paths = getIconPaths(place.types);
-    let defaultPin = paths[0];
-    let selectedPin = paths[1];
-    // marker creation
-    let placeMarker = new google.maps.Marker({
-      position: place.geometry.location,
-      map: map,
-      title: place.name,
-      icon: defaultPin,
-    });
-
-    const htmlContent = getLocationCardHtml(place);
-    // For the material bootstrap library, the preferred method of dom interaction is jquery,
-    // especially for adding elements.
-    let cardElement = $(htmlContent).click(function(event) {
-      if(event.target.nodeName != 'SPAN') {
-        toggleFocusOff();
-        selectLocationMarker($(this).attr('placeName'));
-        $(this).addClass('active-card');
-       focusedCard = this;
-      }
-    });
-    $('#' + SCROLL_ID).append(cardElement);
-
-    // Add events to focus card and pin
-    placeMarker.addListener('click', function () {
-      toggleFocusOff();
-      focusedPin = placeMarker;
-      selectLocationCard(placeMarker.getTitle());
-      placeMarker.setIcon(selectedPin);
-      focusedCard.scrollIntoView({behavior: 'smooth', block: 'center'});
-    });
-
-    placeMarker.addListener('mouseover', function () {
-      placeMarker.setIcon(selectedPin);
-    });
-
-    placeMarker.addListener('mouseout', function () {
-      if (placeMarker != focusedPin) {
-        placeMarker.setIcon(defaultPin);
-      }
-    });
     // If the saved places are being displayed and your search returns one of the saved places, 
     // there is nothing to do so coninue.
     if (savedPlacesSet.has(place.place_id) && document.getElementById(place.place_id)) {
@@ -589,56 +545,54 @@ function populatePlaces(placeArray, saved) {
     // If you request to display the saved places while you currently have search results being displayed,
     // check to see if any of the saved places are already displayed, if so press the star and continue.
     } else if (displayedPlacesSet.has(place.place_id)) {
-      let savedIcon = document.getElementById('icon' + place.name);
-      savedIcon.addClass('press');
+      pressPlaceIcon(place.place_id);
       continue; 
     } else {
+      let paths = getIconPaths(place.types);
+      let defaultPin = paths[0];
+      let selectedPin = paths[1];
       // marker creation
       let placeMarker = new google.maps.Marker({
         position: place.geometry.location,
         map: map,
         title: place.name,
-        icon: PIN_PATH,
+        icon: defaultPin,
         id: place.place_id
       });
 
       const htmlContent = getLocationCardHtml(place);
 
-      // For the material bootstrap library, the preferred method of dom interaction is jquery,
-      // especially for adding elements.
       let cardElement = $(htmlContent).click(function(event) {
         if(event.target.nodeName != 'SPAN') {
           toggleFocusOff();
-          selectLocationMarker($(this).attr('placeName'));
+          selectLocationMarker($(this).attr('placeId'), selectedPin);
           $(this).addClass('active-card');
           focusedCard = this;
         }
       });
+      
       $('#' + SCROLL_ID).append(cardElement);
 
-     // Check to see if it is a saved place, if so make the star pressed 
-      if(savedPlacesSet.has(place.place_id)) {
-        cardElement.find('.icon').addClass('press');
+      if (saved) {
+        pressPlaceIcon(place.place_id);
       }
-
-      $('#' + SCROLL_ID).append(cardElement);
 
       // Add events to focus card and pin
       placeMarker.addListener('click', function () {
         toggleFocusOff();
         focusedPin = placeMarker;
-        selectLocationCard(placeMarker.getTitle());
-        placeMarker.setIcon(SELECTED_PIN_PATH);
+        selectLocationCard(placeMarker.id);
+        placeMarker.setIcon(selectedPin);
         focusedCard.scrollIntoView({behavior: 'smooth', block: 'center'});
       });
 
       placeMarker.addListener('mouseover', function () {
-        placeMarker.setIcon(SELECTED_PIN_PATH);
+        placeMarker.setIcon(selectedPin);
       });
 
       placeMarker.addListener('mouseout', function () {
         if (placeMarker != focusedPin) {
-          placeMarker.setIcon(PIN_PATH);
+          placeMarker.setIcon(defaultPin);
         }
       });
 
@@ -647,7 +601,6 @@ function populatePlaces(placeArray, saved) {
       }
       
       markers.push(placeMarker);
-    
     }
   }
 
@@ -656,22 +609,23 @@ function populatePlaces(placeArray, saved) {
   $('.icon').unbind('click');
   // Handle favoriting a place
   $('.icon').click(function() {
-    const name = $(this).parent().parent().parent().attr('placeName');
     const placeId = $(this).parent().next().next().next().attr('savedPlaceId');
-    let card = document.getElementById(name);
+    let card = document.getElementById(placeId + '-card');
+
     $(this).toggleClass('press');
     if (firebase.auth().currentUser && $(this).hasClass('press')) {
       const time = $(this).parent().next().next().text();
        // Add users saved places to the real time database in Firebase when star is pressed
       const database = firebase.database();
       const uID = firebase.auth().currentUser.uid;
-      const baseRefString = 'users/' + uID + '/places/' + name;
+      const baseRefString = 'users/' + uID + '/places/' + placeId;
       let ref = database.ref(baseRefString);
       let data = {
-        name: name,
+        name: card.getAttribute('placeName'),
         timeAsString: time,
         timeInSeconds: card.getAttribute('data-timeInSeconds'),
-        place_id: placeId,
+        types: card.getAttribute('data-types'),
+        place_id: placeId
       }
       ref.set(data);
       // Store the lat/lng of each place in the database under geometry/location 
@@ -688,7 +642,7 @@ function populatePlaces(placeArray, saved) {
       savedPlacesSet.add(placeId);
     } else if (firebase.auth().currentUser && (!$(this).hasClass('press'))) {
       // Delete user saved places when the star is not pressed/unpressed
-      let ref = firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/places/' + name);
+      let ref = firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/places/' + placeId);
       ref.remove();
       savedPlacesSet.delete(placeId);
 
@@ -699,6 +653,15 @@ function populatePlaces(placeArray, saved) {
       } 
     }
   });
+}
+
+/**
+ * Presses star icon on infocard corresponding to placeId 
+ * @param {String} placeId Textual identifier for place
+ */
+function pressPlaceIcon(placeId) {
+  const savedIcon = document.getElementById(placeId + '-icon');
+  savedIcon.classList.add('press');
 }
 
 /**
@@ -762,13 +725,14 @@ function displaySavedPlaces() {
  * Helper function that returns the an HTML string representing a place card
  * that can be added to the DOM.
  * @param {Object} place Contains name, lat/lng coordinates, place_id, and travel time to place
- * @return {String} HTML content to place inside infocard corresponding to place
+ * @return {string} HTML content to place inside infocard corresponding to place
  */
 function getLocationCardHtml(place) {
   const name = place.name;
   const timeStr = place.timeAsString;
   const timeInSeconds = place.timeInSeconds;
   const place_id = place.place_id;
+  const types = place.types;
 
   let lat;
   if (typeof(place.geometry.location.lat) === 'number') {
@@ -784,12 +748,13 @@ function getLocationCardHtml(place) {
     lng = place.geometry.location.lng();
   } 
 
-  const iconId = 'icon' + name;
+  const iconId = place_id + '-icon';
   const innerHtml = '' +
-    `<div id="${name}"
+    `<div id="${place_id}-card"
        data-timeInSeconds="${timeInSeconds}" 
        data-lat="${lat}"
        data-lng="${lng}"
+       data-types="[${types}]"
        class="card location-card" 
        placeId="${place_id}" 
        placeName="${name}" 
@@ -841,31 +806,31 @@ function getUserDashHtml(user) {
 
 /**
  * Given a title, selects the corresponding marker by focussing it
- * @param {string} title the name of the place whose marker to focus
+ * @param {string} place_id Textual identifier for place to focus
+ * @param {string} pin_path Path to selected pin for marker
 */
-function selectLocationMarker(title) {
+function selectLocationMarker(place_id, pin_path) {
   for (let marker of markers) {
-    if (marker.getTitle() == title) {
+    if (marker.id === place_id) {
       focusedPin = marker;
-      marker.setIcon(SELECTED_PIN_PATH);
+      marker.setIcon(pin_path);
       break;
     }
   }
 }
 
 /**
- * Given a title, selects the corresponding card by focussing it
- * @param {string} title the name of the place whose card to focus
+ * Given a title, selects the corresponding card by focusing it
+ * @param {string} place_id Textual identifier of place to focus card
  */
-function selectLocationCard(title) {
-  const scrollWindow = document.getElementById(SCROLL_ID);
-  for (let locationCard of scrollWindow.childNodes) {
-    if (locationCard.hasChildNodes() && locationCard.getAttribute("placeName") == title) {
-      locationCard.classList.add("active-card");
-      focusedCard = locationCard;
-    }
+function selectLocationCard(place_id) {
+  const locationCard = document.getElementById(place_id + '-card');
+  if (locationCard.hasChildNodes()) {
+    locationCard.classList.add("active-card");
+    focusedCard = locationCard;
   }
 }
+
 
 /** 
  * Removes duplicate places in an array of place objects 
@@ -874,9 +839,9 @@ function selectLocationCard(title) {
  * @return {array} Array of place objects with no duplicates
  */
 function getUniquePlaces(places) {
-  const uniquePlaces = Array.from(new Set(places.map(p => p.name)))
-    .map(name => {
-      return places.find(p => p.name === name);
+  const uniquePlaces = Array.from(new Set(places.map(p => p.place_id)))
+    .map(place_id => {
+      return places.find(p => p.place_id === place_id);
     });
 
   return uniquePlaces;
@@ -1157,7 +1122,7 @@ function addAcceptablePlaces(time, places, acceptablePlacesInfo) {
  * Queries Places API with place details request using place_id to get additional
  * information about place and populates this information inside place's infocard. 
  *
- * @param {String} place_id Textual identifier of place for PlaceDetails request
+ * @param {string} place_id Textual identifier of place for PlaceDetails request
  */
 function populateMorePlaceInfo(place_id) {
   let request = {
@@ -1208,7 +1173,7 @@ function populateMorePlaceInfo(place_id) {
  * phone number in HTML string that makes up content of left side of infocard corresponding to place.
  * 
  * @param {Object} place Contains (if available) rating, formatted address, and formatted phone number 
- * @return {String} HTML content that formats passed in information for left side of infocard
+ * @return {string} HTML content that formats passed in information for left side of infocard
  */
 function getLeftCardHTML(place) {
   let leftHTML = ``;
@@ -1233,7 +1198,7 @@ function getLeftCardHTML(place) {
  * right side of infocard corresponding to place.
  * 
  * @param {Object} place Contains (if available) opening hours of place
- * @return {String} HTML content that formats passed in information for right side of infocard
+ * @return {string} HTML content that formats passed in information for right side of infocard
  */
 function getRightCardHTML(place) {
   const rightHTML = place.opening_hours ? getOpeningHours(place.opening_hours) : '';
@@ -1245,8 +1210,8 @@ function getRightCardHTML(place) {
  * to hide information in infocard for bottom of infocard corresponding to place.
  * 
  * @param {Object} place Contains (if available) link to website for place
- * @param {String} place_id Textual identifier for place 
- * @return {String} HTML content that formats passed in information for bottom of infocard
+ * @param {string} place_id Textual identifier for place 
+ * @return {string} HTML content that formats passed in information for bottom of infocard
  */
 function getBottomCardHTML(place, place_id) {
     // Link to Google Maps directions from home location to place 
@@ -1285,7 +1250,7 @@ function getBottomCardHTML(place, place_id) {
  * line. Returns resulting HTML string for right side of infocard. 
  * 
  * @param {Object} opening_hours Contains function to check if place is open and string array of operating hours
- * @return {String} HTML content that formats hours for right side of infocard
+ * @return {string} HTML content that formats hours for right side of infocard
  */
 function getOpeningHours(opening_hours) {
   const d = new Date();
@@ -1323,7 +1288,7 @@ function getOpeningHours(opening_hours) {
  * 
  * @param {array} weekday_text Array of strings with weekday and times that places are open
  * @param {number} dayIndex Integer corresponding to day of week where 0->Monday
- * @return {String} String that contains replacement with two letter abbreviation
+ * @return {string} String that contains replacement with two letter abbreviation
  */
 function shortenedWeekdayText(weekday_text, dayIndex) {
     const shortDays = ['Mo:','Tu:','We:','Th:','Fr:','Sa:','Su:'];
@@ -1338,8 +1303,8 @@ function shortenedWeekdayText(weekday_text, dayIndex) {
 /**
  * Creates and returns html string containing button to show more information about a place
  * 
- * @param {String} place_id Textual identifier for place
- * @return {String} HTML string containing button to show more information about place
+ * @param {string} place_id Textual identifier for place
+ * @return {string} HTML string containing button to show more information about place
  */
 function removeMorePlaceInfo(place_id) {
     document.getElementById(place_id).innerHTML =
