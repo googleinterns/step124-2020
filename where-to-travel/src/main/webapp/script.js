@@ -118,7 +118,6 @@ let placesService;
 // Keeps track of most recent search request
 let globalNonce;
 
-
 // Keep a set of all saved and displayed places
 let savedPlacesSet = new Set();
 let displayedPlacesSet = new Set();
@@ -126,8 +125,6 @@ let displaySaved = false;
 
 // Query for Place Search
 let placeType = 'Tourist Attractions';
-
-
 
 // Add gmap js library to head of page
 const script = document.createElement('script');
@@ -189,6 +186,12 @@ firebase.auth().onAuthStateChanged(function(user) {
   if (user) {
     addUserDash();
   } else {
+    savedPlacesSet.forEach(place_id => {
+      if(!displayedPlacesSet.has(place_id)) {
+        removePlace(place_id);
+      }
+    });
+    savedPlacesSet.clear();
     addLoginButtons();
   }
 });
@@ -257,15 +260,6 @@ function showModal(htmlFilePath) {
     .then(content => openModal(content));
 }
 
-// When auth changes, display the proper dashboard
-firebase.auth().onAuthStateChanged(function(user) {
-  $('#' + DASH_ID).empty();
-  if (user) {
-    addUserDash();
-  } else {
-    addLoginButtons();
-  }
-});
 
 /**
  * Obtains user's location from either browser or an inputted address and sets home location. If error
@@ -465,8 +459,6 @@ function addUserDash() {
     firebase.auth().signOut().catch(function(error) {
       console.log('Error occurred while signing user out ' + error);
     });
-    // When a user logs out, clear the saved plases set
-    savedPlacesSet.clear();
   });
   $('#' + DASH_ID).append(dashElement);
 }
@@ -628,9 +620,9 @@ function populatePlaces(placeArray, saved) {
         place_id: placeId
       }
       ref.set(data);
+
       // Store the lat/lng of each place in the database under geometry/location 
       // to be the same as the place object created form the search.
-
       let lat = parseFloat(card.dataset.lat);
       let lng = parseFloat(card.dataset.lng);
       ref = database.ref(baseRefString + '/geometry/location/');
@@ -661,7 +653,9 @@ function populatePlaces(placeArray, saved) {
  */
 function pressPlaceIcon(placeId) {
   const savedIcon = document.getElementById(placeId + '-icon');
-  savedIcon.classList.add('press');
+  if (!savedIcon.classList.contains('press')) {
+    savedIcon.classList.add('press');
+  }
 }
 
 /**
