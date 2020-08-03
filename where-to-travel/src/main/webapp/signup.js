@@ -36,7 +36,7 @@ window.addEventListener('load', function() {
 
     const fields = [nameSignUp, emailSignUp, passwordSignUp, passwordConfirmation]
 
-    // Loop over them and check if they are all valid
+    // Loop over input fields and check if they are all valid
     for (let field of fields) {
       if (!field.checkValidity()) {
         validated = false;
