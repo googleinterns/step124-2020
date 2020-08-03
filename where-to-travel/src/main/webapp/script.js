@@ -814,7 +814,8 @@ function getLoginHtml() {
 }
 
 /**
- * A helper function that returns the HTML for the user dashboard given a user.
+ * A helper function that returns the HTML for the user dashboard given a user and
+ * adds name to text on top bar.
  * 
  * @returns the HTML for user dashboard as a string 
  */
