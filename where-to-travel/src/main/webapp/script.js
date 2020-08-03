@@ -435,7 +435,7 @@ function addLoginButtons() {
  * Adds user dash elements to the DOM
  */
 function addUserDash() {
-  const dashElement = $(getUserDashHtml(user));
+  const dashElement = $(getUserDashHtml());
   $(dashElement[2]).change(function () {
     if (this.childNodes[1].checked) {
       displaySaved = true;
@@ -810,10 +810,9 @@ function getLoginHtml() {
 /**
  * A helper function that returns the HTML for the user dashboard given a user.
  * 
- * @param {User} user
  * @returns the HTML for user dashboard as a string 
  */
-function getUserDashHtml(user) {
+function getUserDashHtml() {
   return `<img onclick="showModal(${INFO_HTML_PATH})" class="btn btn-icon" src="icons/help.svg">
           Display Saved:
           <label class="switch btn">
@@ -821,6 +820,16 @@ function getUserDashHtml(user) {
             <span class="slider round"></span>
           </label>
           <a class="btn btn-outline-primary btn-color" style="color: #049688;" id="logout">Logout</a>`;
+}
+
+/**
+ * Returns name with which current user signed up   
+ */
+function getUserName() {
+  firebase.database().ref('users/'+ firebase.auth().currentUser.uid)
+    .once('value', function(userSnapshot){
+      return userSnapshot.val().name;
+    });
 }
 
 /**
