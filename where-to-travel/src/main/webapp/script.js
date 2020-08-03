@@ -67,6 +67,10 @@ const TOURIST_ATTRACTION_TYPE_STR = 'tourist_attraction';
 const STORE_TYPE_STR = 'store';
 const ZOO_TYPE_STR = 'zoo';
 
+// Instructions displayed at top of webpage
+const TOP_INFO_STR = 'Planning a road trip? Enter a home location' +
+                     ' and travel time to find interesting attractions!'
+
 // Paths to default and selected pins for place types
 const ICON_PATHS = {
  defaultIcons: {
@@ -427,6 +431,7 @@ function openModal(content) {
  * Adds login elements to the DOM
  */
 function addLoginButtons() {
+  document.getElementById('top-text').innerHTML = TOP_INFO_STR;
   const dashElement = $(getLoginHtml());
   $('#' + DASH_ID).append(dashElement);
 }
@@ -434,8 +439,9 @@ function addLoginButtons() {
 /**
  * Adds user dash elements to the DOM
  */
-function addUserDash() {
-  const dashElement = $(getUserDashHtml());
+async function addUserDash() {
+  const dashHtml = await getUserDashHtml(); 
+  const dashElement = $(dashHtml);
   $(dashElement[2]).change(function () {
     if (this.childNodes[1].checked) {
       displaySaved = true;
@@ -813,23 +819,22 @@ function getLoginHtml() {
  * @returns the HTML for user dashboard as a string 
  */
 function getUserDashHtml() {
-  return `<img onclick="showModal(${INFO_HTML_PATH})" class="btn btn-icon" src="icons/help.svg">
-          Display Saved:
-          <label class="switch btn">
-            <input type="checkbox">
-            <span class="slider round"></span>
-          </label>
-          <a class="btn btn-outline-primary btn-color" style="color: #049688;" id="logout">Logout</a>`;
-}
-
-/**
- * Returns name with which current user signed up   
- */
-function getUserName() {
-  firebase.database().ref('users/'+ firebase.auth().currentUser.uid)
-    .once('value', function(userSnapshot){
-      return userSnapshot.val().name;
-    });
+  return new Promise(function(resolve) { 
+     firebase.database().ref('users/'+ firebase.auth().currentUser.uid)
+      .once('value', function(userSnapshot){
+        const name = userSnapshot.val().name;
+        document.getElementById('top-text').innerHTML =
+          'Hi, ' + name + '! ' + TOP_INFO_STR; 
+  
+        resolve(`<img onclick="showModal(${INFO_HTML_PATH})" class="btn btn-icon" src="icons/help.svg">
+                 Display Saved:
+                 <label class="switch btn">
+                   <input type="checkbox">
+                   <span class="slider round"></span>
+                 </label>
+                 <a class="btn btn-outline-primary btn-color" style="color: #049688;" id="logout">Logout</a>`);
+      });
+  });
 }
 
 /**
