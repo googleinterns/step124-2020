@@ -39,21 +39,26 @@ const PLACES_THRESHOLD = 30;
 const ATTEMPTS_THRESHOLD = 10;
 const DIRECTION_THRESHOLD = 5;
 
-// Thirty Minutes in seconds
+// Thirty minutes in seconds
 const TIME_THRESHOLD = 1800;
 
-// Document ids for user input elements
+// Document ids for user input and interaction
 const SUBMIT_ID = 'submit';
 const HOURS_ID = 'hrs';
 const MINUTES_ID = 'mnts';
 const SCROLL_ID = 'scroller';
-
+const DASH_ID = 'dash';
+const LOGOUT_ID = 'logout';
 const FEEDBACK_ID = 'feedback-target';
+
+// Thresholds for time input
 const HOURS_MAX_SEARCH = 20;
 const MINUTE_MAX_SEARCH = 59;
 
-const DASH_ID = 'dash';
-const LOGOUT_ID = 'logout';
+// Regex for validating time input
+const INT_REGEX_MATCHER = /^\d+$/;
+
+// Subset of types strings from Places API
 const DEPARMENT_STORE_TYPE_STR = 'department_store';
 const MALL_STORE_TYPE_STR = 'shopping_mall';
 const MUSEUM_TYPE_STR = 'museum';
@@ -62,6 +67,7 @@ const TOURIST_ATTRACTION_TYPE_STR = 'tourist_attraction';
 const STORE_TYPE_STR = 'store';
 const ZOO_TYPE_STR = 'zoo';
 
+// Paths to default and selected pins for place types
 const ICON_PATHS = {
  defaultIcons: {
     default: 'icons/pins/default.svg',
@@ -83,9 +89,8 @@ const ICON_PATHS = {
   }
 };
 
+// Path to pin for home location
 const HOME_PIN_PATH = 'icons/home.svg';
-
-const INT_REGEX_MATCHER = /^\d+$/;
 
 // Text files that contain modal content
 const INFO_HTML_PATH = 'info.txt';
@@ -137,6 +142,7 @@ script.async = true;
 
 document.head.appendChild(script);
 
+/** Adds click event to pill selector for destination type */
 $('.multi-select-pill').click(function () {
   let pillText = $(this).text();
   if(pillText === placeType) {
@@ -154,7 +160,8 @@ $('.multi-select-pill').click(function () {
 });
 
 /** 
- * Initializes map window, runs on load.
+ * Initializes map window, service objects, and adds validation to input fields.
+ * Runs on load.
  */
 function initialize() {
   const submit = document.getElementById(SUBMIT_ID);
@@ -181,6 +188,7 @@ function initialize() {
   placesService = new google.maps.places.PlacesService(map);
 }
 
+/** Changes top bar when user logs in or logs out */
 firebase.auth().onAuthStateChanged(function(user) {
   $('#' + DASH_ID).empty();
   if (user) {
@@ -228,7 +236,6 @@ function getIconPaths(placeTypes) {
   }
 }
 
-
 /**
  * Attaches listeners to the focusout event for search inputs.
  */
@@ -268,7 +275,6 @@ function showModal(htmlFilePath) {
     .then(response => response.text())
     .then(content => openModal(content));
 }
-
 
 /**
  * Obtains user's location from either browser or an inputted address and sets home location. If error
@@ -789,7 +795,6 @@ function getLocationCardHtml(place) {
     return innerHtml;
 }
 
-
 /**
  * A helper function that returns the HTML for login.
  * 
@@ -845,7 +850,6 @@ function selectLocationCard(place_id) {
   }
 }
 
-
 /** 
  * Removes duplicate places in an array of place objects 
  *
@@ -890,24 +894,24 @@ function clearPlaces() {
 
 /** Clears all markers, infocards, search input, and resets map */
 function clearSearch() {
-    clearPlaces();
+  clearPlaces();
     
-    // Remove home marker
-    if (homeMarker) {
-      homeMarker.setMap(null);
-      homeMarker = null;
-    }
-    home = null;
+  // Remove home marker
+  if (homeMarker) {
+    homeMarker.setMap(null);
+    homeMarker = null;
+  }
+  home = null;
 
-    // Reset map
-    map.setCenter({lat: 36.150813, lng: -40.352239});
-    map.setZoom(4);
+  // Reset map
+  map.setCenter({lat: 36.150813, lng: -40.352239});
+  map.setZoom(4);
     
-    // Remove search input
-    document.getElementById('addressInput').value = '';
-    document.getElementById(HOURS_ID).value = '';
-    document.getElementById(MINUTES_ID).value = '';
-    $('.multi-select-pill').removeClass('selected');
+  // Remove search input
+  document.getElementById('addressInput').value = '';
+  document.getElementById(HOURS_ID).value = '';
+  document.getElementById(MINUTES_ID).value = '';
+  $('.multi-select-pill').removeClass('selected');
 }
 
 /**
