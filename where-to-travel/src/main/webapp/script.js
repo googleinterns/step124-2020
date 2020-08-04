@@ -39,27 +39,58 @@ const PLACES_THRESHOLD = 30;
 const ATTEMPTS_THRESHOLD = 10;
 const DIRECTION_THRESHOLD = 5;
 
-// Thirty Minutes in seconds
+// Thirty minutes in seconds
 const TIME_THRESHOLD = 1800;
 
-// Document ids for user input elements
+// Document ids for user input and interaction
 const SUBMIT_ID = 'submit';
 const HOURS_ID = 'hrs';
 const MINUTES_ID = 'mnts';
 const SCROLL_ID = 'scroller';
-
+const DASH_ID = 'dash';
+const LOGOUT_ID = 'logout';
 const FEEDBACK_ID = 'feedback-target';
+
+// Thresholds for time input
 const HOURS_MAX_SEARCH = 20;
 const MINUTE_MAX_SEARCH = 59;
 
-const DASH_ID = 'dash';
-const LOGOUT_ID = 'logout';
-
-const PIN_PATH = 'icons/pin.svg';
-const SELECTED_PIN_PATH = 'icons/selectedPin.svg';
-const HOME_PIN_PATH = 'icons/home.svg';
-
+// Regex for validating time input
 const INT_REGEX_MATCHER = /^\d+$/;
+
+// Subset of types strings from Places API
+const DEPARMENT_STORE_TYPE_STR = 'department_store';
+const MALL_STORE_TYPE_STR = 'shopping_mall';
+const MUSEUM_TYPE_STR = 'museum';
+const PARK_TYPE_STR = 'park';
+const TOURIST_ATTRACTION_TYPE_STR = 'tourist_attraction';
+const STORE_TYPE_STR = 'store';
+const ZOO_TYPE_STR = 'zoo';
+
+// Paths to default and selected pins for place types
+const ICON_PATHS = {
+ defaultIcons: {
+    default: 'icons/pins/default.svg',
+    favorite: 'icons/pins/favorite.svg',
+    museum: 'icons/pins/museum.svg',
+    park: 'icons/pins/park.svg',
+    shopping: 'icons/pins/shopping.svg',
+    tourism: 'icons/pins/tourism.svg',
+    zoo: 'icons/pins/zoo.svg'
+  },
+  selectedIcons: {
+    default: 'icons/selected/default.svg',
+    favorite: 'icons/selected/favorite.svg',
+    museum: 'icons/selected/museum.svg',
+    park: 'icons/selected/park.svg',
+    shopping: 'icons/selected/shopping.svg',
+    tourism: 'icons/selected/tourism.svg',
+    zoo: 'icons/selected/zoo.svg'
+  }
+};
+
+// Path to pin for home location
+const HOME_PIN_PATH = 'icons/home.svg';
 
 // Text files that contain modal content
 const INFO_HTML_PATH = 'info.txt';
@@ -92,14 +123,13 @@ let placesService;
 // Keeps track of most recent search request
 let globalNonce;
 
-
 // Keep a set of all saved and displayed places
-var savedPlacesSet = new Set();
-var displayedPlacesSet = new Set();
+let savedPlacesSet = new Set();
+let displayedPlacesSet = new Set();
+let displaySaved = false;
 
 // Query for Place Search
 let placeType = 'Tourist Attractions';
-
 
 // Add gmap js library to head of page
 const script = document.createElement('script');
@@ -112,20 +142,26 @@ script.async = true;
 
 document.head.appendChild(script);
 
+/** Adds click event to pill selector for destination type */
 $('.multi-select-pill').click(function () {
   let pillText = $(this).text();
   if(pillText === placeType) {
     placeType = 'Tourist Attractions';
     $(this).toggleClass('selected');
   } else {
-    placeType = pillText;
+    if (pillText == 'Tourism') {
+      placeType = 'Tourist Attractions';
+    }  else {
+      placeType = pillText;
+    }
     $(event.target).parent().children('.multi-select-pill').removeClass('selected');
     $(this).toggleClass('selected');
   }
 });
 
 /** 
- * Initializes map window, runs on load.
+ * Initializes map window, service objects, and adds validation to input fields.
+ * Runs on load.
  */
 function initialize() {
   const submit = document.getElementById(SUBMIT_ID);
@@ -141,16 +177,64 @@ function initialize() {
   };
   map = new google.maps.Map(document.getElementById('map'), mapOptions);
   map.addListener('click', toggleFocusOff);
-  // Add autocomplete capabality for address input
+
+  // Add autocomplete capability for address input
   const addressInput = document.getElementById('addressInput');
   let autocomplete = new google.maps.places.Autocomplete(addressInput);
     
   // Initialize API service objects
   distanceMatrixService = new google.maps.DistanceMatrixService();
   geocoder = new google.maps.Geocoder();
-  placesService = new google.maps.places.PlacesService(map);  
+  placesService = new google.maps.places.PlacesService(map);
 }
 
+/** Changes top bar when user logs in or logs out */
+firebase.auth().onAuthStateChanged(function(user) {
+  $('#' + DASH_ID).empty();
+  if (user) {
+    addUserDash();
+  } else {
+    savedPlacesSet.forEach(place_id => {
+      if(!displayedPlacesSet.has(place_id)) {
+        removePlace(place_id);
+      } else {
+        unpressPlaceIcon(place_id);
+      }
+    });
+    savedPlacesSet.clear();
+
+    displaySaved = false;
+    $('#' + SCROLL_ID).children().show();
+    for (let marker of markers) {
+      marker.setMap(map);
+    }
+
+    addLoginButtons();
+  }
+});
+
+/**
+ * Returns the icon paths (default and selected) for a place based on its types array.
+ * 
+ * @param placeTypes an array of types for a place
+ * @return an array with two elements, the first being the default icon path, and 
+ *         the second being the selected icon path
+ */
+function getIconPaths(placeTypes) {
+  if(placeTypes.includes(ZOO_TYPE_STR)) {
+    return [ICON_PATHS.defaultIcons.zoo, ICON_PATHS.selectedIcons.zoo];
+  } else if(placeTypes.includes(MUSEUM_TYPE_STR)) {
+    return [ICON_PATHS.defaultIcons.museum, ICON_PATHS.selectedIcons.museum];
+  } else if(placeTypes.includes(PARK_TYPE_STR)) {
+    return [ICON_PATHS.defaultIcons.park, ICON_PATHS.selectedIcons.park];
+  } else if(placeTypes.includes(MALL_STORE_TYPE_STR) || 
+              placeTypes.includes(DEPARMENT_STORE_TYPE_STR) || 
+              placeTypes.includes(STORE_TYPE_STR)) {
+    return [ICON_PATHS.defaultIcons.shopping, ICON_PATHS.selectedIcons.shopping];
+  } else { // all other types, use the tourism icon
+    return [ICON_PATHS.defaultIcons.tourism, ICON_PATHS.selectedIcons.tourism];
+  }
+}
 
 /**
  * Attaches listeners to the focusout event for search inputs.
@@ -191,16 +275,6 @@ function showModal(htmlFilePath) {
     .then(response => response.text())
     .then(content => openModal(content));
 }
-
-// When auth changes, display the proper dashboard
-firebase.auth().onAuthStateChanged(function(user) {
-  $('#' + DASH_ID).empty();
-  if (user) {
-    addUserDash();
-  } else {
-    addLoginButtons();
-  }
-});
 
 /**
  * Obtains user's location from either browser or an inputted address and sets home location. If error
@@ -364,30 +438,42 @@ function addUserDash() {
   const dashElement = $(getUserDashHtml(user));
   $(dashElement[2]).change(function () {
     if (this.childNodes[1].checked) {
+      displaySaved = true;
+
       // populate saved places
-      savedPlaces();
+      displaySavedPlaces();
       $('#' + SCROLL_ID).children().each(function() {
         if(!savedPlacesSet.has($(this).attr('placeId'))) {
           $(this).hide();
         }
       });
+
+      for (let marker of markers) {
+        if(!savedPlacesSet.has(marker.id)) {
+          marker.setMap(null);
+        }
+      }
     } else {
+      displaySaved = false;
+
       $('#' + SCROLL_ID).children().show();
       // If the card is a saved place but not in the search results, then hide
       $('#' + SCROLL_ID).children().each(function() {
-        if(!savedPlacesSet.has($(this).attr('placeId')) && !(displayedPlacesSet.has($(this).attr('placeId'))) ) {
-          $(this).hide();
+        if(savedPlacesSet.has($(this).attr('placeId')) && !(displayedPlacesSet.has($(this).attr('placeId'))) ) {
+          removePlace($(this).attr('placeId'));
         }
       });
+
+      for (let marker of markers) {
+        marker.setMap(map);
+      }
     }
   });
   // Logout user if they click the logout button
   $(dashElement[4]).click(function () {
     firebase.auth().signOut().catch(function(error) {
-      console.log('Error occurred while sigining user out ' + error);
+      console.log('Error occurred while signing user out ' + error);
     });
-    // When a user logs out, clear the saved plases set
-    savedPlacesSet.clear();
   });
   $('#' + DASH_ID).append(dashElement);
 }
@@ -396,12 +482,15 @@ function addUserDash() {
  * Toggle the focused pin/card off
  */
 function toggleFocusOff() {
-  if(focusedCard != null) {
+  if (focusedCard) {
     focusedCard.classList.remove('active-card');
   }
 
-  if(focusedPin != null) {
-    focusedPin.setIcon(PIN_PATH);
+  if (focusedPin) {
+    let iconPath = focusedPin.getIcon();
+    let iconName = iconPath.split('/')[2].split('.')[0];
+
+    focusedPin.setIcon(ICON_PATHS.defaultIcons[iconName]);
   }
   focusedCard = null;
   focusedPin = null;
@@ -423,7 +512,7 @@ function submitDataListener(event) {
     openModal(content);
   } else {
     clearPlaces();
-    displayedPlacesSet.clear();
+   
     const hours = document.getElementById(HOURS_ID).value;
     const minutes = document.getElementById(MINUTES_ID).value;
 
@@ -437,7 +526,7 @@ function submitDataListener(event) {
       // Hide modal that shows loading status
       $('#loading-modal').modal('hide');
       const sortedPlaces = getSortedPlaces(places);
-      populatePlaces(sortedPlaces);
+      populatePlaces(sortedPlaces, false);
     }).catch(message => console.log(message));
   }
 }
@@ -447,8 +536,9 @@ function submitDataListener(event) {
  * cards to the location card scroller in the DOM.
  *
  * @param {array} placeArray Array of Google Maps Place Objects
+ * @param {boolean} saved Flag indicating if places are from user saving
  */
-function populatePlaces(placeArray) {
+function populatePlaces(placeArray, saved) {
   // if place array is empty, show the no places info
   if(!placeArray) {
     showModal(NO_PLACES_HTML_PATH);
@@ -462,88 +552,96 @@ function populatePlaces(placeArray) {
     // If you request to display the saved places while you currently have search results being displayed,
     // check to see if any of the saved places are already displayed, if so press the star and continue.
     } else if (displayedPlacesSet.has(place.place_id)) {
-      let savedIcon = document.getElementById('icon' + place.name);
-      savedIcon.addClass('press');
+      pressPlaceIcon(place.place_id);
       continue; 
     } else {
+      let paths = getIconPaths(place.types);
+      let defaultPin = paths[0];
+      let selectedPin = paths[1];
       // marker creation
       let placeMarker = new google.maps.Marker({
         position: place.geometry.location,
         map: map,
         title: place.name,
-        icon: PIN_PATH,
+        icon: defaultPin,
+        id: place.place_id
       });
 
       const htmlContent = getLocationCardHtml(place);
 
-      // For the material bootstrap library, the preferred method of dom interaction is jquery,
-      // especially for adding elements.
       let cardElement = $(htmlContent).click(function(event) {
         if(event.target.nodeName != 'SPAN') {
           toggleFocusOff();
-          selectLocationMarker($(this).attr('placeName'));
+          selectLocationMarker($(this).attr('placeId'), selectedPin);
           $(this).addClass('active-card');
           focusedCard = this;
         }
       });
+      
       $('#' + SCROLL_ID).append(cardElement);
 
-     // Check to see if it is a saved place, if so make the star pressed 
-      if(savedPlacesSet.has(place.place_id)) {
-        cardElement.find('.icon').addClass('press');
+      if (saved) {
+        pressPlaceIcon(place.place_id);
       }
-
-      $('#' + SCROLL_ID).append(cardElement);
 
       // Add events to focus card and pin
       placeMarker.addListener('click', function () {
         toggleFocusOff();
         focusedPin = placeMarker;
-        selectLocationCard(placeMarker.getTitle());
-        placeMarker.setIcon(SELECTED_PIN_PATH);
+        selectLocationCard(placeMarker.id);
+        placeMarker.setIcon(selectedPin);
         focusedCard.scrollIntoView({behavior: 'smooth', block: 'center'});
       });
 
       placeMarker.addListener('mouseover', function () {
-        placeMarker.setIcon(SELECTED_PIN_PATH);
+        placeMarker.setIcon(selectedPin);
       });
 
       placeMarker.addListener('mouseout', function () {
         if (placeMarker != focusedPin) {
-          placeMarker.setIcon(PIN_PATH);
+          placeMarker.setIcon(defaultPin);
         }
       });
 
+      if (!saved) {
+        displayedPlacesSet.add(place.place_id);
+      }
+      
       markers.push(placeMarker);
     }
   }
 
   document.getElementById(SCROLL_ID).hidden = false;
+
+  $('.icon').unbind('click');
   // Handle favoriting a place
   $('.icon').click(function() {
-    const name = $(this).parent().parent().parent().attr('placeName');
     const placeId = $(this).parent().next().next().next().attr('savedPlaceId');
-    let card = document.getElementById(name);
+    let card = document.getElementById(placeId + '-card');
+
     $(this).toggleClass('press');
     if (firebase.auth().currentUser && $(this).hasClass('press')) {
       const time = $(this).parent().next().next().text();
        // Add users saved places to the real time database in Firebase when star is pressed
       const database = firebase.database();
-      var uID = firebase.auth().currentUser.uid;
-      var ref = database.ref('users/' + uID + '/places/' + name);
-      var data = {
-        name: name,
+      const uID = firebase.auth().currentUser.uid;
+      const baseRefString = 'users/' + uID + '/places/' + placeId;
+      let ref = database.ref(baseRefString);
+      let data = {
+        name: card.getAttribute('placeName'),
         timeAsString: time,
         timeInSeconds: card.getAttribute('data-timeInSeconds'),
-        place_id: placeId,
+        types: card.getAttribute('data-types'),
+        place_id: placeId
       }
       ref.set(data);
+
       // Store the lat/lng of each place in the database under geometry/location 
       // to be the same as the place object created form the search.
-      let lat = card.dataset.lat;
-      let lng = card.dataset.lng;
-      var ref = ref + '/geometry/location/';
-      var data = {
+      let lat = parseFloat(card.dataset.lat);
+      let lng = parseFloat(card.dataset.lng);
+      ref = database.ref(baseRefString + '/geometry/location/');
+      data = {
         lat: lat,
         lng: lng
       }
@@ -551,11 +649,80 @@ function populatePlaces(placeArray) {
       savedPlacesSet.add(placeId);
     } else if (firebase.auth().currentUser && (!$(this).hasClass('press'))) {
       // Delete user saved places when the star is not pressed/unpressed
-      var ref = firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/places/' + name);
+      let ref = firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/places/' + placeId);
       ref.remove();
       savedPlacesSet.delete(placeId);
+
+      if (!displayedPlacesSet.has(placeId)) {
+        removePlace(placeId);
+      } else if (displaySaved) {
+        hidePlace(placeId);
+      } 
     }
   });
+}
+
+/**
+ * Presses star icon on infocard corresponding to placeId 
+ * @param {String} placeId Textual identifier for place
+ */
+function pressPlaceIcon(placeId) {
+  const savedIcon = document.getElementById(placeId + '-icon');
+  if (!savedIcon.classList.contains('press')) {
+    savedIcon.classList.add('press');
+  }
+}
+
+/**
+ * Unpresses star icon on infocard corresponding to placeId 
+ * @param {String} placeId Textual identifier for place
+ */
+function unpressPlaceIcon(placeId) {
+  const savedIcon = document.getElementById(placeId + '-icon');
+  if (savedIcon.classList.contains('press')) {
+    savedIcon.classList.remove('press');
+  }
+}
+
+/**
+ * Removes html content for infocard corresponding to place_id 
+ * @param {String} placeId Textual identifier for place
+ */
+function removePlace(placeId) {
+  $('#' + SCROLL_ID).children().each(function() {
+    if(($(this).attr('placeId')) === placeId) {
+      $(this).remove();
+    }
+  });
+
+  let new_markers = []
+  for (let marker of markers) {
+    if (marker.id === placeId) {
+      marker.setMap(null);
+    } else {
+      new_markers.push(marker);
+    }
+  }
+
+  markers = new_markers;
+}
+
+/**
+ * Hides html content for infocard corresponding to place_id 
+ * @param {String} placeId Textual identifier for place
+ */
+function hidePlace(placeId) {
+  $('#' + SCROLL_ID).children().each(function() {
+    if(($(this).attr('placeId')) === placeId) {
+      $(this).hide();
+    }
+  });
+
+  for (let marker of markers) {
+    if (marker.id === placeId) {
+      marker.setMap(null);
+    }
+  }
 }
  
 /**
@@ -563,13 +730,14 @@ function populatePlaces(placeArray) {
  */
 function displaySavedPlaces() {
   const placesSnapshot = firebase.database().ref('users/'+ firebase.auth().currentUser.uid + '/places').once('value', function(placesSnapshot){
-    var placeArray = [];
+    let placeArray = [];
     placesSnapshot.forEach((placesSnapshot) => {
       let place = placesSnapshot.val();
       placeArray.push(place);
       savedPlacesSet.add(place.place_id);
     });
-    populatePlaces(placeArray);
+
+    populatePlaces(placeArray, true);
   });
 }
 
@@ -577,22 +745,36 @@ function displaySavedPlaces() {
  * Helper function that returns the an HTML string representing a place card
  * that can be added to the DOM.
  * @param {Object} place Contains name, lat/lng coordinates, place_id, and travel time to place
- * @return {String} HTML content to place inside infocard corresponding to place
+ * @return {string} HTML content to place inside infocard corresponding to place
  */
 function getLocationCardHtml(place) {
   const name = place.name;
   const timeStr = place.timeAsString;
   const timeInSeconds = place.timeInSeconds;
   const place_id = place.place_id;
-  const lat = place.geometry.location.lat();
-  const lng = place.geometry.location.lng();
-    
-  const iconId = 'icon' + name;
+  const types = place.types;
+
+  let lat;
+  if (typeof(place.geometry.location.lat) === 'number') {
+    lat = place.geometry.location.lat;
+  } else {
+    lat = place.geometry.location.lat();
+  }
+
+  let lng;
+  if (typeof(place.geometry.location.lng) === 'number') {
+    lng = place.geometry.location.lng;
+  } else {
+    lng = place.geometry.location.lng();
+  } 
+
+  const iconId = place_id + '-icon';
   const innerHtml = '' +
-    `<div id="${name}"
+    `<div id="${place_id}-card"
        data-timeInSeconds="${timeInSeconds}" 
        data-lat="${lat}"
        data-lng="${lng}"
+       data-types="[${types}]"
        class="card location-card" 
        placeId="${place_id}" 
        placeName="${name}" 
@@ -613,7 +795,6 @@ function getLocationCardHtml(place) {
     return innerHtml;
 }
 
-
 /**
  * A helper function that returns the HTML for login.
  * 
@@ -621,9 +802,9 @@ function getLocationCardHtml(place) {
  */
 function getLoginHtml() {
   return `<img onclick="showModal('${INFO_HTML_PATH}')" class="btn btn-icon" src="icons/help.svg">
-          <a class="btn btn-outline-primary btn-color" onclick="showLogin()">Login</a>
+          <a class="btn btn-outline-primary btn-color" onclick="showLogin()" style="color: #049688">Login</a>
           <span id="nav-text">or</span>
-          <a class="btn btn-outline-primary btn-color" onclick="showSignUp()">Sign up</a>`;
+          <a class="btn btn-outline-primary btn-color" onclick="showSignUp()" style="color: #049688">Sign up</a>`;
 }
 
 /**
@@ -644,29 +825,28 @@ function getUserDashHtml(user) {
 
 /**
  * Given a title, selects the corresponding marker by focussing it
- * @param {string} title the name of the place whose marker to focus
+ * @param {string} place_id Textual identifier for place to focus
+ * @param {string} pin_path Path to selected pin for marker
 */
-function selectLocationMarker(title) {
+function selectLocationMarker(place_id, pin_path) {
   for (let marker of markers) {
-    if (marker.getTitle() == title) {
+    if (marker.id === place_id) {
       focusedPin = marker;
-      marker.setIcon(SELECTED_PIN_PATH);
+      marker.setIcon(pin_path);
       break;
     }
   }
 }
 
 /**
- * Given a title, selects the corresponding card by focussing it
- * @param {string} title the name of the place whose card to focus
+ * Given a title, selects the corresponding card by focusing it
+ * @param {string} place_id Textual identifier of place to focus card
  */
-function selectLocationCard(title) {
-  const scrollWindow = document.getElementById(SCROLL_ID);
-  for (let locationCard of scrollWindow.childNodes) {
-    if (locationCard.hasChildNodes() && locationCard.getAttribute("placeName") == title) {
-      locationCard.classList.add("active-card");
-      focusedCard = locationCard;
-    }
+function selectLocationCard(place_id) {
+  const locationCard = document.getElementById(place_id + '-card');
+  if (locationCard.hasChildNodes()) {
+    locationCard.classList.add("active-card");
+    focusedCard = locationCard;
   }
 }
 
@@ -677,9 +857,9 @@ function selectLocationCard(title) {
  * @return {array} Array of place objects with no duplicates
  */
 function getUniquePlaces(places) {
-  const uniquePlaces = Array.from(new Set(places.map(p => p.name)))
-    .map(name => {
-      return places.find(p => p.name === name);
+  const uniquePlaces = Array.from(new Set(places.map(p => p.place_id)))
+    .map(place_id => {
+      return places.find(p => p.place_id === place_id);
     });
 
   return uniquePlaces;
@@ -698,7 +878,7 @@ function getSortedPlaces(places) {
     return places;
 }
 
-/** Clears all markers on map except for home marker. */
+/** Clears all markers on map except for home marker. Clears all infocards. */
 function clearPlaces() {
   displayedPlacesSet.clear();
   const parent = document.getElementById(SCROLL_ID);
@@ -710,6 +890,28 @@ function clearPlaces() {
     marker.setMap(null);
   }
   markers = [];
+}
+
+/** Clears all markers, infocards, search input, and resets map */
+function clearSearch() {
+  clearPlaces();
+    
+  // Remove home marker
+  if (homeMarker) {
+    homeMarker.setMap(null);
+    homeMarker = null;
+  }
+  home = null;
+
+  // Reset map
+  map.setCenter({lat: 36.150813, lng: -40.352239});
+  map.setZoom(4);
+    
+  // Remove search input
+  document.getElementById('addressInput').value = '';
+  document.getElementById(HOURS_ID).value = '';
+  document.getElementById(MINUTES_ID).value = '';
+  $('.multi-select-pill').removeClass('selected');
 }
 
 /**
@@ -919,6 +1121,7 @@ function addAcceptablePlaces(time, places, acceptablePlacesInfo) {
             if (destination_time <= time + TIME_THRESHOLD && destination_time >= time - TIME_THRESHOLD) {
               acceptablePlacesInfo.places.push({
                 name: places[j].name,
+                types: places[j].types,
                 geometry: places[j].geometry,
                 place_id: places[j].place_id,
                 timeInSeconds: destination_time,
@@ -937,7 +1140,7 @@ function addAcceptablePlaces(time, places, acceptablePlacesInfo) {
  * Queries Places API with place details request using place_id to get additional
  * information about place and populates this information inside place's infocard. 
  *
- * @param {String} place_id Textual identifier of place for PlaceDetails request
+ * @param {string} place_id Textual identifier of place for PlaceDetails request
  */
 function populateMorePlaceInfo(place_id) {
   let request = {
@@ -988,7 +1191,7 @@ function populateMorePlaceInfo(place_id) {
  * phone number in HTML string that makes up content of left side of infocard corresponding to place.
  * 
  * @param {Object} place Contains (if available) rating, formatted address, and formatted phone number 
- * @return {String} HTML content that formats passed in information for left side of infocard
+ * @return {string} HTML content that formats passed in information for left side of infocard
  */
 function getLeftCardHTML(place) {
   let leftHTML = ``;
@@ -1013,7 +1216,7 @@ function getLeftCardHTML(place) {
  * right side of infocard corresponding to place.
  * 
  * @param {Object} place Contains (if available) opening hours of place
- * @return {String} HTML content that formats passed in information for right side of infocard
+ * @return {string} HTML content that formats passed in information for right side of infocard
  */
 function getRightCardHTML(place) {
   const rightHTML = place.opening_hours ? getOpeningHours(place.opening_hours) : '';
@@ -1021,25 +1224,28 @@ function getRightCardHTML(place) {
 }
 
 /**
- * Places links for directions and website (if available) in HTML buttons and add HTML button  
+ * Places links for directions and website (if available) in HTML buttons and adds HTML button  
  * to hide information in infocard for bottom of infocard corresponding to place.
  * 
  * @param {Object} place Contains (if available) link to website for place
- * @param {String} place_id Textual identifier for place 
- * @return {String} HTML content that formats passed in information for bottom of infocard
+ * @param {string} place_id Textual identifier for place 
+ * @return {string} HTML content that formats passed in information for bottom of infocard
  */
 function getBottomCardHTML(place, place_id) {
-    // Link to Google Maps directions from home location to place 
-    const directionsLink = 'https://www.google.com/maps/dir/' +
-      home.lat + ',' + home.lng + '/' +
-      place.geometry.location.lat() + ',' + place.geometry.location.lng();
+    let bottomHTML = '';
 
-    // Always add button for directions
-    let bottomHTML = 
-      `<a target="_blank" class="btn btn-primary active" href=${directionsLink}>
-         Directions
-       </a>
-       &nbsp`;
+    if (home && !displaySaved) {
+      // Link to Google Maps directions from home location to place 
+      const directionsLink = 'https://www.google.com/maps/dir/' +
+        home.lat + ',' + home.lng + '/' +
+        place.geometry.location.lat() + ',' + place.geometry.location.lng();
+
+      bottomHTML += 
+        `<a target="_blank" class="btn btn-primary active" href=${directionsLink}>
+          Directions
+        </a>
+        &nbsp`;
+    }
 
     // If there is a listed website, add a button for it
     if (place.website) {
@@ -1065,7 +1271,7 @@ function getBottomCardHTML(place, place_id) {
  * line. Returns resulting HTML string for right side of infocard. 
  * 
  * @param {Object} opening_hours Contains function to check if place is open and string array of operating hours
- * @return {String} HTML content that formats hours for right side of infocard
+ * @return {string} HTML content that formats hours for right side of infocard
  */
 function getOpeningHours(opening_hours) {
   const d = new Date();
@@ -1103,7 +1309,7 @@ function getOpeningHours(opening_hours) {
  * 
  * @param {array} weekday_text Array of strings with weekday and times that places are open
  * @param {number} dayIndex Integer corresponding to day of week where 0->Monday
- * @return {String} String that contains replacement with two letter abbreviation
+ * @return {string} String that contains replacement with two letter abbreviation
  */
 function shortenedWeekdayText(weekday_text, dayIndex) {
     const shortDays = ['Mo:','Tu:','We:','Th:','Fr:','Sa:','Su:'];
@@ -1118,8 +1324,8 @@ function shortenedWeekdayText(weekday_text, dayIndex) {
 /**
  * Creates and returns html string containing button to show more information about a place
  * 
- * @param {String} place_id Textual identifier for place
- * @return {String} HTML string containing button to show more information about place
+ * @param {string} place_id Textual identifier for place
+ * @return {string} HTML string containing button to show more information about place
  */
 function removeMorePlaceInfo(place_id) {
     document.getElementById(place_id).innerHTML =

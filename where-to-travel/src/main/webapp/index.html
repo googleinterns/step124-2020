@@ -19,7 +19,7 @@
       <header class="bmd-layout-header">
         <div class="navbar bg-faded">
           <div class="text-center" style="width:330px">
-            <a class="navbar-brand text-center text-color" href="#"> <img src="icons/pin.svg" width="16" height="32"> Where to?</a>
+            <h1 class="navbar-brand text-center text-color font-size-large"> <img src="icons/pin.svg" width="20" height="38"> Where to?</h1>
           </div>
 
           <span class="navbar-text">
@@ -40,7 +40,7 @@
             <div class="card">
               <div class="card-header text-center" id="headingOne">
                 <h1 class="mb-0">
-                  <button class="btn btn-link text-color" data-toggle="collapse" data-target="#collapseOne"
+                  <button class="btn btn-link text-color font-size-large" data-toggle="collapse" data-target="#collapseOne"
                         aria-expanded="true" aria-controls="collapseOne">
                     Home Location
                   </button>
@@ -62,7 +62,7 @@
             <div class="card">
               <div class="card-header text-center" id="headingTwo">
               <h1 class="mb-0">
-                <button class="btn btn-link text-color" data-toggle="collapse" data-target="#collapseTwo"
+                <button class="btn btn-link text-color font-size-large" data-toggle="collapse" data-target="#collapseTwo"
                     aria-expanded="true" aria-controls="collapseTwo">
                   Travel Time
                 </button>
@@ -90,7 +90,7 @@
             <div class="card">
               <div class="card-header text-center" id="headingThree">
                 <h1 class="mb-0">
-                  <button class="btn btn-link text-color" data-toggle="collapse" data-target="#collapseThree"
+                  <button class="btn btn-link text-color font-size-large" data-toggle="collapse" data-target="#collapseThree"
                         aria-expanded="true" aria-controls="collapseThree">
                     Destination Type
                   </button>
@@ -112,8 +112,8 @@
           </div>
 
           <span id="search-btn-container">
-            <button type="button" id="submit" class="btn btn-primary search-btn">Search</button>
-            <button type="button" onclick="clearPlaces()" class="btn btn-primary search-btn">Clear</button>
+            <button type="button" id="submit" class="btn btn-primary search-btn font-size-large">Search</button>
+            <button type="button" onclick="clearSearch()" class="btn btn-primary search-btn font-size-large">Clear</button>
           </span>
           
           <div id="feedback-target"></div>
@@ -160,7 +160,7 @@
             <h5 class="modal-title">Sign Up</h5>      
           </div>
           <div class="modal-body">
-            <form style="margin: auto" id="signUpForm" action="">
+            <form style="margin: auto" id="signUpForm" action="#">
               <div class="form-group">
                 <label for="nameInput" class="bmd-label-floating">Name</label>
                 <input type="text" class="form-control" id="nameSignUp" required>
@@ -201,7 +201,7 @@
                   Looks good!
                 </div>
               </div>
-              <button type="submit" id="signUp" class="btn btn-primary" >Sign Up</button>
+              <button type="button" id="signUpSubmit" class="btn btn-primary" >Sign Up</button>
               <button type="button" class="btn btn-primary" data-dismiss="modal">Cancel</button>
             </form>
           </div>

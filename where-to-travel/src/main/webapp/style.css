@@ -8,8 +8,8 @@
 
 .bmd-drawer-f-l>.bmd-layout-drawer {
   height: 100%;
-  top: 0;
   left: 0;
+  top: 0;
   transform: translateX(-0px);
   width: 360px;
 }
@@ -50,11 +50,6 @@ body {
   padding-top: 10%;
 }
 
-#drawer-toggle {
-  color: #049688;
-  font-size: 1.5em;
-}
-
 .feedback {
   color: #D70D00;
 }
@@ -68,6 +63,10 @@ body {
   width: 20%
 }
 
+.font-size-large {
+  font-size: 1.3rem;
+}
+
 html {
   height: 100%;
 }
@@ -77,9 +76,18 @@ h5 {
   margin-right: auto;
 }
 
-.info-header {
-  color: #049688;
-  text-align: left;
+input:checked + .slider {
+  background-color: #049688;
+}
+
+input:focus + .slider {
+  box-shadow: 0 0 1px #049688;
+}
+
+input:checked + .slider:before {
+  -webkit-transform: translateX(26px);
+  -ms-transform: translateX(26px);
+  transform: translateX(26px);
 }
 
 .icon {
@@ -101,13 +109,13 @@ h5 {
   color: #D70D00;
 }
 
-.location-card {
-  margin: 10px;
+.info-header {
+  color: #049688;
+  text-align: left;
 }
 
-.no-break {
-  margin: 0;
-  padding: 0; 
+.location-card {
+  margin: 10px;
 }
 
 #map {
@@ -123,7 +131,7 @@ h5 {
   color: #049688;
   cursor: pointer;
   display: inline-block;
-  font-size: 24px;
+  font-size: 1rem;
   margin: 5px;
   padding: 5px 10px 5px 10px;
   transition: box-shadow .2s cubic-bezier(.4,0,1,1),background-color .2s cubic-bezier(.4,0,.2,1),color .2s cubic-bezier(.4,0,.2,1)
@@ -138,6 +146,11 @@ h5 {
 #nav-text {
   margin-right: 10px;
   margin-left: 10px;
+}
+
+.no-break {
+  margin: 0;
+  padding: 0; 
 }
 
 :not(.bmd-drawer-out).bmd-drawer-in.bmd-drawer-f-l>.bmd-layout-content {
@@ -168,6 +181,39 @@ h5 {
   color: white;
 }
 
+.slider {
+  bottom: 0;
+  background-color: #ccc;
+  cursor: pointer;
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  -webkit-transition: .4s;
+  transition: .4s;
+}
+
+.slider:before { 
+  background-color: white;
+  bottom: 4px;
+  content: "";
+  height: 26px;
+  left: 4px;
+  position: absolute;
+  width: 26px;
+  -webkit-transition: .4s;
+  transition: .4s;
+}
+
+/* Rounded sliders */
+.slider.round {
+  border-radius: 34px;
+}
+
+.slider.round:before {
+  border-radius: 50%;
+}
+
 .stars {
   background: url("https://s3-us-west-2.amazonaws.com/s.cdpn.io/2605/star-rating-sprite.png") repeat-x;
   font-size: 0;
@@ -185,6 +231,21 @@ h5 {
     height: 21px;
     display:block;
 }  
+
+.switch {
+  display: inline-block;
+  height: 34px;
+  margin-right: 31px;
+  position: relative;
+  width: 60px;
+}
+
+/* Selects all inputs after .switches, removes default input styling*/
+.switch input {
+  height: 0; 
+  opacity: 0;
+  width: 0;
+}
 
 .text-center {
   text-align: center;
@@ -232,6 +293,7 @@ h5 {
     max-width: 45%;
     padding: 0;
   }
+<<<<<<< HEAD
 }
 
 .switch {
@@ -294,4 +356,6 @@ input:checked + .slider:before {
 
 .slider.round:before {
   border-radius: 50%;
+=======
+>>>>>>> 2c8362dc4d036d66f809facaa9b1149546af141a
 }
