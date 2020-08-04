@@ -293,7 +293,6 @@ input:checked + .slider:before {
     max-width: 45%;
     padding: 0;
   }
-<<<<<<< HEAD
 }
 
 .switch {
@@ -356,6 +355,4 @@ input:checked + .slider:before {
 
 .slider.round:before {
   border-radius: 50%;
-=======
->>>>>>> 2c8362dc4d036d66f809facaa9b1149546af141a
 }
