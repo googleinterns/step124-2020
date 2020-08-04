@@ -126,6 +126,7 @@ let globalNonce;
 // Keep a set of all saved and displayed places
 let savedPlacesSet = new Set();
 let displayedPlacesSet = new Set();
+let triptsSet = new Set();
 let displaySaved = false;
 
 // Query for Place Search
@@ -742,6 +743,21 @@ function displaySavedPlaces() {
 }
 
 /**
+ * Call the database and displays all places belonging to a trip.
+ */
+function displaySavedPlaces(tripName) {
+  //TODO: Do we clearn all the other pins?
+  const placesSnapshot = firebase.database().ref('users/'+ firebase.auth().currentUser.uid + '/trip/' + tripName + '/').once('value', function(placesSnapshot){
+    let placeArray = [];
+    placesSnapshot.forEach((placesSnapshot) => {
+      let place = placesSnapshot.val();
+      placeArray.push(place);
+    });
+    populatePlaces(placeArray, true);
+  });
+}
+
+/**
  * Helper function that returns the an HTML string representing a place card
  * that can be added to the DOM.
  * @param {Object} place Contains name, lat/lng coordinates, place_id, and travel time to place
@@ -1333,3 +1349,21 @@ function removeMorePlaceInfo(place_id) {
          More Information
        </a>`;
 }
+
+//Function that needs to be called when the toggle is turned on to create the left bar
+//TODO:call this function
+function querySavedTrips() {
+  const placesSnapshot = firebase.database().ref('users/'+ firebase.auth().currentUser.uid + '/trip/').once('value', function(placesSnapshot){
+    let placeArray = [];
+    placesSnapshot.forEach((placesSnapshot) => {
+      let place = placesSnapshot.val();
+      placeArray.push(place);
+    });
+    //this will allow you to show all the trips they have saved
+    return placeArray;
+  });
+}
+
+//function for adding place to trip
+
+//function for displaying trip
