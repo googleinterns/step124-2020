@@ -209,6 +209,10 @@ firebase.auth().onAuthStateChanged(function(user) {
       marker.setMap(map);
     }
 
+    $('#trips').empty();
+    $('#tripOptions').hide();
+    $('#searchOptions').show();
+
     addLoginButtons();
   }
 });
@@ -453,6 +457,12 @@ function addUserDash() {
           marker.setMap(null);
         }
       }
+
+      $('#searchOptions').hide();
+
+       // TODO: For trip in firebase under user, addTrip(trip)
+
+      $('#tripOptions').show();
     } else {
       displaySaved = false;
 
@@ -467,6 +477,9 @@ function addUserDash() {
       for (let marker of markers) {
         marker.setMap(map);
       }
+
+      $('#tripOptions').hide();
+      $('#searchOptions').show();
     }
   });
   // Logout user if they click the logout button
@@ -1332,4 +1345,32 @@ function removeMorePlaceInfo(place_id) {
       `<a onclick="populateMorePlaceInfo('${place_id}')" class="btn btn-primary active">
          More Information
        </a>`;
+}
+
+/**
+ * Adds new trip from user input to firebase and as a button in the trip options
+ * on the sidebar of the page
+ */
+function addTrip() {
+  const tripName = document.getElementById('tripName').value;
+  if (tripName != null && tripName != '') {
+    /** TODO: Add check that trip doesn't already exist in firebase
+     * if (tripExists(tripName)) {
+         openModal(`<p> ${tripName} already exists. Please try another name </p>`);
+       }
+     */
+
+     // TODO: Insert function - addTripToFirebase(tripName)
+
+     const tripHtml =  
+       `<div class="card-header text-center" id="${tripName}">
+          <h1 class="mb-0">
+            <button class="btn btn-link text-color font-size-large">
+              ${tripName}
+            </button>
+          </h1>
+        </div>`;
+
+    $("#trips").prepend(tripHtml);
+  }
 }
