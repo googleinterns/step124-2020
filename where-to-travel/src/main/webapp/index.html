@@ -36,7 +36,7 @@
       <div class="bmd-layout-container bmd-drawer-f-l">
         <div id="dw-s2" class="bmd-layout-drawer bg-faded">
 
-          <div id="searchOptions" class="text-center">
+          <div id="searchOptions" class="text-center" hidden>
             <div class="card">
               <div class="card-header text-center" id="headingOne">
                 <h1 class="mb-0">
@@ -117,6 +117,28 @@
             <div id="feedback-target"></div> 
             
           </div>
+
+          <div id="tripOptions" class="text-center">
+            <div class="card">
+              <div class="card-header bg-light text-center">
+                <h3 class="mb-0">
+                Your Trips
+                </h3>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="card-header text-center">
+                <div class="input-group mb-3">
+                  <input type="text" class="form-control" id="tripName" placeholder="New trip">
+                  <div class="input-group-append">
+                    <input type="image" style="outline:none" src="icons/plus.svg" onclick="addTrip()"> 
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
         </div>
      
 
