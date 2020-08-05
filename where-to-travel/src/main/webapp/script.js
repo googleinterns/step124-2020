@@ -1374,13 +1374,33 @@ function addTripByName(tripName) {
   // TODO: Insert function - addTripToFirebase(tripName)
 
   const tripHtml =  
-    `<div class="card-header text-center" id="${tripName}">
+    `<div class="card-header text-center" id="${tripName}" draggable="true" ondragstart="dragTrip(event)">
        <h1 class="mb-0">
-         <button class="btn btn-link text-color font-size-large">
+         <h4 class="text-color">
            ${tripName}
-         </button>
+         </h4>
        </h1>
      </div>`;
 
     $("#trips").prepend(tripHtml);
+}
+
+/** Allows for drop event on element */
+function allowDrop(event) {
+  event.preventDefault();
+}
+
+/** Sets id (tripName) of dragged card in event data */
+function dragTrip(event) {
+  event.dataTransfer.setData("text", event.target.id);
+}
+
+/** Gets tripName of dragged card from event and deletes in Firebase and DOM */
+function deleteTrip(event) {
+  event.preventDefault();
+  const tripName = event.dataTransfer.getData("text");
+
+  // TODO: deleteTripByName(tripName) - from Firebase
+
+  $('#' + tripName).remove();
 }
