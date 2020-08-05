@@ -128,6 +128,12 @@ let savedPlacesSet = new Set();
 let displayedPlacesSet = new Set();
 let displaySaved = false;
 
+// Name of trip that is currently displayed
+let savedTrip = null;
+
+let tripIdCounter = 0;
+
+
 // Query for Place Search
 let placeType = 'Tourist Attractions';
 
@@ -212,6 +218,8 @@ firebase.auth().onAuthStateChanged(function(user) {
     $('#trips').empty();
     $('#tripOptions').hide();
     $('#searchOptions').show();
+
+    tripIdCounter = 0;
 
     addLoginButtons();
   }
@@ -461,7 +469,7 @@ function addUserDash() {
       $('#searchOptions').hide();
 
        // TODO: For trip in firebase under user, addTripByName(tripName)
-
+      document.getElementById('tripName').value = '';
       $('#tripOptions').show();
     } else {
       displaySaved = false;
@@ -1353,6 +1361,7 @@ function removeMorePlaceInfo(place_id) {
  */
 function addTrip() {
   const tripName = document.getElementById('tripName').value;
+
   if (tripName != null && tripName != '') {
     /** TODO: Add check that trip doesn't already exist in firebase
      * if (tripExists(tripName)) {
@@ -1375,8 +1384,11 @@ function addTripByName(tripName) {
 
   // TODO: Add data attribute for saved ids under trip
   // TODO: Add onclick to function that shows only saved places under trip
+  const tripId = createTripId();
+
   const tripHtml =  
-    `<div class="card-header text-center" id="${tripName}" draggable="true" ondragstart="dragTrip(event)">
+    `<div class="card-header text-center" id="${tripId}" 
+         draggable="true" ondragstart="dragTrip(event)">
        <h1 class="mb-0">
          <h4 class="text-color">
            ${tripName}
@@ -1386,6 +1398,13 @@ function addTripByName(tripName) {
 
     $("#trips").prepend(tripHtml);
 }
+
+function createTripId() {
+  const tripId = 'trip-' + tripIdCounter;
+  tripIdCounter += 1;
+  return tripId;
+}
+
 
 /** Allows for drop event on element */
 function allowDrop(event) {
@@ -1397,12 +1416,13 @@ function dragTrip(event) {
   event.dataTransfer.setData("text", event.target.id);
 }
 
-/** Gets tripName of dragged card from event and deletes in Firebase and DOM */
+/** Gets tripId of dragged card from event and deletes in Firebase and DOM */
 function deleteTrip(event) {
   event.preventDefault();
-  const tripName = event.dataTransfer.getData("text");
+  const tripId = event.dataTransfer.getData("text");
 
   // TODO: deleteTripByName(tripName) - from Firebase
 
-  $('#' + tripName).remove();
+  $('#' + tripId).remove();
 }
+
