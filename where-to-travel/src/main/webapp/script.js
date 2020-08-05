@@ -50,6 +50,7 @@ const SCROLL_ID = 'scroller';
 const DASH_ID = 'dash';
 const LOGOUT_ID = 'logout';
 const FEEDBACK_ID = 'feedback-target';
+const TOP_ID = 'top-text';
 
 // Thresholds for time input
 const HOURS_MAX_SEARCH = 20;
@@ -431,7 +432,7 @@ function openModal(content) {
  * Adds login elements to the DOM
  */
 function addLoginButtons() {
-  document.getElementById('top-text').innerHTML = TOP_INFO_STR;
+  document.getElementById(TOP_ID).innerHTML = TOP_INFO_STR;
   const dashElement = $(getLoginHtml());
   $('#' + DASH_ID).append(dashElement);
 }
@@ -824,8 +825,7 @@ function getUserDashHtml() {
      firebase.database().ref('users/'+ firebase.auth().currentUser.uid)
       .once('value', function(userSnapshot){
         const name = userSnapshot.val().name;
-        document.getElementById('top-text').innerHTML =
-          'Hi, ' + name + '! ' + TOP_INFO_STR; 
+        document.getElementById(TOP_ID).innerHTML = `Hi, ${name}! ${TOP_INFO_STR}`; 
   
         resolve(`<img onclick="showModal(${INFO_HTML_PATH})" class="btn btn-icon" src="icons/help.svg">
                  Display Saved:
