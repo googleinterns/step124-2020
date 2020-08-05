@@ -1373,6 +1373,8 @@ function addTrip() {
 function addTripByName(tripName) {
   // TODO: Insert function - addTripToFirebase(tripName)
 
+  // TODO: Add data attribute for saved ids under trip
+  // TODO: Add onclick to function that shows only saved places under trip
   const tripHtml =  
     `<div class="card-header text-center" id="${tripName}" draggable="true" ondragstart="dragTrip(event)">
        <h1 class="mb-0">
