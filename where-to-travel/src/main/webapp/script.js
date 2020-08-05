@@ -50,6 +50,7 @@ const SCROLL_ID = 'scroller';
 const DASH_ID = 'dash';
 const LOGOUT_ID = 'logout';
 const FEEDBACK_ID = 'feedback-target';
+const TOP_ID = 'top-text';
 
 // Thresholds for time input
 const HOURS_MAX_SEARCH = 20;
@@ -66,6 +67,10 @@ const PARK_TYPE_STR = 'park';
 const TOURIST_ATTRACTION_TYPE_STR = 'tourist_attraction';
 const STORE_TYPE_STR = 'store';
 const ZOO_TYPE_STR = 'zoo';
+
+// Instructions displayed at top of webpage
+const TOP_INFO_STR = 'Planning a road trip? Enter a home location' +
+                     ' and travel time to find interesting attractions!'
 
 // Paths to default and selected pins for place types
 const ICON_PATHS = {
@@ -427,6 +432,7 @@ function openModal(content) {
  * Adds login elements to the DOM
  */
 function addLoginButtons() {
+  document.getElementById(TOP_ID).innerHTML = TOP_INFO_STR;
   const dashElement = $(getLoginHtml());
   $('#' + DASH_ID).append(dashElement);
 }
@@ -434,8 +440,9 @@ function addLoginButtons() {
 /**
  * Adds user dash elements to the DOM
  */
-function addUserDash() {
-  const dashElement = $(getUserDashHtml(user));
+async function addUserDash() {
+  const dashHtml = await getUserDashHtml(); 
+  const dashElement = $(dashHtml);
   $(dashElement[2]).change(function () {
     if (this.childNodes[1].checked) {
       displaySaved = true;
@@ -808,19 +815,27 @@ function getLoginHtml() {
 }
 
 /**
- * A helper function that returns the HTML for the user dashboard given a user.
+ * A helper function that returns the HTML for the user dashboard given a user and
+ * adds name to text on top bar.
  * 
- * @param {User} user
  * @returns the HTML for user dashboard as a string 
  */
-function getUserDashHtml(user) {
-  return `<img onclick="showModal(${INFO_HTML_PATH})" class="btn btn-icon" src="icons/help.svg">
-          Display Saved:
-          <label class="switch btn">
-            <input type="checkbox">
-            <span class="slider round"></span>
-          </label>
-          <a class="btn btn-outline-primary btn-color" style="color: #049688;" id="logout">Logout</a>`;
+function getUserDashHtml() {
+  return new Promise(function(resolve) { 
+     firebase.database().ref('users/'+ firebase.auth().currentUser.uid)
+      .once('value', function(userSnapshot){
+        const name = userSnapshot.val().name;
+        document.getElementById(TOP_ID).innerHTML = `Hi, ${name}! ${TOP_INFO_STR}`; 
+  
+        resolve(`<img onclick="showModal(${INFO_HTML_PATH})" class="btn btn-icon" src="icons/help.svg">
+                 Display Saved:
+                 <label class="switch btn">
+                   <input type="checkbox">
+                   <span class="slider round"></span>
+                 </label>
+                 <a class="btn btn-outline-primary btn-color" style="color: #049688;" id="logout">Logout</a>`);
+      });
+  });
 }
 
 /**
