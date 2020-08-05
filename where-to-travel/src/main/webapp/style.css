@@ -50,6 +50,11 @@ body {
   padding-top: 10%;
 }
 
+.delete {
+  width: 24px;
+  height: 24px;
+}
+
 .feedback {
   color: #D70D00;
 }
@@ -177,8 +182,8 @@ input:checked + .slider:before {
 }
 
 .plus {
-  outline: none;
   margin-left: 12px;  
+  outline: none;  
 }
 
 .selected {
