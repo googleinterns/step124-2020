@@ -1414,7 +1414,7 @@ function allowDrop(event) {
   event.preventDefault();
 }
 
-/** Sets id (tripName) of dragged card in event data */
+/** Sets id of dragged card in event data */
 function dragTrip(event) {
   event.dataTransfer.setData("text", event.target.id);
 }
@@ -1429,6 +1429,13 @@ function deleteTrip(event) {
   $('#' + tripId).remove();
 }
 
+
+/** 
+ * Selects card corresponding to tripName if not selected and displays those places. Otherwise
+ * unselects and defaults to displaying all saved places. Every other card is unselected.
+ *
+ * @param {string} tripName Name of trip that should be selected
+ */
 function clickTrip(tripName) {
   $("div[id^=trip-]").each(function (index) {
     if ($(this).attr('tripName') == tripName) {
