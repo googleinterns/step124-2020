@@ -49,11 +49,10 @@
               <div id="collapseOne" class="collapse show" aria-labelledby="headingOne">
                 <div class="card-header bg-light text-color">
                   <div class="form-group">
-                    <input type="text" class="form-control text-center" placeholder="Enter an address" id="addressInput">
+                    <input type="text" onfocusout="getHomeLocation(true)" class="form-control text-center" placeholder="Enter an address" id="addressInput">
                   </div>
                   <div class="text-center">
                     <button onclick="getHomeLocation(false)" type="button" class="btn btn-secondary">Use My Location</button>
-                    <button onclick="getHomeLocation(true)" type="button" class="btn btn-secondary">Use Address</button>
                   </div>
                 </div>
               </div>
