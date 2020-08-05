@@ -460,7 +460,7 @@ function addUserDash() {
 
       $('#searchOptions').hide();
 
-       // TODO: For trip in firebase under user, addTrip(trip)
+       // TODO: For trip in firebase under user, addTripByName(tripName)
 
       $('#tripOptions').show();
     } else {
@@ -1356,21 +1356,31 @@ function addTrip() {
   if (tripName != null && tripName != '') {
     /** TODO: Add check that trip doesn't already exist in firebase
      * if (tripExists(tripName)) {
-         openModal(`<p> ${tripName} already exists. Please try another name </p>`);
-       }
+     *   openModal(`<p> ${tripName} already exists. Please try another name </p>`);
+     * } else {}
      */
 
-     // TODO: Insert function - addTripToFirebase(tripName)
+    addTripByName(tripName);
+  }
+}
 
-     const tripHtml =  
-       `<div class="card-header text-center" id="${tripName}">
-          <h1 class="mb-0">
-            <button class="btn btn-link text-color font-size-large">
-              ${tripName}
-            </button>
-          </h1>
-        </div>`;
+/**
+ * Adds new trip by name to firebase and as a button in the trip options
+ * on the sidebar of the page.
+ * 
+ * @param {string} tripName Name of trip that is unique for current user
+ */
+function addTripByName(tripName) {
+  // TODO: Insert function - addTripToFirebase(tripName)
+
+  const tripHtml =  
+    `<div class="card-header text-center" id="${tripName}">
+       <h1 class="mb-0">
+         <button class="btn btn-link text-color font-size-large">
+           ${tripName}
+         </button>
+       </h1>
+     </div>`;
 
     $("#trips").prepend(tripHtml);
-  }
 }
