@@ -176,6 +176,11 @@ input:checked + .slider:before {
   margin-left: auto;
 }
 
+.plus {
+  outline: none;
+  margin-left: 12px;  
+}
+
 .selected {
   background-color: #049688;
   color: white;
