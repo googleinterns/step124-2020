@@ -6,6 +6,11 @@
   z-index: 500;
 }
 
+.active-trip {
+  background-color: #049688!important;
+  color: white!important;
+}
+
 .bmd-drawer-f-l>.bmd-layout-drawer {
   height: 100%;
   left: 0;

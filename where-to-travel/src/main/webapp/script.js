@@ -1382,15 +1382,18 @@ function addTrip() {
 function addTripByName(tripName) {
   // TODO: Insert function - addTripToFirebase(tripName)
 
-  // TODO: Add data attribute for saved ids under trip
-  // TODO: Add onclick to function that shows only saved places under trip
+
   const tripId = createTripId();
 
+
+  // TODO: Add data attribute for saved ids under trip
+  // TODO: Add onclick to function that shows only saved places under trip
+  // TODO: Add ondrop event for adding card to trip
   const tripHtml =  
-    `<div class="card-header text-center" id="${tripId}" 
-         draggable="true" ondragstart="dragTrip(event)">
+    `<div class="card-header text-center" id="${tripId}" tripName="${tripName}"
+         onclick="clickTrip('${tripName}')" draggable="true" ondragstart="dragTrip(event)">
        <h1 class="mb-0">
-         <h4 class="text-color">
+         <h4>
            ${tripName}
          </h4>
        </h1>
@@ -1426,3 +1429,21 @@ function deleteTrip(event) {
   $('#' + tripId).remove();
 }
 
+function clickTrip(tripName) {
+  $("div[id^=trip-]").each(function (index) {
+    if ($(this).attr('tripName') == tripName) {
+      if ($(this).hasClass('active-trip')) {
+        // TODO: call function to display all saved places
+        $(this).removeClass('active-trip')
+        $(this).prop('draggable', true);
+      } else {
+        // TODO: call function to display saved places under this trip (get ids from data-attr)
+        $(this).addClass('active-trip')
+        $(this).prop('draggable', false);
+      }
+    } else {
+      $(this).removeClass('active-trip')
+      $(this).prop('draggable', true);
+    }
+  });
+}
