@@ -1487,7 +1487,7 @@ function addTripToFirebase(tripName) {
     openModal('<p> You have entered an empty trip name </p>');
   }
 
-  if(tripsSet.contains(tripName)) {
+  if(tripsSet.has(tripName)) {
     openModal('<p> You already have a trip by this name </p>');
   }
 
