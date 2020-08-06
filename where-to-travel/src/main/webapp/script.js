@@ -1373,26 +1373,6 @@ function addTrip (nameInput) {
   }
 }
 
-// add a new trip to the data base
-function addPlac (nameInput) {
-  //check that the place does not already exist
-  if(nameInput==null) {
-    alert("You have entered an empty input.");
-  }
-  if(tripsSet.contains(nameInput)) {
-    alert("You already have a trip by this name.");
-  }
-  else {
-      let ref = firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/trips/');
-      ref.set(nameInput); 
-      tripsSet.add(nameInput);
-  }
-}
-
-
-
-
-
 function addPlaceToTrip(tripName, placeId) {
    let ref = firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/' + tripName + '/placeIds/';
       ref.set(placeId); 
