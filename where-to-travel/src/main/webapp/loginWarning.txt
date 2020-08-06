@@ -1,0 +1,2 @@
+<h2>Please login</h2>
+<p>To use the save functionality for places, you must first make an account and login</p>
