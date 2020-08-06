@@ -806,6 +806,8 @@ function getLocationCardHtml(place) {
        data-lat="${lat}"
        data-lng="${lng}"
        data-types="[${types}]"
+       draggable="true"
+       ondragstart=dragTrip(event)
        class="card location-card" 
        placeId="${place_id}" 
        placeName="${name}" 
@@ -1400,7 +1402,7 @@ function addTripToDash(tripName, placeIds) {
   // TODO: Add ondrop event for adding card to trip
   const tripHtml =  
     `<div class="card-header text-center" id="${tripId}" tripName="${tripName}" data-ids="[${placeIds}]"
-         onclick="clickTrip('${tripName}')" draggable="true" ondragstart="dragTrip(event)">
+         onclick="clickTrip('${tripName}')" draggable="true" ondragstart="dragTrip(event)" ondrop="addPlace(event)" ondragover="allowDrop(event)">
        <h1 class="mb-0">
          <h4>
            ${tripName}
@@ -1436,6 +1438,17 @@ function deleteTrip(event) {
   // TODO: deleteTripByName(tripName) - from Firebase
 
   $('#' + tripId).remove();
+}
+
+function addPlace(event) {
+  event.preventDefault();
+  const cardId = event.dataTransfer.getData("text");
+  const placeId = cardId.split('-')[0];
+  console.log(placeId);
+  
+  const tripName = event.target.getAttribute('tripName');
+  console.log(tripName);
+  addPlaceToTrip(tripName, placeId);
 }
 
 /** 
@@ -1487,7 +1500,7 @@ function addTripToFirebase(tripName) {
     openModal('<p> You have entered an empty trip name </p>');
   }
 
-  if(tripsSet.contains(tripName)) {
+  else if(tripsSet.has(tripName)) {
     openModal('<p> You already have a trip by this name </p>');
   }
 
