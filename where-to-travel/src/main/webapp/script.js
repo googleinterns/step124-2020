@@ -577,6 +577,8 @@ function populatePlaces(placeArray, saved) {
     // If the saved places are being displayed and your search returns one of the saved places, 
     // there is nothing to do so coninue.
     if (savedPlacesSet.has(place.place_id) && document.getElementById(place.place_id)) {
+      const savedCardId = place.place_id + '-card';
+      $('#' + savedCardId).show();
       continue;
     // If you request to display the saved places while you currently have search results being displayed,
     // check to see if any of the saved places are already displayed, if so press the star and continue.
@@ -1450,13 +1452,14 @@ function clickTrip(tripName) {
   $("div[id^=trip-]").each(function (index) {
     if ($(this).attr('tripName') == tripName) {
       if ($(this).hasClass('active-trip')) {
-        // TODO: call function to display all saved places
-        $(this).removeClass('active-trip')
+        $(this).removeClass('active-trip');
         $(this).prop('draggable', true);
+        displaySavedPlaces();
       } else {
-        // TODO: call function to display saved places under this trip (get ids from data-attr)
-        $(this).addClass('active-trip')
+        const placeIds = $(this).attr('data-ids');
+        $(this).addClass('active-trip');
         $(this).prop('draggable', false);
+        displayTrip(placeIds);
       }
     } else {
       $(this).removeClass('active-trip')
@@ -1470,6 +1473,7 @@ function querySavedTrips() {
   const tripsSnapshot = firebase.database().ref('users/'+ firebase.auth().currentUser.uid + '/trip/').once('value', function(tripsSnapshot){
     tripsSnapshot.forEach((tripsSnapshot) => {
       let tripInfo = tripsSnapshot.val();
+      // TODO: Change structure of tripInfo appropriately
       addTripByInfo(tripInfo);
     });
   });
@@ -1496,20 +1500,47 @@ function addTripToFirebase (tripName) {
 }
 
 function addPlaceToTrip(tripName, placeId) {
-   let ref = firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/trips/' + tripName + '/placeIds/');
-   ref.set(placeId); 
-  //TODO: add it to the object on the card with all the place Ids
+  let ref = firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/trips/' + tripName + '/placeIds/');
+    ref.set(placeId); 
+  
+  // Add id to ids on corresponding card
+  $("div[id^=trip-]").each(function (index) {
+    if ($(this).attr('tripName') == tripName) {
+      const placeIds = $(this).attr('data-ids');
+      placeIds.push(placeId);
+      $(this).attr('data-ids', placeIds); 
+    }
+  });
 }
 
+/** Displays all saved places with matching place ids */
 function displayTrip(placeIds) {
-  //get the object with all the place ids
+  //Get the object with all the place ids
   let tripPlacesSet = new set();
   for(id in placeIds) {
     tripPlacesSet.add(id);
   }
-  //Create a set that contains those elements of set savedPlaces that are not in set tripPlacesSet. 
+  /** Create a set that contains those elements of set savedPlaces that are not in set tripPlacesSet. 
   let differenceSet = new Set(savedPlacesSet.filter(x=> !tripPlacesSet.has(x)));
   differenceSet.forEach(place => {
     //Hide the info cards and pins
   });
+  */
+
+  // Maybe hide all saved places and only show ones in set
+  $('#' + SCROLL_ID).children().each(function() {
+    if(!tripPlacesSet.has($(this).attr('placeId'))) {
+       $(this).hide();
+    } else {
+       $(this).show();
+    }
+  });
+
+  for (let marker of markers) {
+    if(!tripPlacesSet.has(marker.id)) {
+      marker.setMap(null);
+    } else {
+      marker.setMap(map);
+    }
+  }
 }
