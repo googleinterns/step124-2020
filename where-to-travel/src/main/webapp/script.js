@@ -664,7 +664,6 @@ function populatePlaces(placeArray, saved) {
         timeInSeconds: card.getAttribute('data-timeInSeconds'),
         types: card.getAttribute('data-types'),
         place_id: placeId,
-        trips: null
       }
       ref.set(data);
 
@@ -1383,8 +1382,7 @@ function addTrip() {
   const tripName = document.getElementById('tripName').value;
 
   if (tripName != null && tripName != '') {
-    tripInfo = {tripName: tripName, placeIds: []};
-    addTripByInfo(tripInfo);
+    addTripToDash(tripName, []);
     addTripToFirebase(tripName);
   }
 }
@@ -1393,13 +1391,11 @@ function addTrip() {
  * Adds new trip by name to firebase and as a button in the trip options
  * on the sidebar of the page.
  * 
- * @param {Object} tripInfo Object containing name of trip and place ids saved to it
+ * @param {string} tripName Name of trip 
+ * @param {array} placeIds Ids of places saved to trip
  */
-function addTripByInfo(tripInfo) {
-
+function addTripToDash(tripName, placeIds) {
   const tripId = createTripId();
-  const tripName = tripInfo.tripName;
-  const placeIds = tripInfo.placeIds ? tripInfo.placeIds : [];
 
   // TODO: Add ondrop event for adding card to trip
   const tripHtml =  
@@ -1470,18 +1466,21 @@ function clickTrip(tripName) {
 
 /** Function that is called when the saved places toggle is turned on */
 function querySavedTrips() {
-  const tripsSnapshot = firebase.database().ref('users/'+ firebase.auth().currentUser.uid + '/trip/').once('value', function(tripsSnapshot){
+  const tripsSnapshot = firebase.database().ref('users/'+ firebase.auth().currentUser.uid + '/trips/').once('value', function(tripsSnapshot){
     tripsSnapshot.forEach((tripsSnapshot) => {
       let tripInfo = tripsSnapshot.val();
+      console.log(tripInfo);
       // TODO: Change structure of tripInfo appropriately
-      addTripByInfo(tripInfo);
+      const tripName = 'place holder';
+      const placeIds = [];
+      addTripToDash(tripName, placeIds);
     });
   });
 }
 
 
 // Add a new trip to the data base
-function addTripToFirebase (tripName) {
+function addTripToFirebase(tripName) {
  
   //Check that the user does not already have a trip with the same name
   if(tripName == null || tripName == ' ') {
@@ -1520,14 +1519,8 @@ function displayTrip(placeIds) {
   for(id in placeIds) {
     tripPlacesSet.add(id);
   }
-  /** Create a set that contains those elements of set savedPlaces that are not in set tripPlacesSet. 
-  let differenceSet = new Set(savedPlacesSet.filter(x=> !tripPlacesSet.has(x)));
-  differenceSet.forEach(place => {
-    //Hide the info cards and pins
-  });
-  */
 
-  // Maybe hide all saved places and only show ones in set
+  // Hide all saved places and only show ones in set
   $('#' + SCROLL_ID).children().each(function() {
     if(!tripPlacesSet.has($(this).attr('placeId'))) {
        $(this).hide();
