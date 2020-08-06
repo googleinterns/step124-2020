@@ -22,7 +22,7 @@
             <h1 class="navbar-brand text-center text-color font-size-large"> <img src="icons/pins/default.svg" width="20" height="38"> Where to?</h1>
           </div>
 
-          <span class="navbar-text">
+          <span id="top-text" class="navbar-text">
             Planning a road trip? Enter a home location and travel time to find interesting attractions!
           </span>    
           <ul class="nav navbar-nav">
@@ -49,11 +49,10 @@
               <div id="collapseOne" class="collapse show" aria-labelledby="headingOne">
                 <div class="card-header bg-light text-color">
                   <div class="form-group">
-                    <input type="text" class="form-control text-center" placeholder="Enter an address" id="addressInput">
+                    <input type="text" onfocusout="getHomeLocation(true)" class="form-control text-center" placeholder="Enter an address" id="addressInput">
                   </div>
                   <div class="text-center">
                     <button onclick="getHomeLocation(false)" type="button" class="btn btn-secondary">Use My Location</button>
-                    <button onclick="getHomeLocation(true)" type="button" class="btn btn-secondary">Use Address</button>
                   </div>
                 </div>
               </div>
