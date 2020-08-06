@@ -633,7 +633,8 @@ function populatePlaces(placeArray, saved) {
         timeAsString: time,
         timeInSeconds: card.getAttribute('data-timeInSeconds'),
         types: card.getAttribute('data-types'),
-        place_id: placeId
+        place_id: placeId,
+        trips: null
       }
       ref.set(data);
 
@@ -1350,20 +1351,37 @@ function removeMorePlaceInfo(place_id) {
        </a>`;
 }
 
-//Function that needs to be called when the toggle is turned on to create the left bar
+//Function that needs to be called when the get all the saved trips in the database
 //TODO:call this function
-function querySavedTrips() {
+function querrySavedTrips() {
   const placesSnapshot = firebase.database().ref('users/'+ firebase.auth().currentUser.uid + '/trip/').once('value', function(placesSnapshot){
     let placeArray = [];
     placesSnapshot.forEach((placesSnapshot) => {
       let place = placesSnapshot.val();
       placeArray.push(place);
     });
-    //this will allow you to show all the trips they have saved
-    return placeArray;
+    populatePlacesInTrips(placeArray)
   });
 }
 
-//function for adding place to trip
 
-//function for displaying trip
+function populatePlacesInTrips(placeArray)  {
+  for(let place of placeArray) {
+    // TODO: itterate through and add the infomation to the card
+  }
+} 
+
+// add a new trip to the data base
+function addTrip (nameInput) {
+  //check that the place does not already exist
+  if(nameInput==null) {
+    alert("You have entered an empty input.");
+  }
+  if(triptsSet.contains(nameInput)) {
+    alert("You already have a trip by this name.");
+  }
+  else {
+      let ref = firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/trips/');
+      ref.set(nameInput); 
+  }
+}
