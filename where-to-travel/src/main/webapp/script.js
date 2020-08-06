@@ -126,7 +126,7 @@ let globalNonce;
 // Keep a set of all saved and displayed places
 let savedPlacesSet = new Set();
 let displayedPlacesSet = new Set();
-let triptsSet = new Set();
+let tripsSet = new Set();
 let displaySaved = false;
 
 // Query for Place Search
@@ -1338,7 +1338,7 @@ function removeMorePlaceInfo(place_id) {
 
 //Function that needs to be called when the saved places togle is turned on.
 //TODO:call this function
-function querrySavedTrips() {
+function querySavedTrips() {
   const placesSnapshot = firebase.database().ref('users/'+ firebase.auth().currentUser.uid + '/trip/').once('value', function(placesSnapshot){
     let placeArray = [];
     placesSnapshot.forEach((placesSnapshot) => {
