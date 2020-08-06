@@ -476,7 +476,7 @@ async function addUserDash() {
 
       $('#searchOptions').hide();
 
-       // TODO: For trip in firebase under user, addTripByName(tripName)
+      querySavedTrips();
       document.getElementById('tripName').value = '';
       $('#tripOptions').show();
     } else {
@@ -1381,13 +1381,9 @@ function addTrip() {
   const tripName = document.getElementById('tripName').value;
 
   if (tripName != null && tripName != '') {
-    /** TODO: Add check that trip doesn't already exist in firebase
-     * if (tripExists(tripName)) {
-     *   openModal(`<p> ${tripName} already exists. Please try another name </p>`);
-     * } else {}
-     */
-
-    addTripByName(tripName);
+    tripInfo = {tripName: tripName, placeIds: []};
+    addTripByInfo(tripInfo);
+    addTripToFirebase(tripName);
   }
 }
 
@@ -1395,20 +1391,17 @@ function addTrip() {
  * Adds new trip by name to firebase and as a button in the trip options
  * on the sidebar of the page.
  * 
- * @param {string} tripName Name of trip that is unique for current user
+ * @param {Object} tripInfo Object containing name of trip and place ids saved to it
  */
-function addTripByName(tripName) {
-  // TODO: Insert function - addTripToFirebase(tripName)
-
+function addTripByInfo(tripInfo) {
 
   const tripId = createTripId();
+  const tripName = tripInfo.tripName;
+  const placeIds = tripInfo.placeIds ? tripInfo.placeIds : [];
 
-
-  // TODO: Add data attribute for saved ids under trip
-  // TODO: Add onclick to function that shows only saved places under trip
   // TODO: Add ondrop event for adding card to trip
   const tripHtml =  
-    `<div class="card-header text-center" id="${tripId}" tripName="${tripName}"
+    `<div class="card-header text-center" id="${tripId}" tripName="${tripName}" data-ids="[${placeIds}]"
          onclick="clickTrip('${tripName}')" draggable="true" ondragstart="dragTrip(event)">
        <h1 class="mb-0">
          <h4>
@@ -1472,40 +1465,33 @@ function clickTrip(tripName) {
   });
 }
 
-//Function that needs to be called when the saved places togle is turned on.
-//TODO:call this function
+/** Function that is called when the saved places toggle is turned on */
 function querySavedTrips() {
-  const placesSnapshot = firebase.database().ref('users/'+ firebase.auth().currentUser.uid + '/trip/').once('value', function(placesSnapshot){
-    let placeArray = [];
-    placesSnapshot.forEach((placesSnapshot) => {
-      let place = placesSnapshot.val();
-      placeArray.push(place);
+  const tripsSnapshot = firebase.database().ref('users/'+ firebase.auth().currentUser.uid + '/trip/').once('value', function(placesSnapshot){
+    tripsSnapshot.forEach((tripsSnapshot) => {
+      let tripInfo = tripsSnapshot.val();
+      addTripByInfo(tripInfo);
     });
-    populatePlacesInTrips(placeArray)
   });
 }
 
-function populatePlacesInTrips(placeArray)  {
-  for(let place of placeArray) {
-    // TODO: itterate through and add the infomation to the card
-    // 1. Add the name to the card
-    // 2. store the place Id to the card
-  }
-} 
 
-// add a new trip to the data base
-function addTrip (nameInput) {
-  //check that the place does not already exist
-  if(nameInput==null) {
-    alert("You have entered an empty input.");
+// Add a new trip to the data base
+function addTripToFirebase (tripName) {
+ 
+  //Check that the user does not already have a trip with the same name
+  if(tripName == null || tripName == ' ') {
+    openModal('<p> You have entered an empty trip name </p>');
   }
-  if(tripsSet.contains(nameInput)) {
-    alert("You already have a trip by this name.");
+
+  if(tripsSet.contains(tripName)) {
+    openModal('<p> You already have a trip by this name </p>');
   }
+
   else {
-      let ref = firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/trips/');
-      ref.set(nameInput); 
-      tripsSet.add(nameInput);
+    let ref = firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/trips/');
+    ref.set(tripName); 
+    tripsSet.add(tripName);
   }
 }
 
