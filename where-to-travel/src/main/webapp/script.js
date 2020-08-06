@@ -744,21 +744,6 @@ function displaySavedPlaces() {
 }
 
 /**
- * Call the database and displays all places belonging to a trip.
- */
-function displaySavedPlaces(tripName) {
-  //TODO: Do we clearn all the other pins?
-  const placesSnapshot = firebase.database().ref('users/'+ firebase.auth().currentUser.uid + '/trip/' + tripName + '/').once('value', function(placesSnapshot){
-    let placeArray = [];
-    placesSnapshot.forEach((placesSnapshot) => {
-      let place = placesSnapshot.val();
-      placeArray.push(place);
-    });
-    populatePlaces(placeArray, true);
-  });
-}
-
-/**
  * Helper function that returns the an HTML string representing a place card
  * that can be added to the DOM.
  * @param {Object} place Contains name, lat/lng coordinates, place_id, and travel time to place
