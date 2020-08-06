@@ -131,6 +131,7 @@ let globalNonce;
 // Keep a set of all saved and displayed places
 let savedPlacesSet = new Set();
 let displayedPlacesSet = new Set();
+let tripsSet = new Set();
 let displaySaved = false;
 
 // Query for Place Search
@@ -639,7 +640,8 @@ function populatePlaces(placeArray, saved) {
         timeAsString: time,
         timeInSeconds: card.getAttribute('data-timeInSeconds'),
         types: card.getAttribute('data-types'),
-        place_id: placeId
+        place_id: placeId,
+        trips: null
       }
       ref.set(data);
 
@@ -1349,3 +1351,60 @@ function removeMorePlaceInfo(place_id) {
          More Information
        </a>`;
 }
+
+//Function that needs to be called when the saved places togle is turned on.
+//TODO:call this function
+function querySavedTrips() {
+  const placesSnapshot = firebase.database().ref('users/'+ firebase.auth().currentUser.uid + '/trip/').once('value', function(placesSnapshot){
+    let placeArray = [];
+    placesSnapshot.forEach((placesSnapshot) => {
+      let place = placesSnapshot.val();
+      placeArray.push(place);
+    });
+    populatePlacesInTrips(placeArray)
+  });
+}
+
+function populatePlacesInTrips(placeArray)  {
+  for(let place of placeArray) {
+    // TODO: itterate through and add the infomation to the card
+    // 1. Add the name to the card
+    // 2. store the place Id to the card
+  }
+} 
+
+// add a new trip to the data base
+function addTrip (nameInput) {
+  //check that the place does not already exist
+  if(nameInput==null) {
+    alert("You have entered an empty input.");
+  }
+  if(tripsSet.contains(nameInput)) {
+    alert("You already have a trip by this name.");
+  }
+  else {
+      let ref = firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/trips/');
+      ref.set(nameInput); 
+      tripsSet.add(nameInput);
+  }
+}
+
+function addPlaceToTrip(tripName, placeId) {
+   let ref = firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/' + tripName + '/placeIds/');
+      ref.set(placeId); 
+  //TODO: add it to the object on the card with all the place Ids
+}
+
+function displayTrip(trip) {
+  //get the object with all the place ids
+  let tripPlacesSet = new set();
+  for(id in placeIds) {
+    tripPlacesSet.add(id);
+  }
+  //Create a set that contains those elements of set savedPlaces that are not in set tripPlacesSet. 
+  let differenceSet = new Set(savedPlacesSet.filter(x=> !tripPlacesSet.has(x)));
+  differenceSet.forEach(place => {
+    //Hide the info cards and pins
+  });
+}
+
