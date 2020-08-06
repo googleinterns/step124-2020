@@ -1336,7 +1336,7 @@ function removeMorePlaceInfo(place_id) {
        </a>`;
 }
 
-//Function that needs to be called when the get all the saved trips in the database
+//Function that needs to be called when the saved places togle is turned on.
 //TODO:call this function
 function querrySavedTrips() {
   const placesSnapshot = firebase.database().ref('users/'+ firebase.auth().currentUser.uid + '/trip/').once('value', function(placesSnapshot){
