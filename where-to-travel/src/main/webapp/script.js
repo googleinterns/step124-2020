@@ -1479,10 +1479,12 @@ function clickTrip(tripName) {
 
 /** Function that is called when the saved places toggle is turned on */
 function querySavedTrips() {
-  const tripsSnapshot = firebase.database().ref('users/'+ firebase.auth().currentUser.uid + '/trips/').once('value', function(tripsSnapshot){
+  console.log('Is this working');
+  firebase.database().ref('users/'+ firebase.auth().currentUser.uid + '/trips').once('value', function(tripsSnapshot){
     tripsSnapshot.forEach((tripsSnapshot) => {
       let tripInfo = tripsSnapshot.val();
       console.log(tripInfo);
+      console.log(tripsSnapshot);
       // TODO: Change structure of tripInfo appropriately
       const tripName = 'place holder';
       const placeIds = [];
@@ -1490,7 +1492,6 @@ function querySavedTrips() {
     });
   });
 }
-
 
 // Add a new trip to the data base
 function addTripToFirebase(tripName) {
@@ -1505,8 +1506,8 @@ function addTripToFirebase(tripName) {
   }
 
   else {
-    let ref = firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/trips/');
-    ref.set(tripName); 
+    let ref = firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/trips/' + tripName);
+    ref.set('placeIds'); 
     tripsSet.add(tripName);
   }
 }
@@ -1519,6 +1520,7 @@ function addPlaceToTrip(tripName, placeId) {
   $("div[id^=trip-]").each(function (index) {
     if ($(this).attr('tripName') == tripName) {
       const placeIds = $(this).attr('data-ids');
+      console.log(placeIds);
       placeIds.push(placeId);
       $(this).attr('data-ids', placeIds); 
     }
