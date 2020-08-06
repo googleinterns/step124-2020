@@ -1382,10 +1382,14 @@ function removeMorePlaceInfo(place_id) {
  */
 function addTrip() {
   const tripName = document.getElementById('tripName').value;
+  if ( tripsSet.has(tripName)) {
+      openModal('<p> You already have a trip by this name </p>');
+  }
 
-  if (tripName != null && tripName != '') {
+  else if (tripName != null && tripName != '') {
     addTripToDash(tripName, []);
     addTripToFirebase(tripName);
+    tripsSet.add(tripName);
   }
 }
 
@@ -1499,10 +1503,6 @@ function addTripToFirebase(tripName) {
   //Check that the user does not already have a trip with the same name
   if(tripName == null || tripName == ' ') {
     openModal('<p> You have entered an empty trip name </p>');
-  }
-
-  else if(tripsSet.has(tripName)) {
-    openModal('<p> You already have a trip by this name </p>');
   }
 
   else {
