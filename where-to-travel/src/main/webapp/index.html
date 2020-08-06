@@ -15,7 +15,6 @@
   <body onload="initialize();">      
 
     <div class="bmd-layout-canvas">
-      
       <header class="bmd-layout-header">
         <div class="navbar bg-faded">
           <div class="text-center" style="width:330px">
@@ -36,7 +35,7 @@
       <div class="bmd-layout-container bmd-drawer-f-l">
         <div id="dw-s2" class="bmd-layout-drawer bg-faded">
 
-          <div id="accordion">
+          <div id="searchOptions" class="text-center">
             <div class="card">
               <div class="card-header text-center" id="headingOne">
                 <h1 class="mb-0">
@@ -106,19 +105,45 @@
                   </div>
                 </div>
               </div>
-            </div> 
+            </div>
             
+            <button type="button" id="submit" class="btn btn-primary search-btn font-size-large">Search</button>
+            <button type="button" onclick="clearSearch()" class="btn btn-primary search-btn font-size-large">Clear</button>     
+          
+            <div id="feedback-target"></div>     
           </div>
 
-          <span id="search-btn-container">
-            <button type="button" id="submit" class="btn btn-primary search-btn font-size-large">Search</button>
-            <button type="button" onclick="clearSearch()" class="btn btn-primary search-btn font-size-large">Clear</button>
-          </span>
-          
-          <div id="feedback-target"></div>
+          <div id="tripOptions" class="text-center" style="display:none">
+            <div class="card">
+              <div class="card-header bg-light text-center">
+                <h3 class="mb-0">
+                My Trips
+                </h3>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="card-header text-center">
+                <div class="input-group mb-3">
+                  <input type="text" class="form-control" id="tripName" placeholder="New trip">
+                  <div class="input-group-append">
+                    <input type="image" class="plus" src="icons/plus-circle.svg" onclick="addTrip()"> 
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="card" id="trips">
+            </div>
+
+            <div class="card" ondrop="deleteTrip(event)" ondragover="allowDrop(event)">
+              <div class="card-header bg-light text-center">
+                <img class="delete" src="icons/trashcan.svg"> 
+              </div>
+            </div>
+          </div>
         </div>
      
-
         <main class="bmd-layout-content content">
           <div hidden class="card-scroller" id="scroller" style="margin-left: 360px"></div>
           <div id="map" style="margin-left: 360px"></div>
@@ -208,15 +233,15 @@
       </div>
     </div>
 
-      <div class="modal fade" id="location-modal" tabindex="-1" role="dialog" aria-hidden="true">
-        <div class="modal-dialog modal-sm" role="document">
-          <div class="modal-content">
-            <div class="modal-body text-center">
-              <h5> Finding Your Location... </h5>
-            </div>
+    <div class="modal fade" id="location-modal" tabindex="-1" role="dialog" aria-hidden="true">
+      <div class="modal-dialog modal-sm" role="document">
+        <div class="modal-content">
+          <div class="modal-body text-center">
+            <h5> Finding Your Location... </h5>
           </div>
         </div>
       </div>
+    </div>
 
     <div class="modal fade" id="login-modal" tabindex="-1" role="dialog" aria-hidden="true">
       <div class="modal-dialog modal-sm" role="document">

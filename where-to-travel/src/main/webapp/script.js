@@ -134,6 +134,12 @@ let displayedPlacesSet = new Set();
 let tripsSet = new Set();
 let displaySaved = false;
 
+// Name of trip that is currently displayed
+let savedTrip = null;
+
+let tripIdCounter = 0;
+
+
 // Query for Place Search
 let placeType = 'Tourist Attractions';
 
@@ -214,6 +220,12 @@ firebase.auth().onAuthStateChanged(function(user) {
     for (let marker of markers) {
       marker.setMap(map);
     }
+
+    $('#trips').empty();
+    $('#tripOptions').hide();
+    $('#searchOptions').show();
+
+    tripIdCounter = 0;
 
     addLoginButtons();
   }
@@ -461,6 +473,12 @@ async function addUserDash() {
           marker.setMap(null);
         }
       }
+
+      $('#searchOptions').hide();
+
+       // TODO: For trip in firebase under user, addTripByName(tripName)
+      document.getElementById('tripName').value = '';
+      $('#tripOptions').show();
     } else {
       displaySaved = false;
 
@@ -475,6 +493,9 @@ async function addUserDash() {
       for (let marker of markers) {
         marker.setMap(map);
       }
+
+      $('#tripOptions').hide();
+      $('#searchOptions').show();
     }
   });
   // Logout user if they click the logout button
@@ -1352,6 +1373,105 @@ function removeMorePlaceInfo(place_id) {
        </a>`;
 }
 
+/**
+ * Adds new trip from user input to firebase and as a button in the trip options
+ * on the sidebar of the page
+ */
+function addTrip() {
+  const tripName = document.getElementById('tripName').value;
+
+  if (tripName != null && tripName != '') {
+    /** TODO: Add check that trip doesn't already exist in firebase
+     * if (tripExists(tripName)) {
+     *   openModal(`<p> ${tripName} already exists. Please try another name </p>`);
+     * } else {}
+     */
+
+    addTripByName(tripName);
+  }
+}
+
+/**
+ * Adds new trip by name to firebase and as a button in the trip options
+ * on the sidebar of the page.
+ * 
+ * @param {string} tripName Name of trip that is unique for current user
+ */
+function addTripByName(tripName) {
+  // TODO: Insert function - addTripToFirebase(tripName)
+
+
+  const tripId = createTripId();
+
+
+  // TODO: Add data attribute for saved ids under trip
+  // TODO: Add onclick to function that shows only saved places under trip
+  // TODO: Add ondrop event for adding card to trip
+  const tripHtml =  
+    `<div class="card-header text-center" id="${tripId}" tripName="${tripName}"
+         onclick="clickTrip('${tripName}')" draggable="true" ondragstart="dragTrip(event)">
+       <h1 class="mb-0">
+         <h4>
+           ${tripName}
+         </h4>
+       </h1>
+     </div>`;
+
+    $("#trips").prepend(tripHtml);
+}
+
+function createTripId() {
+  const tripId = 'trip-' + tripIdCounter;
+  tripIdCounter += 1;
+  return tripId;
+}
+
+
+/** Allows for drop event on element */
+function allowDrop(event) {
+  event.preventDefault();
+}
+
+/** Sets id of dragged card in event data */
+function dragTrip(event) {
+  event.dataTransfer.setData("text", event.target.id);
+}
+
+/** Gets tripId of dragged card from event and deletes in Firebase and DOM */
+function deleteTrip(event) {
+  event.preventDefault();
+  const tripId = event.dataTransfer.getData("text");
+
+  // TODO: deleteTripByName(tripName) - from Firebase
+
+  $('#' + tripId).remove();
+}
+
+/** 
+ * Selects card corresponding to tripName if not selected and displays those places. Otherwise
+ * unselects and defaults to displaying all saved places. Every other card is unselected.
+ *
+ * @param {string} tripName Name of trip that should be selected
+ */
+function clickTrip(tripName) {
+  $("div[id^=trip-]").each(function (index) {
+    if ($(this).attr('tripName') == tripName) {
+      if ($(this).hasClass('active-trip')) {
+        // TODO: call function to display all saved places
+        $(this).removeClass('active-trip')
+        $(this).prop('draggable', true);
+      } else {
+        // TODO: call function to display saved places under this trip (get ids from data-attr)
+        $(this).addClass('active-trip')
+        $(this).prop('draggable', false);
+      }
+    } else {
+      $(this).removeClass('active-trip')
+      $(this).prop('draggable', true);
+    }
+  });
+}
+
 //Function that needs to be called when the saved places togle is turned on.
 //TODO:call this function
 function querySavedTrips() {
@@ -1407,4 +1527,3 @@ function displayTrip(trip) {
     //Hide the info cards and pins
   });
 }
-

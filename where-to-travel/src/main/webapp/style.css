@@ -6,6 +6,11 @@
   z-index: 500;
 }
 
+.active-trip {
+  background-color: #049688!important;
+  color: white!important;
+}
+
 .bmd-drawer-f-l>.bmd-layout-drawer {
   height: 100%;
   left: 0;
@@ -48,6 +53,11 @@ body {
 #colon {
   font-size: 24px;
   padding-top: 10%;
+}
+
+.delete {
+  width: 24px;
+  height: 24px;
 }
 
 .feedback {
@@ -174,6 +184,11 @@ input:checked + .slider:before {
   margin-top: 5px;
   margin-right: auto;
   margin-left: auto;
+}
+
+.plus {
+  margin-left: 12px;  
+  outline: none;  
 }
 
 .selected {
