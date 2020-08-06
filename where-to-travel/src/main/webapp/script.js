@@ -1166,6 +1166,7 @@ function populateMorePlaceInfo(place_id) {
       'geometry',
       'opening_hours', 
       'rating', 
+      'utc_offset_minutes',
       'website' 
     ]
   };
@@ -1301,7 +1302,7 @@ function getOpeningHours(opening_hours) {
 
   // If place is currently open, show open in green, otherwise show closed in red.
   if (opening_hours.isOpen()) {
-    html = `<p><b>Hours:</b> &nbsp <span style = "color:#6CC551;">Open</span> &nbsp ${todaysHours} </p>`;  
+    html = `<p><b>Hours:</b> &nbsp <span style = "color:#1A9107;">Open</span> &nbsp ${todaysHours} </p>`;  
   } else {
     html = `<p><b>Hours:</b> &nbsp <span style = "color:#D70D00;">Closed</span> &nbsp ${todaysHours} </p>`; 
   }
