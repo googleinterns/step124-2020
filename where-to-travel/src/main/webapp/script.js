@@ -577,6 +577,8 @@ function populatePlaces(placeArray, saved) {
     // If the saved places are being displayed and your search returns one of the saved places, 
     // there is nothing to do so coninue.
     if (savedPlacesSet.has(place.place_id) && document.getElementById(place.place_id)) {
+      const savedCardId = place.place_id + '-card';
+      $('#' + savedCardId).show();
       continue;
     // If you request to display the saved places while you currently have search results being displayed,
     // check to see if any of the saved places are already displayed, if so press the star and continue.
@@ -1450,14 +1452,14 @@ function clickTrip(tripName) {
   $("div[id^=trip-]").each(function (index) {
     if ($(this).attr('tripName') == tripName) {
       if ($(this).hasClass('active-trip')) {
-        // TODO: call function to display all saved places
         $(this).removeClass('active-trip');
         $(this).prop('draggable', true);
+        displaySavedPlaces();
       } else {
         const placeIds = $(this).attr('data-ids');
-        displayTrip(placeIds);
         $(this).addClass('active-trip');
         $(this).prop('draggable', false);
+        displayTrip(placeIds);
       }
     } else {
       $(this).removeClass('active-trip')
@@ -1511,7 +1513,7 @@ function addPlaceToTrip(tripName, placeId) {
   });
 }
 
-// TODO: Function that shows all saved places
+/** Displays all saved places with matching place ids */
 function displayTrip(placeIds) {
   //Get the object with all the place ids
   let tripPlacesSet = new set();
@@ -1524,7 +1526,7 @@ function displayTrip(placeIds) {
     //Hide the info cards and pins
   });
   */
-  
+
   // Maybe hide all saved places and only show ones in set
   $('#' + SCROLL_ID).children().each(function() {
     if(!tripPlacesSet.has($(this).attr('placeId'))) {
