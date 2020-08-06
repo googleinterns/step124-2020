@@ -1364,10 +1364,11 @@ function querrySavedTrips() {
   });
 }
 
-
 function populatePlacesInTrips(placeArray)  {
   for(let place of placeArray) {
     // TODO: itterate through and add the infomation to the card
+    // 1. Add the name to the card
+    // 2. store the place Id to the card
   }
 } 
 
@@ -1377,11 +1378,30 @@ function addTrip (nameInput) {
   if(nameInput==null) {
     alert("You have entered an empty input.");
   }
-  if(triptsSet.contains(nameInput)) {
+  if(tripsSet.contains(nameInput)) {
     alert("You already have a trip by this name.");
   }
   else {
       let ref = firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/trips/');
       ref.set(nameInput); 
+      tripsSet.add(nameInput);
   }
 }
+
+function addPlaceToTrip(placeId) {
+  //TODO: add it to the object with all the place Ids
+}
+
+function displayTrip(trip) {
+  //get the object with all the place ids
+  let tripPlacesSet = new set();
+  for(id in placeIds) {
+    tripPlacesSet.add(id);
+  }
+  //Create a set that contains those elements of set savedPlaces that are not in set tripPlacesSet. 
+  let differenceSet = new Set(savedPlacesSet.filter(x=> !tripPlacesSet.has(x)));
+  differenceSet.forEach(place => {
+    //Hide the info cards and pins
+  });
+}
+
