@@ -1467,7 +1467,7 @@ function clickTrip(tripName) {
 
 /** Function that is called when the saved places toggle is turned on */
 function querySavedTrips() {
-  const tripsSnapshot = firebase.database().ref('users/'+ firebase.auth().currentUser.uid + '/trip/').once('value', function(placesSnapshot){
+  const tripsSnapshot = firebase.database().ref('users/'+ firebase.auth().currentUser.uid + '/trip/').once('value', function(tripsSnapshot){
     tripsSnapshot.forEach((tripsSnapshot) => {
       let tripInfo = tripsSnapshot.val();
       addTripByInfo(tripInfo);
