@@ -1497,7 +1497,7 @@ function addTripToFirebase (tripName) {
 
 function addPlaceToTrip(tripName, placeId) {
    let ref = firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/trips/' + tripName + '/placeIds/');
-      ref.set(placeId); 
+   ref.set(placeId); 
   //TODO: add it to the object on the card with all the place Ids
 }
 
