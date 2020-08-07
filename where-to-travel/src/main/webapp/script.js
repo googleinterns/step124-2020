@@ -1387,7 +1387,7 @@ function addTrip() {
   const tripBox = document.getElementById('tripName');
   const tripName = tripBox.value;
   tripBox.value = '';
-  if ( tripsSet.has(tripName)) {
+  if (tripsSet.has(tripName)) {
       openModal('<p> You already have a trip by this name </p>');
   }
 
