@@ -816,7 +816,7 @@ function getLocationCardHtml(place) {
        style="margin-right: 0;">
       <div class="card-body">
         <h5 id="${titleId}" class="card-title" draggable="true"
-            ondragstart="dragTrip(event)">${name}
+        ondragstart="dragTrip(event)">${name}
           <span class="icon" id="${iconId}">
             &#9733;
           </span>
@@ -1384,7 +1384,9 @@ function removeMorePlaceInfo(place_id) {
  * on the sidebar of the page
  */
 function addTrip() {
-  const tripName = document.getElementById('tripName').value;
+  const tripBox = document.getElementById('tripName');
+  const tripName = tripBox.value;
+  tripBox.value = '';
   if ( tripsSet.has(tripName)) {
       openModal('<p> You already have a trip by this name </p>');
   }
