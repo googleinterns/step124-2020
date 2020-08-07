@@ -132,7 +132,11 @@ let globalNonce;
 // Keep a set of all saved and displayed places
 let savedPlacesSet = new Set();
 let displayedPlacesSet = new Set();
+let tripsSet = new Set();
 let displaySaved = false;
+
+// Counter for generating unique trip card ids
+let tripIdCounter = 0;
 
 // Query for Place Search
 let placeType = 'Tourist Attractions';
@@ -214,6 +218,12 @@ firebase.auth().onAuthStateChanged(function(user) {
     for (let marker of markers) {
       marker.setMap(map);
     }
+
+    $('#trips').empty();
+    $('#tripOptions').hide();
+    $('#searchOptions').show();
+
+    tripIdCounter = 0;
 
     addLoginButtons();
   }
@@ -448,7 +458,7 @@ async function addUserDash() {
     if (this.childNodes[1].checked) {
       displaySaved = true;
 
-      // populate saved places
+      // Populate saved places
       displaySavedPlaces();
       $('#' + SCROLL_ID).children().each(function() {
         if(!savedPlacesSet.has($(this).attr('placeId'))) {
@@ -461,6 +471,13 @@ async function addUserDash() {
           marker.setMap(null);
         }
       }
+
+      $('#searchOptions').hide();
+
+      // Populate and show trip dashboard
+      querySavedTrips();
+      document.getElementById('tripName').value = '';
+      $('#tripOptions').show();
     } else {
       displaySaved = false;
 
@@ -475,6 +492,11 @@ async function addUserDash() {
       for (let marker of markers) {
         marker.setMap(map);
       }
+
+      // Switch from trip to search dashboard
+      $('#trips').empty();  
+      $('#tripOptions').hide();
+      $('#searchOptions').show();
     }
   });
   // Logout user if they click the logout button
@@ -487,7 +509,7 @@ async function addUserDash() {
 }
 
 /**
- * Toggle the focused pin/card off
+ * Toggles the focused pin/card off
  */
 function toggleFocusOff() {
   if (focusedCard) {
@@ -553,9 +575,18 @@ function populatePlaces(placeArray, saved) {
   }
 
   for(let place of placeArray) {
-    // If the saved places are being displayed and your search returns one of the saved places, 
-    // there is nothing to do so coninue.
+    // If the saved places are being displayed and card for place already exists, show
+    // card and corresponding pin and continue
     if (savedPlacesSet.has(place.place_id) && document.getElementById(place.place_id)) {
+      const savedIconId = '#' + place.place_id + '-icon';
+      const savedCardId = '#' + place.place_id + '-card';
+      for (let marker of markers) {
+        if (marker.id === place.place_id) {
+            marker.setMap(map);
+        }
+      }
+      $(savedIconId).addClass('press');
+      $(savedCardId).show();
       continue;
     // If you request to display the saved places while you currently have search results being displayed,
     // check to see if any of the saved places are already displayed, if so press the star and continue.
@@ -645,7 +676,7 @@ function populatePlaces(placeArray, saved) {
         timeAsString: time,
         timeInSeconds: card.getAttribute('data-timeInSeconds'),
         types: card.getAttribute('data-types'),
-        place_id: placeId
+        place_id: placeId,
       }
       ref.set(data);
 
@@ -738,9 +769,7 @@ function hidePlace(placeId) {
   }
 }
  
-/**
- * Call the database and displays all saved places.
- */
+/** Extracts saved places from database and displays them  */
 function displaySavedPlaces() {
   const placesSnapshot = firebase.database().ref('users/'+ firebase.auth().currentUser.uid + '/places').once('value', function(placesSnapshot){
     let placeArray = [];
@@ -755,7 +784,7 @@ function displaySavedPlaces() {
 }
 
 /**
- * Helper function that returns the an HTML string representing a place card
+ * Helper function that returns HTML string representing a place card
  * that can be added to the DOM.
  * @param {Object} place Contains name, lat/lng coordinates, place_id, and travel time to place
  * @return {string} HTML content to place inside infocard corresponding to place
@@ -782,6 +811,7 @@ function getLocationCardHtml(place) {
   } 
 
   const iconId = place_id + '-icon';
+  const titleId = place_id + '-title';
   const innerHtml = '' +
     `<div id="${place_id}-card"
        data-timeInSeconds="${timeInSeconds}" 
@@ -793,7 +823,8 @@ function getLocationCardHtml(place) {
        placeName="${name}" 
        style="margin-right: 0;">
       <div class="card-body">
-        <h5 class="card-title">${name}
+        <h5 id="${titleId}" class="card-title" draggable="true"
+        ondragstart="dragTrip(event)">${name}
           <span class="icon" id="${iconId}">
             &#9733;
           </span>
@@ -809,9 +840,9 @@ function getLocationCardHtml(place) {
 }
 
 /**
- * A helper function that returns the HTML for login.
+ * A helper function that returns HTML string for login dashboard.
  * 
- * @returns the HTML for login as a string
+ * @returns HTML for login as a string
  */
 function getLoginHtml() {
   return `<img onclick="showModal('${INFO_HTML_PATH}')" class="btn btn-icon" src="icons/help.svg">
@@ -821,10 +852,10 @@ function getLoginHtml() {
 }
 
 /**
- * A helper function that returns the HTML for the user dashboard given a user and
+ * A helper function that returns HTML for the user dashboard given a user and
  * adds name to text on top bar.
  * 
- * @returns the HTML for user dashboard as a string 
+ * @returns HTML for user dashboard as a string 
  */
 function getUserDashHtml() {
   return new Promise(function(resolve) { 
@@ -845,7 +876,7 @@ function getUserDashHtml() {
 }
 
 /**
- * Given a title, selects the corresponding marker by focussing it
+ * Given a title, selects the corresponding marker by focusing it
  * @param {string} place_id Textual identifier for place to focus
  * @param {string} pin_path Path to selected pin for marker
 */
@@ -1254,37 +1285,37 @@ function getRightCardHTML(place) {
  * @return {string} HTML content that formats passed in information for bottom of infocard
  */
 function getBottomCardHTML(place, place_id) {
-    let bottomHTML = '';
+  let bottomHTML = '';
 
-    if (home && !displaySaved) {
-      // Link to Google Maps directions from home location to place 
-      const directionsLink = 'https://www.google.com/maps/dir/' +
-        home.lat + ',' + home.lng + '/' +
-        place.geometry.location.lat() + ',' + place.geometry.location.lng();
+  if (home && !displaySaved) {
+    // Link to Google Maps directions from home location to place 
+    const directionsLink = 'https://www.google.com/maps/dir/' +
+      home.lat + ',' + home.lng + '/' +
+      place.geometry.location.lat() + ',' + place.geometry.location.lng();
 
-      bottomHTML += 
-        `<a target="_blank" class="btn btn-primary active" href=${directionsLink}>
-          Directions
-        </a>
-        &nbsp`;
-    }
-
-    // If there is a listed website, add a button for it
-    if (place.website) {
-      bottomHTML += 
-        `<a target="_blank" class="btn btn-primary active" href=${place.website}>
-           Website
-         </a>
-         &nbsp`;
-    }
-
-    // Always add button for hiding information
     bottomHTML += 
-      `<a class="btn btn-primary active" onclick="removeMorePlaceInfo('${place_id}')">
-          Hide Information
-       </a>`;
+      `<a target="_blank" class="btn btn-primary active" href=${directionsLink}>
+        Directions
+      </a>
+      &nbsp`;
+  }
 
-    return bottomHTML;
+  // If there is a listed website, add a button for it
+  if (place.website) {
+    bottomHTML += 
+      `<a target="_blank" class="btn btn-primary active" href=${place.website}>
+         Website
+       </a>
+       &nbsp`;
+  }
+
+  // Always add button for hiding information
+  bottomHTML += 
+    `<a class="btn btn-primary active" onclick="removeMorePlaceInfo('${place_id}')">
+        Hide Information
+     </a>`;
+
+  return bottomHTML;
 }
 
 /**
@@ -1354,4 +1385,209 @@ function removeMorePlaceInfo(place_id) {
       `<a onclick="populateMorePlaceInfo('${place_id}')" class="btn btn-primary active">
          More Information
        </a>`;
+}
+
+/**
+ * Adds new trip from user input to firebase and as a button in the trip options
+ * on the sidebar of the page
+ */
+function addTrip() {
+  const tripBox = document.getElementById('tripName');
+  const tripName = tripBox.value;
+  tripBox.value = '';
+  if (tripsSet.has(tripName)) {
+      openModal('<p> You already have a trip by this name </p>');
+  }
+
+  else if (tripName != null && tripName != '') {
+    addTripToDash(tripName, []);
+    addTripToFirebase(tripName);
+    tripsSet.add(tripName);
+  }
+}
+
+/**
+ * Adds new trip by name to firebase and as a button in the trip options
+ * on the sidebar of the page.
+ * 
+ * @param {string} tripName Name of trip 
+ * @param {array} placeIds Ids of places saved to trip
+ */
+function addTripToDash(tripName, placeIds) {
+  const tripId = createTripId();
+
+  const tripHtml =  
+    `<div class="card-body card-outline text-center" id="${tripId}" data-tripname="${tripName}" 
+         onclick="clickTrip('${tripName}')" draggable="true" ondragstart="dragTrip(event)" 
+         ondrop="addPlace(event)" ondragover="allowDrop(event)">
+       <h4 class="mb-0" data-tripname="${tripName}"
+           ondrop="addPlace(event)" ondragover="allowDrop(event)">
+         ${tripName}
+       </h4> 
+     </div>`;
+
+    $('#trips').prepend(tripHtml);
+    $('#' + tripId).data('placeIds', placeIds);
+}
+
+/** Generate unique id for trip card */
+function createTripId() {
+  const tripId = 'trip-' + tripIdCounter;
+  tripIdCounter += 1;
+  return tripId;
+}
+
+/** Allows for drop event on element */
+function allowDrop(event) {
+  event.preventDefault();
+}
+
+/** Sets id of dragged card in event data */
+function dragTrip(event) {
+  event.dataTransfer.setData("text", event.target.id);
+}
+
+/** Gets tripName of dragged card from event and deletes in Firebase and DOM */
+function deleteTrip(event) {
+  event.preventDefault();
+  const tripId = event.dataTransfer.getData("text");
+  const tripName = $('#' + tripId).attr('data-tripname');
+  deleteTripFromFirebase(tripName);
+  tripsSet.delete(tripName);
+  $('#' + tripId).remove();
+}
+
+/**
+ * Deletes trip by name in Firebase
+ * 
+ * @param {string} tripName Name of trip to delete
+ */
+function deleteTripFromFirebase(tripName) {
+  let ref = firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/trips/' + tripName);
+  ref.remove();
+}
+
+/** Adds place dropped onto trip card to trip in Firebase */
+function addPlace(event) {
+  event.preventDefault();
+  
+  const cardId = event.dataTransfer.getData("text");
+  const placeId = cardId.split('-title')[0];
+
+  const tripName = event.target.getAttribute('data-tripname');
+
+  addPlaceToTrip(tripName, placeId);
+}
+
+/** 
+ * Selects card corresponding to tripName if not selected and displays those places. Otherwise
+ * unselects and defaults to displaying all saved places. Every other card is unselected.
+ *
+ * @param {string} tripName Name of trip that should be selected
+ */
+function clickTrip(tripName) {
+  $("div[id^=trip-]").each(function (index) {
+    if ($(this).attr('data-tripname') == tripName) {
+      if ($(this).hasClass('active-trip')) {
+        $(this).removeClass('active-trip');
+        $(this).prop('draggable', true);
+        displaySavedPlaces();
+      } else {
+        const placeIds = $(this).data('placeIds');
+        $(this).addClass('active-trip');
+        $(this).prop('draggable', false);
+        displayTrip(placeIds);
+      }
+    } else {
+      $(this).removeClass('active-trip')
+      $(this).prop('draggable', true);
+    }
+  });
+}
+
+/**
+ * Function that is called when saved places toggle is turned on. Populates previously
+ * saved trips to trips dashboard.
+ */
+function querySavedTrips() {
+  firebase.database().ref('users/'+ firebase.auth().currentUser.uid + '/trips/').once('value', function(tripsSnapshot){
+    tripsSnapshot.forEach((tripsSnapshot) => {
+      let tripInfo = tripsSnapshot.val();
+      const tripName = tripsSnapshot.key;
+      let placeIds = [];
+      if (typeof(tripInfo) === 'object') {
+        placeIds = Object.keys(tripInfo.placeIds);
+      } 
+      addTripToDash(tripName, placeIds);
+    });
+  });
+}
+
+/** 
+ * Adds a new trip to Firebase under current user's account 
+ *
+ * @param {string} tripName Name of trip to add to Firebase
+ */
+function addTripToFirebase(tripName) {
+ 
+  if(tripName == null || tripName == ' ') {
+    openModal('<p> You have entered an empty trip name </p>');
+  }
+  //Check that the user does not already have a trip with the same name
+  else if (tripsSet.has(tripName)) {
+    openModal('<p> You have entered a trip name that already exists </p>');
+  }
+  else {
+    let ref = firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/trips/' + tripName);
+    ref.set('placeIds');
+    tripsSet.add(tripName);
+  }
+}
+
+/**
+ * Adds place id to tripName in Firabase and in data attribute for trip card 
+ *
+ * @param {string} tripName Name of trip to add place id 
+ * @param {string} placeId Textual identifier of place that is added to trip
+ */
+function addPlaceToTrip(tripName, placeId) {
+  let ref = firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/trips/' + tripName + '/placeIds/' + placeId);
+  ref.set({[placeId]: true}); 
+  
+  // Add id to ids on corresponding card
+  $("div[id^=trip-]").each(function (index) {
+    if ($(this).attr('data-tripname') == tripName) {
+      const placeIds = $(this).data('placeIds');
+      placeIds.push(placeId);
+      $(this).data('placeIds', placeIds); 
+    }
+  });
+}
+
+/**
+ * Displays all saved places with matching place ids 
+ *
+ * @param {array} placeIds Contains ids of all saved places to display
+ */
+function displayTrip(placeIds) {
+
+  //Get the object with all the place ids
+  let tripPlacesSet = new Set(placeIds);
+
+  // Hide all saved places and only show ones in set
+  $('#' + SCROLL_ID).children().each(function() {
+    if(!tripPlacesSet.has($(this).attr('placeId'))) {
+       $(this).hide();
+    } else {
+       $(this).show();
+    }
+  });
+
+  for (let marker of markers) {
+    if(!tripPlacesSet.has(marker.id)) {
+      marker.setMap(null);
+    } else {
+      marker.setMap(map);
+    }
+  }
 }
