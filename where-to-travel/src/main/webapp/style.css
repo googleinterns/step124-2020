@@ -35,6 +35,11 @@ body {
   color: #049688;
 }
 
+.card-outline {
+  border-top:  1px solid black;   
+  border-bottom: 1px solid black;
+}
+
 .card-scroller {
   background-color: rgba(0, 0, 0, 0);
   height: 100%;

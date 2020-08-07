@@ -494,6 +494,7 @@ async function addUserDash() {
         marker.setMap(map);
       }
 
+      $('#trips').empty();  
       $('#tripOptions').hide();
       $('#searchOptions').show();
     }
@@ -577,8 +578,10 @@ function populatePlaces(placeArray, saved) {
     // If the saved places are being displayed and your search returns one of the saved places, 
     // there is nothing to do so coninue.
     if (savedPlacesSet.has(place.place_id) && document.getElementById(place.place_id)) {
-      const savedCardId = place.place_id + '-card';
-      $('#' + savedCardId).show();
+      const savedIconId = '#' + place.place_id + '-icon';
+      const savedCardId = '#' + place.place_id + '-card';
+      $(savedIconId).addClass('press');
+      $(savedCardId).show();
       continue;
     // If you request to display the saved places while you currently have search results being displayed,
     // check to see if any of the saved places are already displayed, if so press the star and continue.
@@ -800,20 +803,20 @@ function getLocationCardHtml(place) {
   } 
 
   const iconId = place_id + '-icon';
+  const titleId = place_id + '-title';
   const innerHtml = '' +
     `<div id="${place_id}-card"
        data-timeInSeconds="${timeInSeconds}" 
        data-lat="${lat}"
        data-lng="${lng}"
        data-types="[${types}]"
-       draggable="true"
-       ondragstart=dragTrip(event)
        class="card location-card" 
        placeId="${place_id}" 
        placeName="${name}" 
        style="margin-right: 0;">
       <div class="card-body">
-        <h5 class="card-title">${name}
+        <h5 id="${titleId}" class="card-title" draggable="true"
+            ondragstart="dragTrip(event)">${name}
           <span class="icon" id="${iconId}">
             &#9733;
           </span>
@@ -1399,18 +1402,18 @@ function addTrip() {
 function addTripToDash(tripName, placeIds) {
   const tripId = createTripId();
 
-  // TODO: Add ondrop event for adding card to trip
   const tripHtml =  
-    `<div class="card-header text-center" id="${tripId}" tripName="${tripName}" data-ids="[${placeIds}]"
-         onclick="clickTrip('${tripName}')" draggable="true" ondragstart="dragTrip(event)" ondrop="addPlace(event)" ondragover="allowDrop(event)">
-       <h1 class="mb-0">
-         <h4>
-           ${tripName}
-         </h4>
-       </h1>
+    `<div class="card-body card-outline text-center" id="${tripId}" data-tripname="${tripName}" 
+         onclick="clickTrip('${tripName}')" draggable="true" ondragstart="dragTrip(event)" 
+         ondrop="addPlace(event)" ondragover="allowDrop(event)">
+       <h4 class="mb-0" data-tripname="${tripName}"
+           ondrop="addPlace(event)" ondragover="allowDrop(event)">
+         ${tripName}
+       </h4> 
      </div>`;
 
-    $("#trips").prepend(tripHtml);
+    $('#trips').prepend(tripHtml);
+    $('#' + tripId).data('placeIds', placeIds);
 }
 
 function createTripId() {
@@ -1434,21 +1437,27 @@ function dragTrip(event) {
 function deleteTrip(event) {
   event.preventDefault();
   const tripId = event.dataTransfer.getData("text");
-
-  // TODO: deleteTripByName(tripName) - from Firebase
+  const tripName = $('#' + tripId).attr('data-tripname');
+  deleteTripByName(tripName);
 
   $('#' + tripId).remove();
 }
 
+function deleteTripByName(tripName) {
+  let ref = firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/trips/' + tripName);
+  ref.remove();
+  tripsSet.delete(tripName);
+}
+
+/** Adds place dropped onto trip card to corresponding trip */
 function addPlace(event) {
   event.preventDefault();
   const cardId = event.dataTransfer.getData("text");
-  const placeId = cardId.split('-')[0];
-  console.log(placeId);
-  
-  const tripName = event.target.getAttribute('tripName');
-  console.log(tripName);
+  const placeId = cardId.split('-title')[0];
+
+  const tripName = event.target.getAttribute('data-tripname');
   addPlaceToTrip(tripName, placeId);
+
 }
 
 /** 
@@ -1459,13 +1468,13 @@ function addPlace(event) {
  */
 function clickTrip(tripName) {
   $("div[id^=trip-]").each(function (index) {
-    if ($(this).attr('tripName') == tripName) {
+    if ($(this).attr('data-tripname') == tripName) {
       if ($(this).hasClass('active-trip')) {
         $(this).removeClass('active-trip');
         $(this).prop('draggable', true);
         displaySavedPlaces();
       } else {
-        const placeIds = $(this).attr('data-ids');
+        const placeIds = $(this).data('placeIds');
         $(this).addClass('active-trip');
         $(this).prop('draggable', false);
         displayTrip(placeIds);
@@ -1479,15 +1488,14 @@ function clickTrip(tripName) {
 
 /** Function that is called when the saved places toggle is turned on */
 function querySavedTrips() {
-  console.log('Is this working');
-  firebase.database().ref('users/'+ firebase.auth().currentUser.uid + '/trips').once('value', function(tripsSnapshot){
+  firebase.database().ref('users/'+ firebase.auth().currentUser.uid + '/trips/').once('value', function(tripsSnapshot){
     tripsSnapshot.forEach((tripsSnapshot) => {
       let tripInfo = tripsSnapshot.val();
-      console.log(tripInfo);
-      console.log(tripsSnapshot);
-      // TODO: Change structure of tripInfo appropriately
-      const tripName = 'place holder';
-      const placeIds = [];
+      const tripName = tripsSnapshot.key;
+      let placeIds = [];
+      if (typeof(tripInfo) === 'object') {
+        placeIds = Object.keys(tripInfo.placeIds);
+      } 
       addTripToDash(tripName, placeIds);
     });
   });
@@ -1507,33 +1515,31 @@ function addTripToFirebase(tripName) {
 
   else {
     let ref = firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/trips/' + tripName);
-    ref.set('placeIds'); 
+    ref.set('placeIds');
     tripsSet.add(tripName);
   }
 }
 
+/** Adds place id to tripName in Firabase and in data attribute */
 function addPlaceToTrip(tripName, placeId) {
   let ref = firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/trips/' + tripName + '/placeIds/');
-    ref.set(placeId); 
+  ref.set({[placeId]: true}); 
   
   // Add id to ids on corresponding card
   $("div[id^=trip-]").each(function (index) {
-    if ($(this).attr('tripName') == tripName) {
-      const placeIds = $(this).attr('data-ids');
-      console.log(placeIds);
+    if ($(this).attr('data-tripname') == tripName) {
+      const placeIds = $(this).data('placeIds');
       placeIds.push(placeId);
-      $(this).attr('data-ids', placeIds); 
+      $(this).data('placeIds', placeIds); 
     }
   });
 }
 
 /** Displays all saved places with matching place ids */
 function displayTrip(placeIds) {
+
   //Get the object with all the place ids
-  let tripPlacesSet = new set();
-  for(id in placeIds) {
-    tripPlacesSet.add(id);
-  }
+  let tripPlacesSet = new Set(placeIds);
 
   // Hide all saved places and only show ones in set
   $('#' + SCROLL_ID).children().each(function() {
