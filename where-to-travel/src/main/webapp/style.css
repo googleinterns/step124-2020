@@ -9,6 +9,7 @@
 .active-trip {
   background-color: #049688!important;
   color: white!important;
+  user-select: none;
 }
 
 .bmd-drawer-f-l>.bmd-layout-drawer {
