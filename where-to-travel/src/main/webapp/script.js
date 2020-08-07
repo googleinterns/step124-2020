@@ -100,6 +100,7 @@ const HOME_PIN_PATH = 'icons/home.svg';
 // Text files that contain modal content
 const INFO_HTML_PATH = 'info.txt';
 const NO_PLACES_HTML_PATH = 'noPlaces.txt';
+const LOGIN_WARNING_HTML_PATH = 'loginWarning.txt';
 
 // The map display object
 let map;
@@ -654,6 +655,11 @@ function populatePlaces(placeArray, saved) {
   $('.icon').unbind('click');
   // Handle favoriting a place
   $('.icon').click(function() {
+    if (!firebase.auth().currentUser) {
+      showModal(LOGIN_WARNING_HTML_PATH);
+      return;
+    }
+
     const placeId = $(this).parent().next().next().next().attr('savedPlaceId');
     let card = document.getElementById(placeId + '-card');
 
