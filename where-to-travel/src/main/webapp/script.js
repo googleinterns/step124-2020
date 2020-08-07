@@ -580,6 +580,11 @@ function populatePlaces(placeArray, saved) {
     if (savedPlacesSet.has(place.place_id) && document.getElementById(place.place_id)) {
       const savedIconId = '#' + place.place_id + '-icon';
       const savedCardId = '#' + place.place_id + '-card';
+      for (let marker of markers) {
+        if (marker.id === place.place_id) {
+            marker.setMap(map);
+        }
+      }
       $(savedIconId).addClass('press');
       $(savedCardId).show();
       continue;
