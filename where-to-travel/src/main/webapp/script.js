@@ -1522,7 +1522,7 @@ function addTripToFirebase(tripName) {
 
 /** Adds place id to tripName in Firabase and in data attribute */
 function addPlaceToTrip(tripName, placeId) {
-  let ref = firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/trips/' + tripName + '/placeIds/');
+  let ref = firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/trips/' + tripName + '/placeIds/' + placeId);
   ref.set({[placeId]: true}); 
   
   // Add id to ids on corresponding card
